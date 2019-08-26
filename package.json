@@ -1,0 +1,19 @@
+{
+  "name": "familyfriendlybrewerytracker",
+  "version": "1.0.0",
+  "description": "Family Friendly Brewery Tracker project source code for Junior Design project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seanmbills/FamilyFriendlyBreweryTracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/seanmbills/FamilyFriendlyBreweryTracker/issues"
+  },
+  "homepage": "https://github.com/seanmbills/FamilyFriendlyBreweryTracker#readme"
+}
