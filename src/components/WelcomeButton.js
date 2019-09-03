@@ -1,12 +1,12 @@
 import React from 'react';
 import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 
-const WelcomeButton = (props) => {
-    console.log(props)
+const WelcomeButton = ({onPress, title}) => {
+    console.log(title)
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPress}>
             <View style={styles.containingDiv}>
-                <Text style={styles.text}>{props.title}</Text>
+                <Text style={styles.text}>{title}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -15,11 +15,12 @@ const WelcomeButton = (props) => {
 const styles = StyleSheet.create({
     text: {
         color: '#000000',
-        textAlign: 'center'
+        textAlign: 'center',
+        fontSize: 20
     },
     containingDiv: {
-        height: 50,
-        width: 100,
+        height: 60,
+        width: 110,
         backgroundColor: '#ffffff',
         margin: 5,
         borderRadius: 10,
