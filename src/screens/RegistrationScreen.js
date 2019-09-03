@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
-import { Text, KeyboardAvoidingView, StyleSheet, View, ScrollView, TextInput} from 'react-native';
+import React, {useState } from 'react';
+import { Text, StyleSheet, View, ScrollView, TextInput} from 'react-native';
 import TitleText from '../components/TitleText';
 import PhoneInput from 'react-native-phone-input';
 import WelcomeButton from '../components/WelcomeButton';
+import DatePicker from 'react-native-datepicker';
 
 const RegistrationScreen = ({navigation}) => {
     const [email, setEmail] = useState('');
@@ -10,7 +11,9 @@ const RegistrationScreen = ({navigation}) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
-
+    const [ birthDate, setBirthDate] = useState('2000-01-01');
+    
+    
     return (
         <ScrollView style={styles.background}>
             <TitleText title="Registration"/>
@@ -52,6 +55,9 @@ const RegistrationScreen = ({navigation}) => {
                         style={styles.textInput}
                         value={firstName}
                         placeholder="First Name"
+                        onPress={(newName) => {
+                            setFirstName(newName);
+                        }}
                     />
                 </View>
             </View>
@@ -62,9 +68,13 @@ const RegistrationScreen = ({navigation}) => {
                         style={styles.textInput}
                         value={lastName}
                         placeholder="Last Name"
+                        onPress={(newName) => {
+                            setLastName(newName)
+                        }}
                     />
                 </View>
             </View>
+            <View>
                 <Text style={styles.formLabel}>Phone Number:</Text>
                 <View style= {styles.textContainer}>
                     <PhoneInput
@@ -76,12 +86,28 @@ const RegistrationScreen = ({navigation}) => {
                         style={styles.textInput}
                     />
                 </View>
+            </View>
+            <View style={styles.datePicker}>
+                <Text style={styles.formLabel}>Birth Date:</Text>
+                <DatePicker
+                    style={{backgroundColor: "#ffffff"}}
+                    mode="date"
+                    format="YYYY-MM-DD"
+                    confirmBtnText="Confirm"
+                    cancelBtnText="Cancel"
+                    minDate="1900-01-01"
+                    maximumDate="2019-01-01"
+                    date={birthDate}
+                    onDateChange={(newDate) => {
+                        setBirthDate(newDate)
+                    }}
+                />
+            </View>
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Register"
                     onPress={ () => {
                         console.log("Registration button pressed");
-            
                     }}
                 />
             </View>
@@ -142,6 +168,9 @@ const styles = StyleSheet.create({
     buttonContainer: {
         alignItems: "center",
         marginTop: 30
+    },
+    datePicker: {
+        alignItems: "center"
     }
 });
 export default RegistrationScreen;
