@@ -1,5 +1,6 @@
 import React, {useState } from 'react';
-import { Text, StyleSheet, View, ScrollView, TextInput} from 'react-native';
+import { Text, StyleSheet, View, ScrollView, TextInput, KeyboardAvoidingView} from 'react-native';
+import KeyboardAwareScrollView from 'react-native-keyboard-aware-scroll-view';
 import TitleText from '../components/TitleText';
 import PhoneInput from 'react-native-phone-input';
 import WelcomeButton from '../components/WelcomeButton';
@@ -12,10 +13,12 @@ const RegistrationScreen = ({navigation}) => {
     const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
     const [ birthDate, setBirthDate] = useState('2000-01-01');
+    const [username, setUsername] = useState('');
     
     
     return (
         <ScrollView style={styles.background}>
+            <View style={styles.topSpan}/>
             <TitleText title="Registration"/>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Email:</Text>
@@ -28,6 +31,20 @@ const RegistrationScreen = ({navigation}) => {
                         autoCorrect={false}
                         onChangeText={(newEmail) => {
                             setEmail(newEmail);
+                        }}
+                    />
+                </View>
+            </View>
+            <View style={styles.formElement}>
+                <Text style={styles.formLabel}>Username:</Text>
+                <View style= {styles.textContainer}>
+                    <TextInput
+                        style={styles.textInput}
+                        value={username}
+                        placeholder="username"
+                        autoCapitalize="none"
+                        onChangeText={(newUsername) => {
+                            setUsername(newUsername);
                         }}
                     />
                 </View>
@@ -134,7 +151,7 @@ const RegistrationScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     background: {
         backgroundColor: "#fcc203",
-        marginTop: 20
+        paddingTop: 20
     },
     formElement: {
         marginTop: 20,
@@ -170,7 +187,8 @@ const styles = StyleSheet.create({
         marginTop: 30
     },
     datePicker: {
-        alignItems: "center"
+        alignItems: "center",
+        marginTop: 20
     }
 });
 export default RegistrationScreen;
