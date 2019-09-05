@@ -1,10 +1,52 @@
 import React, {useState } from 'react';
 import { Text, StyleSheet, View, ScrollView, TextInput, KeyboardAvoidingView} from 'react-native';
-import KeyboardAwareScrollView from 'react-native-keyboard-aware-scroll-view';
 import TitleText from '../components/TitleText';
 import PhoneInput from 'react-native-phone-input';
 import WelcomeButton from '../components/WelcomeButton';
 import DatePicker from 'react-native-datepicker';
+
+function validateUsername(name) {
+    if (name.length < 6 || name.length > 30) {
+        return false;
+    } 
+    if (!name.match(/^[0-9a-z]+$/)) {
+        return false;
+    }
+    return true
+}
+
+function validatePassword(pass) {
+    return pass.length >= 8 
+        && (/[a-z]/.test(pass))
+        && pass.match(/[A-Z]/)
+        && pass.match(/\d/)
+        && pass.match(/[$|*=()[\]_+@.-]/)
+        && (!pass.match(/[^a-zA-Z0-9$|*=()[\]_+@.-]/));
+}
+
+function validateEmail(mail) {
+    return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail));
+}
+
+function validatePhone(num) {
+    return num.length == 10
+    && num.match(/^[0-9]*$/g);
+}
+
+function validateZip(num) {
+    return num.length == 5
+    && num.match(/^[0-9]*$/g);
+}
+
+function validateBirthDate(date) {
+    const enteredDate = date.split('-');
+    const givenYear = parseInt(enteredDate[0]);
+    const givenMonth = parseInt(enteredDate[1]);
+    const givenDay = parseInt(enteredDate[2]);
+    console.log(new Date(givenYear + 21, givenMonth -1 , givenDay))
+    return (new Date(givenYear + 21, givenMonth -1 , givenDay) <= new Date());
+
+}
 
 const RegistrationScreen = ({navigation}) => {
     const [email, setEmail] = useState('');
@@ -14,7 +56,59 @@ const RegistrationScreen = ({navigation}) => {
     const [phone, setPhone] = useState('');
     const [ birthDate, setBirthDate] = useState('2000-01-01');
     const [username, setUsername] = useState('');
+    const [zip, setZip] = useState('');
+    const [ inputErrMsg, setInputErrMsg ] = useState('');
+    const [ passErrMsg, setPassErrMsg ] = useState('');
+    const [ emailErrMsg, setEmailErrMsg ] = useState('');
+    const [ phoneErrMsg, setPhoneErrMsg ] = useState('');
+    const [ zipErrMsg, setZipErrMsg ] = useState('');
+    const [ birthDateErrMsg, setBirthDateErrMsg ] = useState('');
     
+    function validateInput(inputMap) {
+        var isValid = true
+        // email, password, username, phone, zip, birthdDate
+        if (!validateUsername(inputMap.get('username'))) {
+            setInputErrMsg("Username must be between 6-30 characters and " 
+            + "can only contain alpanumeric characters.");
+            isValid = false;
+        } else {
+            setInputErrMsg('');
+        }
+        if (!validatePassword(inputMap.get('password'))) {
+            setPassErrMsg("Password must be longer than 8 characters, contain "
+                + "one special character, capital letter, and number");
+            isValid = false;
+        } else {
+            setPassErrMsg('');
+        }
+
+        if (!validateEmail(inputMap.get('email'))) {
+            setEmailErrMsg("Email address provided was not valid");
+            isValid = false;
+        } else {
+            setEmailErrMsg('');
+        }
+        if (!validatePhone(inputMap.get('phone'))) {
+            setPhoneErrMsg("Phone number provided was not valid");
+            isValid = false;
+        } else {
+            setPhoneErrMsg('');
+        }
+        if (!validateZip(inputMap.get('zip'))) {
+            setZipErrMsg("Zip code provided was not valid");
+            isValid = false;
+        } else {
+            setZipErrMsg('');
+        }
+        if (!validateBirthDate(inputMap.get('birthDate'))) {
+            setBirthDateErrMsg("You must be at least 21 years old "
+                + "to use this application");
+            isValid = false;
+        } else {
+            setBirthDateErrMsg('');
+        }
+        return isValid;
+    }
     
     return (
         <ScrollView style={styles.background}>
@@ -34,6 +128,9 @@ const RegistrationScreen = ({navigation}) => {
                         }}
                     />
                 </View>
+                <View>
+                    <Text style={styles.errorMsg}>{emailErrMsg}</Text>
+                </View>
             </View>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Username:</Text>
@@ -47,6 +144,9 @@ const RegistrationScreen = ({navigation}) => {
                             setUsername(newUsername);
                         }}
                     />
+                </View>
+                <View>
+                    <Text style={styles.errorMsg}>{inputErrMsg}</Text>
                 </View>
             </View>
             <View style={styles.formElement}>
@@ -64,6 +164,9 @@ const RegistrationScreen = ({navigation}) => {
                         }}
                     />
                 </View>
+                <View>
+                    <Text style={styles.errorMsg}>{passErrMsg}</Text>
+                </View>
             </View>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>First Name:</Text>
@@ -72,7 +175,7 @@ const RegistrationScreen = ({navigation}) => {
                         style={styles.textInput}
                         value={firstName}
                         placeholder="First Name"
-                        onPress={(newName) => {
+                        onChangeText={(newName) => {
                             setFirstName(newName);
                         }}
                     />
@@ -85,23 +188,43 @@ const RegistrationScreen = ({navigation}) => {
                         style={styles.textInput}
                         value={lastName}
                         placeholder="Last Name"
-                        onPress={(newName) => {
+                        onChangeText={(newName) => {
                             setLastName(newName)
                         }}
                     />
                 </View>
             </View>
-            <View>
+            <View style={styles.formElement}>
+                <Text style={styles.formLabel}>Zip Code:</Text>
+                <View style= {styles.textContainer}>
+                    <TextInput
+                        keyboardType="number-pad"
+                        style={styles.textInput}
+                        value={zip}
+                        placeholder="zip code"
+                        onChangeText={(newZip) => {
+                            setZip(newZip);
+                        }}
+                    />
+                </View>
+                <View>
+                    <Text style={styles.errorMsg}>{zipErrMsg}</Text>
+                </View>
+            </View>
+            <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Phone Number:</Text>
                 <View style= {styles.textContainer}>
                     <PhoneInput
                         placeholder="Enter phone number"
                         value={phone}
-                        onChange={ (newPhone)=> {
+                        onChangePhoneNumber={ (newPhone)=> {
                             setPhone(newPhone);
                         }}
-                        style={styles.textInput}
+                        style={styles.textInput}   
                     />
+                </View>
+                <View>
+                    <Text style={styles.errorMsg}>{phoneErrMsg}</Text>
                 </View>
             </View>
             <View style={styles.datePicker}>
@@ -119,12 +242,25 @@ const RegistrationScreen = ({navigation}) => {
                         setBirthDate(newDate)
                     }}
                 />
+                <View>
+                    <Text style={styles.errorMsg}>{birthDateErrMsg}</Text>
+                </View>
             </View>
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Register"
                     onPress={ () => {
-                        console.log("Registration button pressed");
+                        //Create map object to pass to input validation function
+                        const inputMap = new Map();
+                        inputMap.set('email', email);
+                        inputMap.set('password', password);
+                        inputMap.set('username', username);
+                        inputMap.set('phone', phone);
+                        inputMap.set('zip', zip);
+                        inputMap.set('birthDate', birthDate);
+
+                        //Check the input & set error messages if somthing is wrong
+                        validateInput(inputMap);
                     }}
                 />
             </View>
@@ -155,7 +291,7 @@ const styles = StyleSheet.create({
     },
     formElement: {
         marginTop: 20,
-        marginBottom: 30
+        marginBottom: 20
     },
     formLabel: {
         fontSize: 20,
@@ -184,11 +320,20 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         alignItems: "center",
-        marginTop: 30
+        marginTop: 20,
+        marginBottom: 20
     },
     datePicker: {
         alignItems: "center",
         marginTop: 20
+    },
+    errorMsg: {
+        color: "#eb1809",
+        fontSize: 20,
+        textAlign: "center",
+        marginLeft: 5,
+        marginRight: 5
     }
+    
 });
 export default RegistrationScreen;
