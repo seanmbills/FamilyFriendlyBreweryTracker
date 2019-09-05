@@ -2,13 +2,14 @@ import { createStackNavigator, createAppContainer } from 'react-navigation';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import LoginScreen from './src/screens/LoginScreen';
-import flags from 'react-native-phone-input/lib/resources/flags';
+//import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 
 const navigator = createStackNavigator(
   { //Route Object                                                                       
     Welcome: WelcomeScreen,
     Registration: RegistrationScreen,
-    Login: LoginScreen
+    Login: LoginScreen,
+    // ForgotPassword: ForgotPasswordScreen
   },
   {
     initialRouteName: 'Welcome',
