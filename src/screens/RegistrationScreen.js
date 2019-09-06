@@ -4,6 +4,7 @@ import TitleText from '../components/TitleText';
 import PhoneInput from 'react-native-phone-input';
 import WelcomeButton from '../components/WelcomeButton';
 import DatePicker from 'react-native-datepicker';
+import Server from '../api/Server';
 
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
@@ -17,11 +18,11 @@ function validateUsername(name) {
 
 function validatePassword(pass) {
     return pass.length >= 8 
-        && (/[a-z]/.test(pass))
-        && pass.match(/[A-Z]/)
-        && pass.match(/\d/)
-        && pass.match(/[$|*=()[\]_+@.-]/)
-        && (!pass.match(/[^a-zA-Z0-9$|*=()[\]_+@.-]/));
+        && (/[a-z]/.test(pass)) // check to ensure pass contains lowercase
+        && pass.match(/[A-Z]/)  // check to ensure pass contains uppercase
+        && pass.match(/\d/)     // check to ensure pass contains a digit
+        && pass.match(/[$|*=(!)[\]_+@.-]/) // check to ensure pass contains special character
+        && (!pass.match(/[^a-zA-Z0-9$|*=(!)[\]_+@.-]/)); // check to ensure pass doesn't contain character that is not a special one
 }
 
 function validateEmail(mail) {
@@ -249,7 +250,7 @@ const RegistrationScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Register"
-                    onPress={ () => {
+                    onPress={ async () => {
                         //Create map object to pass to input validation function
                         const inputMap = new Map();
                         inputMap.set('email', email);
@@ -261,33 +262,17 @@ const RegistrationScreen = ({navigation}) => {
 
                         //Check the input & set error messages if somthing is wrong
                         if(validateInput(inputMap)) {
-                            return fetch('https://ffbtdevelopment.herokuapp.com/signup', {
-                                method: 'POST',
-                                headers: {
-                                    Accept: 'application/json',
-                                    'Content-Type' : 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    "email": email,
-                                    "userId": username,
-                                    "password": password,
-                                    "birthDate": birthDate,
-                                    "firstName": firstName,
-                                    "lastName": lastName,
-                                    "phoneNumber": phone,
-                                    "zipCode": zip,
-                                    "testHeader": {
-                                        "createdBy": "test"
-                                    }
-                                }),
-                            })
-                                .then((response) => {
-                                    console.log(response);
-                                    response.json();
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                            const userId = username;
+                            const phoneNumber = phone;
+                            const zipCode = zip;
+                            try { 
+                                const response = await Server.post('/signup', {email, userId, 
+                                    password, birthDate, firstName, lastName, phoneNumber, zipCode }, 
+                                    { 'Accept' : 'application/json', 'Content-type': 'application/json'});
+                                console.log(response);
+                            } catch (err) {
+                                console.log(err.response.data.error);
+                            }
                         } else {
                             console.log("Input was not valid");
                         }

@@ -2,7 +2,6 @@ import React from 'react';
 import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 
 const WelcomeButton = ({onPress, title}) => {
-    console.log(title)
     return (
         <TouchableOpacity onPress={onPress}>
             <View style={styles.containingDiv}>

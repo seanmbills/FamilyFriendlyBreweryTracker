@@ -3,6 +3,7 @@ import { Text, StyleSheet, View } from 'react-native';
 import TitleText from '../components/TitleText';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import WelcomeButton from '../components/WelcomeButton';
+import Server from '../api/Server';
 
 function validateEmail(mail) {
     return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail));
@@ -65,27 +66,20 @@ const LoginScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Login"
-                    onPress={() => {
+                    onPress={ async () => {
                         const validateMap = new Map();
                         validateMap.set('email', email);
                         validateMap.set('password', password);
 
                         if (validateInput(validateMap)) {
-                            return fetch('https://ffbtdevelopment.herokuapp.com/signin', {
-                                method: 'POST',
-                                headers: {
-                                    Accept: 'application/json',
-                                    'Content-Type' : 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    "email": email,
-                                    "password": password,
-                                }),
-                            })
-                                .then((response) => console.log(response))
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                            const emailOrId = email;
+                            try {
+                                const response = await Server.post('/signin', {emailOrId, password}, 
+                                    { 'Accept' : 'application/json', 'Content-type': 'application/json'});
+                                console.log(response); 
+                            } catch (err) {
+                                console.log(err.response.data.error);
+                            }
                         } else {
                             console.log("input was not valid");
                         }
