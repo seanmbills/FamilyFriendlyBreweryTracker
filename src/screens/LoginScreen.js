@@ -5,18 +5,15 @@ import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-ha
 import WelcomeButton from '../components/WelcomeButton';
 import Server from '../api/Server';
 
-function validateEmail(mail) {
-    return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail));
-}
-
 const LoginScreen = ({navigation}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errMsg, setErrMsg ] = useState('');
 
     function validateInput(inputMap) {
         const email = inputMap.get('email');
         const password = inputMap.get('password');
-        if (validateEmail(email) && password.length >= 8) {
+        if (email.length > 0 && password.length >= 8) {
             return true;
         }
         return false;
@@ -27,6 +24,9 @@ const LoginScreen = ({navigation}) => {
             <TitleText
                 title="Login"
             />
+            <View style={ marginTop=10}>
+                <Text style={styles.errorMsg}>{errMsg}</Text>
+            </View>
             <View style={styles.formElement}> 
                 <Text style={styles.formLabel}>Email</Text>
                 <TextInput
@@ -53,6 +53,7 @@ const LoginScreen = ({navigation}) => {
                         setPassword(newPass);
                     }}
                 />
+                
                 {/* <TouchableOpacity
                     onPress={() => {
                         navigation.navigate('ForgotPassword')
@@ -77,7 +78,9 @@ const LoginScreen = ({navigation}) => {
                                 const response = await Server.post('/signin', {emailOrId, password}, 
                                     { 'Accept' : 'application/json', 'Content-type': 'application/json'});
                                 console.log(response); 
+                                setErrMsg('');
                             } catch (err) {
+                                setErrMsg(err.response.data.error);
                                 console.log(err.response.data.error);
                             }
                         } else {
@@ -104,7 +107,7 @@ const styles = StyleSheet.create({
         paddingTop: 20
     },
     formElement: {
-        marginTop: 20,
+        marginTop: 15,
     },
     formLabel: {
         fontSize: 20,
@@ -138,6 +141,13 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         textAlign: "center",
         fontSize: 12
+    },
+    errorMsg: {
+        color: "#eb1809",
+        fontSize: 20,
+        textAlign: "center",
+        marginLeft: 5,
+        marginRight: 5
     }
 });
 
