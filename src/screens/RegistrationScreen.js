@@ -9,7 +9,7 @@ function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
         return false;
     } 
-    if (!name.match(/^[0-9a-z]+$/)) {
+    if (!name.match(/^[0-9a-zA-Z]+$/)) {
         return false;
     }
     return true
@@ -31,7 +31,7 @@ function validateEmail(mail) {
 function validatePhone(num) {
     return num.length == 10
     && num.match(/^[0-9]*$/g);
-}
+} 
 
 function validateZip(num) {
     return num.length == 5
@@ -260,7 +260,37 @@ const RegistrationScreen = ({navigation}) => {
                         inputMap.set('birthDate', birthDate);
 
                         //Check the input & set error messages if somthing is wrong
-                        validateInput(inputMap);
+                        if(validateInput(inputMap)) {
+                            return fetch('https://ffbtdevelopment.herokuapp.com/signup', {
+                                method: 'POST',
+                                headers: {
+                                    Accept: 'application/json',
+                                    'Content-Type' : 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    "email": email,
+                                    "userId": username,
+                                    "password": password,
+                                    "birthDate": birthDate,
+                                    "firstName": firstName,
+                                    "lastName": lastName,
+                                    "phoneNumber": phone,
+                                    "zipCode": zip,
+                                    "testHeader": {
+                                        "createdBy": "test"
+                                    }
+                                }),
+                            })
+                                .then((response) => {
+                                    console.log(response);
+                                    response.json();
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        } else {
+                            console.log("Input was not valid");
+                        }
                     }}
                 />
             </View>

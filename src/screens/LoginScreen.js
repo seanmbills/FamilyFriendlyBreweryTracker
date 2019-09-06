@@ -3,9 +3,23 @@ import { Text, StyleSheet, View } from 'react-native';
 import TitleText from '../components/TitleText';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import WelcomeButton from '../components/WelcomeButton';
+
+function validateEmail(mail) {
+    return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail));
+}
+
 const LoginScreen = ({navigation}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    function validateInput(inputMap) {
+        const email = inputMap.get('email');
+        const password = inputMap.get('password');
+        if (validateEmail(email) && password.length >= 8) {
+            return true;
+        }
+        return false;
+    }
     return (
         <ScrollView style={styles.background}>
             <View style={styles.topSpan}/>
@@ -52,7 +66,29 @@ const LoginScreen = ({navigation}) => {
                 <WelcomeButton
                     title="Login"
                     onPress={() => {
-                        console.log("Login")
+                        const validateMap = new Map();
+                        validateMap.set('email', email);
+                        validateMap.set('password', password);
+
+                        if (validateInput(validateMap)) {
+                            return fetch('https://ffbtdevelopment.herokuapp.com/signin', {
+                                method: 'POST',
+                                headers: {
+                                    Accept: 'application/json',
+                                    'Content-Type' : 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    "email": email,
+                                    "password": password,
+                                }),
+                            })
+                                .then((response) => console.log(response))
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        } else {
+                            console.log("input was not valid");
+                        }
                     }}
                 />
             </View>
