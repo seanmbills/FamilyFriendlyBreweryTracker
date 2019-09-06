@@ -4,12 +4,13 @@ import TitleText from '../components/TitleText';
 import PhoneInput from 'react-native-phone-input';
 import WelcomeButton from '../components/WelcomeButton';
 import DatePicker from 'react-native-datepicker';
+import Server from '../api/Server';
 
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
         return false;
     } 
-    if (!name.match(/^[0-9a-z]+$/)) {
+    if (!name.match(/^[0-9a-zA-Z]+$/)) {
         return false;
     }
     return true
@@ -17,11 +18,11 @@ function validateUsername(name) {
 
 function validatePassword(pass) {
     return pass.length >= 8 
-        && (/[a-z]/.test(pass))
-        && pass.match(/[A-Z]/)
-        && pass.match(/\d/)
-        && pass.match(/[$|*=()[\]_+@.-]/)
-        && (!pass.match(/[^a-zA-Z0-9$|*=()[\]_+@.-]/));
+        && (/[a-z]/.test(pass)) // check to ensure pass contains lowercase
+        && pass.match(/[A-Z]/)  // check to ensure pass contains uppercase
+        && pass.match(/\d/)     // check to ensure pass contains a digit
+        && pass.match(/[$|*=(!)[\]_+@.-]/) // check to ensure pass contains special character
+        && (!pass.match(/[^a-zA-Z0-9$|*=(!)[\]_+@.-]/)); // check to ensure pass doesn't contain character that is not a special one
 }
 
 function validateEmail(mail) {
@@ -31,7 +32,7 @@ function validateEmail(mail) {
 function validatePhone(num) {
     return num.length == 10
     && num.match(/^[0-9]*$/g);
-}
+} 
 
 function validateZip(num) {
     return num.length == 5
@@ -249,7 +250,7 @@ const RegistrationScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Register"
-                    onPress={ () => {
+                    onPress={ async () => {
                         //Create map object to pass to input validation function
                         const inputMap = new Map();
                         inputMap.set('email', email);
@@ -260,7 +261,21 @@ const RegistrationScreen = ({navigation}) => {
                         inputMap.set('birthDate', birthDate);
 
                         //Check the input & set error messages if somthing is wrong
-                        validateInput(inputMap);
+                        if(validateInput(inputMap)) {
+                            const userId = username;
+                            const phoneNumber = phone;
+                            const zipCode = zip;
+                            try { 
+                                const response = await Server.post('/signup', {email, userId, 
+                                    password, birthDate, firstName, lastName, phoneNumber, zipCode }, 
+                                    { 'Accept' : 'application/json', 'Content-type': 'application/json'});
+                                console.log(response);
+                            } catch (err) {
+                                console.log(err.response.data.error);
+                            }
+                        } else {
+                            console.log("Input was not valid");
+                        }
                     }}
                 />
             </View>

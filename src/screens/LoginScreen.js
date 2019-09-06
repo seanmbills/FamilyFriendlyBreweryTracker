@@ -3,15 +3,30 @@ import { Text, StyleSheet, View } from 'react-native';
 import TitleText from '../components/TitleText';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import WelcomeButton from '../components/WelcomeButton';
+import Server from '../api/Server';
+
 const LoginScreen = ({navigation}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errMsg, setErrMsg ] = useState('');
+
+    function validateInput(inputMap) {
+        const email = inputMap.get('email');
+        const password = inputMap.get('password');
+        if (email.length > 0 && password.length >= 8) {
+            return true;
+        }
+        return false;
+    }
     return (
         <ScrollView style={styles.background}>
             <View style={styles.topSpan}/>
             <TitleText
                 title="Login"
             />
+            <View style={ marginTop=10}>
+                <Text style={styles.errorMsg}>{errMsg}</Text>
+            </View>
             <View style={styles.formElement}> 
                 <Text style={styles.formLabel}>Email</Text>
                 <TextInput
@@ -38,6 +53,7 @@ const LoginScreen = ({navigation}) => {
                         setPassword(newPass);
                     }}
                 />
+                
                 {/* <TouchableOpacity
                     onPress={() => {
                         navigation.navigate('ForgotPassword')
@@ -51,8 +67,25 @@ const LoginScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Login"
-                    onPress={() => {
-                        console.log("Login")
+                    onPress={ async () => {
+                        const validateMap = new Map();
+                        validateMap.set('email', email);
+                        validateMap.set('password', password);
+
+                        if (validateInput(validateMap)) {
+                            const emailOrId = email;
+                            try {
+                                const response = await Server.post('/signin', {emailOrId, password}, 
+                                    { 'Accept' : 'application/json', 'Content-type': 'application/json'});
+                                console.log(response); 
+                                setErrMsg('');
+                            } catch (err) {
+                                setErrMsg(err.response.data.error);
+                                console.log(err.response.data.error);
+                            }
+                        } else {
+                            console.log("input was not valid");
+                        }
                     }}
                 />
             </View>
@@ -74,7 +107,7 @@ const styles = StyleSheet.create({
         paddingTop: 20
     },
     formElement: {
-        marginTop: 20,
+        marginTop: 15,
     },
     formLabel: {
         fontSize: 20,
@@ -108,6 +141,13 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         textAlign: "center",
         fontSize: 12
+    },
+    errorMsg: {
+        color: "#eb1809",
+        fontSize: 20,
+        textAlign: "center",
+        marginLeft: 5,
+        marginRight: 5
     }
 });
 
