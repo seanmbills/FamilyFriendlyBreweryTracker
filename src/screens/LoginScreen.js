@@ -79,6 +79,7 @@ const LoginScreen = ({navigation}) => {
                                     { 'Accept' : 'application/json', 'Content-type': 'application/json'});
                                 console.log(response); 
                                 setErrMsg('');
+                                navigation.navigate('loggedInFlow')
                             } catch (err) {
                                 setErrMsg(err.response.data.error);
                                 console.log(err.response.data.error);
