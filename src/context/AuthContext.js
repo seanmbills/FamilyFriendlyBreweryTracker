@@ -1,3 +1,4 @@
+import {AsyncStorage} from 'react-native'
 import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
 
@@ -5,6 +6,8 @@ const authReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
+        case 'register':
+            return {...state, token: action.payload, errorMessage: ''}
         default: 
             return state;
     }
@@ -20,14 +23,20 @@ const register = (dispatch) => {
                 password, birthDate, firstName, lastName, phoneNumber, zipCode }, 
                 { 'Accept' : 'application/json', 'Content-type': 'application/json'});
             console.log(response.data);
+            // if we sign up, modify our state to reflect that we're authenticated
+            // (aka got a token back)
+            // we also store the token on the device for later access
+            await AsyncStorage.setItem('token', resonse.data.token)
+            dispatch({type: 'register', payload: response.data.token})
+
+            // then need to navigate the user immediately to the logged in state
+            
         } catch (err) {
-            console.log(err.response);
+            console.log(err.response)
+            // if we get an error back from signing up, need to display the appropriate error
+            // message to the user
             dispatch({ type: 'add_error_message', payload: err.response.data})
         }
-        // if we sign up, modify our state to reflect that we're authenticated
-        // (aka got a token back)
-
-        // if signing up fails, need to display an error somewhere
     }
 }
 
@@ -50,5 +59,5 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout},
-    {token: false, errorMessage: ''}
+    {token: null, errorMessage: ''}
 )
