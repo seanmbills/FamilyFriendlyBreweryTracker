@@ -1,6 +1,7 @@
 import {AsyncStorage} from 'react-native'
 import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
+import {navigate} from '../navigationRef'
 
 const authReducer = (state, action) => {
     switch(action.type) {
@@ -26,11 +27,11 @@ const register = (dispatch) => {
             // if we sign up, modify our state to reflect that we're authenticated
             // (aka got a token back)
             // we also store the token on the device for later access
-            await AsyncStorage.setItem('token', resonse.data.token)
+            await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'register', payload: response.data.token})
 
             // then need to navigate the user immediately to the logged in state
-            
+            navigate('loggedInFlow')
         } catch (err) {
             console.log(err.response)
             // if we get an error back from signing up, need to display the appropriate error
