@@ -12,6 +12,9 @@ import LoginScreen from './src/screens/LoginScreen';
 import BreweryListScreen from './src/screens/BreweryListScreen'
 //import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 
+import {Provider as AuthProvider} from './src/context/AuthContext'
+
+
 const switchNavigator = createSwitchNavigator({
     loginFlow: createStackNavigator({
         Welcome: WelcomeScreen,
@@ -37,7 +40,15 @@ const switchNavigator = createSwitchNavigator({
     })
 })
 
-export default createAppContainer(switchNavigator)
+const App = createAppContainer(switchNavigator)
+
+export default () => {
+    return (
+        <AuthProvider>
+            <App />
+        </AuthProvider>
+    )
+}
 
 // const navigator = createStackNavigator(
 //   { //Route Object                                                                       
