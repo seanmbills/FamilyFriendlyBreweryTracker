@@ -1,10 +1,10 @@
-import React, {useState } from 'react';
+import React, {useState, useContext } from 'react';
 import { Text, StyleSheet, View, ScrollView, TextInput, KeyboardAvoidingView} from 'react-native';
 import TitleText from '../components/TitleText';
 import PhoneInput from 'react-native-phone-input';
 import WelcomeButton from '../components/WelcomeButton';
 import DatePicker from 'react-native-datepicker';
-import Server from '../api/Server';
+import {Context as AuthContext} from '../context/AuthContext'
 
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
@@ -50,6 +50,8 @@ function validateBirthDate(date) {
 }
 
 const RegistrationScreen = ({navigation}) => {
+    const {state, register} = useContext(AuthContext)
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -247,10 +249,11 @@ const RegistrationScreen = ({navigation}) => {
                     <Text style={styles.errorMsg}>{birthDateErrMsg}</Text>
                 </View>
             </View>
+            {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Register"
-                    onPress={ async () => {
+                    onPress={() => {
                         //Create map object to pass to input validation function
                         const inputMap = new Map();
                         inputMap.set('email', email);
@@ -265,14 +268,9 @@ const RegistrationScreen = ({navigation}) => {
                             const userId = username;
                             const phoneNumber = phone;
                             const zipCode = zip;
-                            try { 
-                                const response = await Server.post('/signup', {email, userId, 
-                                    password, birthDate, firstName, lastName, phoneNumber, zipCode }, 
-                                    { 'Accept' : 'application/json', 'Content-type': 'application/json'});
-                                console.log(response);
-                            } catch (err) {
-                                console.log(err.response.data.error);
-                            }
+                            register({email, userId, 
+                                password, birthDate, firstName, lastName,
+                                phoneNumber, zipCode })
                         } else {
                             console.log("Input was not valid");
                         }
