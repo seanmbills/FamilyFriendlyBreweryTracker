@@ -1,32 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
+import {NavigationEvents} from 'react-navigation'
 import TitleText from '../components/TitleText';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import WelcomeButton from '../components/WelcomeButton';
-import Server from '../api/Server';
+import {Context as AuthContext} from '../context/AuthContext'
 
 const LoginScreen = ({navigation}) => {
+    const {state, signin, clearErrorMessage} = useContext(AuthContext)
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errMsg, setErrMsg ] = useState('');
 
     function validateInput(inputMap) {
         const email = inputMap.get('email');
         const password = inputMap.get('password');
         if (email.length > 0 && password.length >= 8) {
+            console.log('not valid input')
             return true;
         }
+        console.log('valid input')
         return false;
     }
     return (
         <ScrollView style={styles.background}>
+            <NavigationEvents 
+                onWillBlur={clearErrorMessage}
+            />
             <View style={styles.topSpan}/>
             <TitleText
                 title="Login"
             />
-            <View style={ marginTop=10}>
-                <Text style={styles.errorMsg}>{errMsg}</Text>
-            </View>
             <View style={styles.formElement}> 
                 <Text style={styles.formLabel}>Email</Text>
                 <TextInput
@@ -63,7 +67,7 @@ const LoginScreen = ({navigation}) => {
                 </TouchableOpacity> */}
 
             </View>
-
+            {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Login"
@@ -74,16 +78,7 @@ const LoginScreen = ({navigation}) => {
 
                         if (validateInput(validateMap)) {
                             const emailOrId = email;
-                            try {
-                                const response = await Server.post('/signin', {emailOrId, password}, 
-                                    { 'Accept' : 'application/json', 'Content-type': 'application/json'});
-                                console.log(response); 
-                                setErrMsg('');
-                                navigation.navigate('loggedInFlow')
-                            } catch (err) {
-                                setErrMsg(err.response.data.error);
-                                console.log(err.response.data.error);
-                            }
+                            signin({emailOrId, password})
                         } else {
                             console.log("input was not valid");
                         }

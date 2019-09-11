@@ -4,6 +4,7 @@ import TitleText from '../components/TitleText';
 import PhoneInput from 'react-native-phone-input';
 import WelcomeButton from '../components/WelcomeButton';
 import DatePicker from 'react-native-datepicker';
+import {NavigationEvents} from 'react-navigation'
 import {Context as AuthContext} from '../context/AuthContext'
 
 function validateUsername(name) {
@@ -50,7 +51,7 @@ function validateBirthDate(date) {
 }
 
 const RegistrationScreen = ({navigation}) => {
-    const {state, register} = useContext(AuthContext)
+    const {state, register, clearErrorMessage} = useContext(AuthContext)
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -115,6 +116,9 @@ const RegistrationScreen = ({navigation}) => {
     
     return (
         <ScrollView style={styles.background}>
+            <NavigationEvents 
+                onWillBlur={clearErrorMessage}
+            />
             <View style={styles.topSpan}/>
             <TitleText title="Registration"/>
             <View style={styles.formElement}>

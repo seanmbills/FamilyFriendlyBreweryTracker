@@ -2,13 +2,18 @@ import {AsyncStorage} from 'react-native'
 import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
 import {navigate} from '../navigationRef'
+import { decode } from 'punycode';
+const jwt = require('jsonwebtoken')
 
 const authReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
         case 'register':
+        case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
+        case 'clear_error_message':
+            return {...state, errorMessage: ''}
         default: 
             return state;
     }
@@ -42,14 +47,41 @@ const register = (dispatch) => {
 }
 
 const signin = (dispatch) => {
-    return ({emailOrId, password}) => {
+    return async ({emailOrId, password}) => {
         // try to sign in
-
+        try {
+            const response = await ServerApi.post('/signin', {emailOrId, password}, 
+                { 'Accept' : 'application/json', 'Content-type': 'application/json'});
+            console.log(response.data); 
+            await AsyncStorage.setItem('token', response.data.token)
+            dispatch({type: 'signin', payload: response.data.token})
+            
+            navigate('loggedInFlow')
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data})
+        }
         // handle success by updating state
 
         // handle failure with error message
     }
 }
+
+const clearErrorMessage = dispatch => () => {
+    dispatch({type: 'clear_error_message'})
+}
+
+// const tryAutoSignin = dispatch => async() => {
+//     const token = await AsyncStorage.getItem('token')
+//     if (token)
+//         try {
+//             const {exp} = decode(token)
+//             if (Date.now() < exp * 1000)
+//                 dispatch({type: 'signin', payload: token})
+//         } catch(err) {
+
+//         }
+// }
 
 const signout = (dispatch) => {
     return () => {
@@ -59,6 +91,6 @@ const signout = (dispatch) => {
 
 export const {Provider, Context} = createDataContext(
     authReducer,
-    {register, signin, signout},
+    {register, signin, signout, clearErrorMessage, tryAutoSignin},
     {token: null, errorMessage: ''}
 )
