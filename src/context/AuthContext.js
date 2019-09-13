@@ -2,8 +2,8 @@ import {AsyncStorage} from 'react-native'
 import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
 import {navigate} from '../navigationRef'
-import { decode } from 'punycode';
-const jwt = require('jsonwebtoken')
+//import { decode } from 'punycode';
+import jwt from 'react-native-pure-jwt';
 
 const authReducer = (state, action) => {
     switch(action.type) {
@@ -71,17 +71,17 @@ const clearErrorMessage = dispatch => () => {
     dispatch({type: 'clear_error_message'})
 }
 
-// const tryAutoSignin = dispatch => async() => {
-//     const token = await AsyncStorage.getItem('token')
-//     if (token)
-//         try {
-//             const {exp} = decode(token)
-//             if (Date.now() < exp * 1000)
-//                 dispatch({type: 'signin', payload: token})
-//         } catch(err) {
+const tryAutoSignin = dispatch => async() => {
+    const token = await AsyncStorage.getItem('token')
+    if (token)
+        try {
+            const {exp} = decode(token)
+            if (Date.now() < exp * 1000)
+                dispatch({type: 'signin', payload: token})
+        } catch(err) {
 
-//         }
-// }
+        }
+}
 
 const signout = (dispatch) => {
     return () => {
@@ -91,6 +91,6 @@ const signout = (dispatch) => {
 
 export const {Provider, Context} = createDataContext(
     authReducer,
-    {register, signin, signout, clearErrorMessage, tryAutoSignin},
+    {register, signin, signout, clearErrorMessage},// tryAutoSignin},
     {token: null, errorMessage: ''}
 )
