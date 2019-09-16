@@ -93,6 +93,13 @@ const LoginScreen = ({navigation}) => {
                     }}
                 />
             </View>
+            <TouchableOpacity
+                onPress={() => {
+                    navigation.navigate("ForgotPassword");
+                }}
+            >
+                <Text style={styles.forgotPass}>Forgot Password</Text>
+            </TouchableOpacity>
         </ScrollView>
     );
 }
@@ -144,6 +151,11 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginLeft: 5,
         marginRight: 5
+    },
+    forgotPass: {
+        textAlign: "center",
+        fontSize: 20,
+        marginTop: 10
     }
 });
 
