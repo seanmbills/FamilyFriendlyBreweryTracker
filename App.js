@@ -2,10 +2,10 @@ import React from 'react'
 
 import {
     createAppContainer, 
-    createStackNavigator,
-    createBottomTabNavigator,
     createSwitchNavigator,
 } from 'react-navigation'
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import {createStackNavigator} from 'react-navigation-stack';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import LoginScreen from './src/screens/LoginScreen';
