@@ -41,7 +41,7 @@ const register = (dispatch) => {
             console.log(err.response.data.error)
             // if we get an error back from signing up, need to display the appropriate error
             // message to the user
-            dispatch({ type: 'add_error_message', payload: err.response.data})
+            dispatch({ type: 'add_error_message', payload: err.response.data.error})
         }
     }
 }
@@ -59,7 +59,7 @@ const signin = (dispatch) => {
             navigate('loggedInFlow')
         } catch (err) {
             console.log(err.response.data.error);
-            dispatch({type: 'add_error_message', payload: err.response.data})
+            dispatch({type: 'add_error_message', payload: err.response.data.error})
         }
         // handle success by updating state
 
@@ -74,10 +74,11 @@ const forgotPassword = (dispatch) => {
             const response = await ServerApi.post('/forgotPassword', {email},
                 { 'Accept' : 'application/json', 'Content-type' : 'application/json'});
 
-            navigate('ForgotPassword')
+            //navigate('ForgotPassword')
         } catch (err) {
-            console.log(err);
-            dispatch({type: 'add_error_message', payload: err.response.data.error})
+            console.log(err.response.data.error.errmsg);
+            dispatch({type: 'add_error_message', payload: err.response.data.error.errmsg})
+
         }
     }
 }
@@ -88,9 +89,9 @@ const resetPassword = (dispatch) => {
             const response = await ServerApi.post('/resetPassword', {email, resetCode, newPassword},
                 { 'Accept' : 'application/json', 'Content-type' : 'application/json'});
 
-            navigate('ForgotPassword')
+            navigate('PasswordResetSuccess')
         } catch (err) {
-            console.log(err);
+            console.log(err.response.data.error);
             dispatch({tpe: 'add_error_message', payload: err.response.data.error})
         }
     }

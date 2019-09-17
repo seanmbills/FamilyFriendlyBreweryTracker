@@ -3,6 +3,8 @@ import {View, StyleSheet, TextInput, Text } from 'react-native'
 import SubHeading from '../components/SubHeading';
 import WelcomeButton from '../components/WelcomeButton';
 import { Context as AuthContext } from '../context/AuthContext';
+import { NavigationEvents } from 'react-navigation';
+import { ScrollView } from 'react-native-gesture-handler';
 
 function validatePass(pass) {
     return pass.length >= 8 
@@ -13,20 +15,27 @@ function validatePass(pass) {
         && (!pass.match(/[^a-zA-Z0-9$|*=(!)[\]_+@.-]/)); // check to ensure pass doesn't contain character that is not a special one
 }
 
+function validateEmail(mail) {
+    return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail));
+}
+
 const ForgotPasswordScreen = () => {
     const {state, forgotPassword, resetPassword, clearErrorMessage} = useContext(AuthContext)
     const [email, setEmail] = useState('');
-    const [pin, setPin ] = useState('');
-    const [password, setPassword ] = useState('');
-    const [emailErrMsg, setEmailErrMsg ] = useState('');
-    const [passErrMsg, setPassErrMsg ] = useState('');
+    const [resetCode, setResetCode ] = useState('');
+    const [newPassword, setNewPassword ] = useState('');
     const [showEmail, setShowEmail] = useState(true);
     const [showPass, setShowPass] = useState(false);
+    const [ passErrMsg, setPassErrMsg ] = useState('');
+    const [ emailErrMsg, setEmailErrMsg ] = useState('');
     const [confirmPass, setConfirmPass ] = useState('');
         return (
-            <View style={styles.background}>
+            <ScrollView style={styles.background}>
                 <SubHeading 
                     title="Forgot Password"
+                />
+                <NavigationEvents
+                    onWillBlur={clearErrorMessage}
                 />
             { showEmail && <View>
             <View style= {styles.textContainer}>
@@ -39,22 +48,23 @@ const ForgotPasswordScreen = () => {
                         }}
                         autoCapitalize="none"
                     />
-            </View>
-            <View>
-                <Text style={styles.errorMsg}>{emailErrMsg}</Text>
+                    <Text style={styles.errorMsg}>{emailErrMsg}</Text>
             </View>
             <View style={styles.button}>
                 <WelcomeButton
                     title="Submit"
                     style={styles.button}
                     onPress={() => {
-                            forgotPassword({email});
-                            setShowPass(true);
-                            setShowEmail(false);
+                            const response = forgotPassword({email});
+                            if (validateEmail(email)) {
+                                setShowPass(true);
+                                setShowEmail(false);
+                            } else {
+                                setEmailErrMsg("Please enter a valid email.");
+                            }
                         }
                     }
                 />
-                {state.errorMessage ? <Text style={styles.errorMsg}></Text> : <Text></Text>}
             </View>
             </View>
             }
@@ -68,23 +78,23 @@ const ForgotPasswordScreen = () => {
                     </View>
                 <TextInput
                     style={styles.textInput}
-                    value={pin}
+                    value={resetCode}
                     autoCapitalize="none"
                     autoCorrect={false}
                     placeholder="Reset Code"
-                    onChangeText={(newPin) => setPin(newPin)}
+                    onChangeText={(newResetCode) => setResetCode(newResetCode)}
                 />
                 <TextInput
                         style={styles.textPassword}
-                        value={password}
+                        value={newPassword}
                         secureTextEntry={true}
                         autoCapitalize="none"
                         autoCorrect={false}
                         placeholder="Password"
                         onChangeText={(newPass) => {
-                            setPassword(newPass);
+                            setNewPassword(newPass);
                         }}
-                    />
+                />
                 <TextInput
                     style={styles.textPassword}
                     value={confirmPass}
@@ -96,17 +106,18 @@ const ForgotPasswordScreen = () => {
                         setConfirmPass(newConfirmPass);
                     }}
                 />
-            </View>
-            <View>
-                <Text style={styles.errorMsg}>{passErrMsg}</Text>
+                {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
+
             </View>
             <View style={styles.button}>
                 <WelcomeButton
                     title="Submit"
                     style={styles.button}
                     onPress={() => {
-                            if (validatePass(password) && password == confirmPass ) {
-                                resetPassword({email, pin, password})
+                            if (validatePass(newPassword) && newPassword == confirmPass ) {
+                                const response = resetPassword({email, resetCode, newPassword})
+                            } else if (newPassword != confirmPass) {
+                                setPassErrMsg("Passwords must match");
                             }
                         }
                     }
@@ -125,7 +136,7 @@ const ForgotPasswordScreen = () => {
             </View>
             }
 
-        </View>
+        </ScrollView>
         );
 
 }

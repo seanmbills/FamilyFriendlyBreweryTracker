@@ -14,13 +14,15 @@ import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 
 import {Provider as AuthProvider} from './src/context/AuthContext'
 import {setNavigator} from './src/navigationRef'
+import PasswordResetSuccessScreen from './src/screens/PasswordResetSuccessScreen';
 
 const switchNavigator = createSwitchNavigator({
     loginFlow: createStackNavigator({
         Welcome: WelcomeScreen,
         Registration: RegistrationScreen,
         Login: LoginScreen,
-        ForgotPassword: ForgotPasswordScreen
+        ForgotPassword: ForgotPasswordScreen,
+        PasswordResetSuccess: PasswordResetSuccessScreen
     },
     {
         initialRouteName: 'Welcome',
