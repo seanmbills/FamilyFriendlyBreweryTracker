@@ -59,7 +59,7 @@ const signin = (dispatch) => {
             navigate('loggedInFlow')
         } catch (err) {
             console.log(err.response.data.error);
-            dispatch({type: 'add_error_message', payload: err.response.data})
+            dispatch({type: 'add_error_message', payload: err.response.data.error})
         }
         // handle success by updating state
 
