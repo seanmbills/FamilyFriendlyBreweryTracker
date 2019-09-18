@@ -92,10 +92,60 @@ const resetPassword = (dispatch) => {
             navigate('PasswordResetSuccess')
         } catch (err) {
             console.log(err.response.data.error);
-            dispatch({tpe: 'add_error_message', payload: err.response.data.error})
+            dispatch({type: 'add_error_message', payload: err.response.data.error})
         }
     }
 }
+
+
+const userUpdate = (dispatch) => {
+    return async({firstName, lastName, zipCode}) => {
+        try {
+            const response = await ServerApi.post('/userUpdate', {firstName, lastName, zipCode},
+            { 'Accept' : 'application/json', 'Content-type' : 'application/json'});
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
+const updatePassword = (dispatch) => {
+    return async({oldPassword, newPassword}) => {
+        try {
+            const response = ServerApi.post('/updatePassword', {oldPassword, newPassword},
+            {'Accept' : 'application/json', 'Content-type' : 'application/json'});
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
+const updateEmail = (dispatch) => {
+    return async({newEmail, password}) => {
+        try {
+            const response = ServerApi.post('/updatePassword', {newEmail, password},
+            {'Accept' : 'application/json', 'Content-type' : 'application/json'});
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
+const updatePhone = (dispatch) => {
+    return async({password, newPhone}) => {
+        try {
+            const response = ServerApi.post('/updatePassword', {password, newPhone},
+            {'Accept' : 'application/json', 'Content-type' : 'application/json'});
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
 const clearErrorMessage = dispatch => () => {
     dispatch({type: 'clear_error_message'})
 }
@@ -118,8 +168,11 @@ const signout = (dispatch) => {
     }
 }
 
+
+
 export const {Provider, Context} = createDataContext(
     authReducer,
-    {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage},// tryAutoSignin},
+    {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
+        userUpdate, updatePassword, updateEmail, updatePhone},// tryAutoSignin},
     {token: null, errorMessage: ''}
 )
