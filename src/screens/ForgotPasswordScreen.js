@@ -19,7 +19,7 @@ function validateEmail(mail) {
     return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail));
 }
 
-const ForgotPasswordScreen = () => {
+const ForgotPasswordScreen = ({navigation}) => {
     const {state, forgotPassword, resetPassword, clearErrorMessage} = useContext(AuthContext)
     const [email, setEmail] = useState('');
     const [resetCode, setResetCode ] = useState('');
@@ -65,11 +65,16 @@ const ForgotPasswordScreen = () => {
                         }
                     }
                 />
+                <WelcomeButton
+                    title="Cancel"
+                    style={styles.button}
+                    onPress={() => navigation.navigate("Login")}
+                />
             </View>
             </View>
             }
 
-            { showPass && <View>
+            { clearErrorMessage && showPass && <View>
                 <View style= {styles.textContainer}>
                     <View >
                         <Text style={styles.resetMsg}>If the email entered exists, a reset code has been sent.
@@ -107,7 +112,7 @@ const ForgotPasswordScreen = () => {
                     }}
                 />
                 {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
-
+                <Text style={styles.errorMsg}>{passErrMsg}</Text>
             </View>
             <View style={styles.button}>
                 <WelcomeButton
@@ -165,7 +170,8 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems:"center",
-        marginTop: 20
+        marginTop: 20,
+        marginBottom:10
     },
     errorMsg: {
         color: "#eb1809",
