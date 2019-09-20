@@ -9,6 +9,10 @@ const authReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
+        case 'updatePassword':
+        case 'updateUser':
+        case 'updateEmail':
+        case 'updatePhone':
         case 'register':
         case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
@@ -72,11 +76,12 @@ const forgotPassword = (dispatch) => {
     return async({email}) => {
         try {
             const response = await ServerApi.post('/forgotPassword', {email},
-                { 'Accept' : 'application/json', 'Content-type' : 'application/json'});
+                { 'Accept' : 'application/json', 'Content-type' : 'application/json',
+                'authorization' : AsyncStorage.getItem('token')});
 
             //navigate('ForgotPassword')
         } catch (err) {
-            console.log(err.response.data.error.errmsg);
+            console.log(err.response.data);
             dispatch({type: 'add_error_message', payload: err.response.data.error.errmsg})
 
         }
@@ -101,10 +106,13 @@ const resetPassword = (dispatch) => {
 const userUpdate = (dispatch) => {
     return async({firstName, lastName, zipCode}) => {
         try {
-            const response = await ServerApi.post('/userUpdate', {firstName, lastName, zipCode},
-            { 'Accept' : 'application/json', 'Content-type' : 'application/json'});
+            const response = await ServerApi.post('/userUpdate', {firstName, lastName, zipCode},{ headers: 
+                {'Accept' : 'application/json', 'Content-type' : 'application/json',
+                'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            await AsyncStorage.setItem('token', response.data.token)
+            dispatch({type: 'userUpdate', payload: response.data.token})
         } catch (err) {
-            console.log(err.response.data.error);
+            console.log(err.response.data);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
         }
     }
@@ -113,8 +121,15 @@ const userUpdate = (dispatch) => {
 const updatePassword = (dispatch) => {
     return async({oldPassword, newPassword}) => {
         try {
-            const response = ServerApi.post('/updatePassword', {oldPassword, newPassword},
-            {'Accept' : 'application/json', 'Content-type' : 'application/json'});
+            console.log('token: ')
+            console.log(await AsyncStorage.getItem('token'))
+            const response = await ServerApi.post('/updatePassword', {oldPassword, newPassword}, { headers: 
+            {'Accept' : 'application/json', 'Content-type' : 'application/json',
+            'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            
+            await AsyncStorage.setItem('token', response.data.token)
+            dispatch({type: 'updatePassword', payload: response.data.token})
+            console.log(response)
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -125,8 +140,11 @@ const updatePassword = (dispatch) => {
 const updateEmail = (dispatch) => {
     return async({newEmail, password}) => {
         try {
-            const response = ServerApi.post('/updatePassword', {newEmail, password},
-            {'Accept' : 'application/json', 'Content-type' : 'application/json'});
+            const response = await ServerApi.post('/updateEmail', {newEmail, password},{ headers: 
+                {'Accept' : 'application/json', 'Content-type' : 'application/json',
+                'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            await AsyncStorage.setItem('token', response.data.token)
+            dispatch({type: 'updateEmail', payload: response.data.token})
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -137,8 +155,11 @@ const updateEmail = (dispatch) => {
 const updatePhone = (dispatch) => {
     return async({password, newPhone}) => {
         try {
-            const response = ServerApi.post('/updatePassword', {password, newPhone},
-            {'Accept' : 'application/json', 'Content-type' : 'application/json'});
+            const response = await ServerApi.post('/updatePhone', {password, newPhone},{ headers: 
+                {'Accept' : 'application/json', 'Content-type' : 'application/json',
+                'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            await AsyncStorage.setItem('token', response.data.token)
+            dispatch({type: 'updatePhone', payload: response.data.token})
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});

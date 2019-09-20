@@ -14,7 +14,7 @@ const UpdateAccountScreen = ({navigation}) => {
     const [ firstName, setFirstName ] = useState('');
     const [ lastName, setLastName ] = useState('');
     const [ zipCode, setZipCode ] = useState('');
-    const [ phoneNumber, setPhoneNumber ] = useState('');
+    const [ newPhone, setNewPhone ] = useState('');
     const [ needPassword, setNeedPassword ] = useState(false);
     const [ oldPassword, setOldPassword ] = useState('');
     const [ newPassword, setNewPassword ] = useState('');
@@ -23,6 +23,7 @@ const UpdateAccountScreen = ({navigation}) => {
     const [ changePhone, setChangePhone ] = useState(false);
     const [ changeEmail, setChangeEmail ] = useState(false);
     const [ newEmail, setNewEmail ] = useState('');
+    const [ passErrMsg, setPassErrMsg ] = useState('');
 
     return ( 
         <ScrollView style={styles.background}>
@@ -141,12 +142,17 @@ const UpdateAccountScreen = ({navigation}) => {
                     onChangeText={(newPass) => setConfirmPassword(newPass)}
                 />
             </View>
+            <View>
+                <Text style={styles.errMsg}>{passErrMsg}</Text>
+            </View>
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
                     onPress={()=> {
-                        if (validatePassword(newPassword) && newPassword == confirmPassword) {
+                        if (validatePassword(newPassword) && newPassword === confirmPassword) {
                             updatePassword({oldPassword, newPassword})
+                        } else {
+                            setPassErrMsg("Passwords must match!");
                         }
                     }}
                 />
@@ -165,9 +171,9 @@ const UpdateAccountScreen = ({navigation}) => {
                 <Text style={styles.inputTitle}>New Phone #</Text>
                 <PhoneInput
                         placeholder="Enter phone number"
-                        value={phoneNumber}
-                        onChangePhoneNumber={ (newPhone)=> {
-                            setPhoneNumber(newPhone);
+                        value={newPhone}
+                        onChangePhoneNumber={ (newNumber)=> {
+                            setNewPhone(newNumber);
                         }}
                         style={styles.input}   
                     />
@@ -252,6 +258,13 @@ const styles = StyleSheet.create({
     needPassLink: {
         fontSize: 20,
         fontWeight: "bold"
+    },
+    errMsg: {
+        color: "#eb1809",
+        fontSize: 20,
+        textAlign: "center",
+        marginLeft: 5,
+        marginRight: 5
     }
 });
 
