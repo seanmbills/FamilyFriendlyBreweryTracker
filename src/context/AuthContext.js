@@ -38,10 +38,10 @@ const register = (dispatch) => {
             // then need to navigate the user immediately to the logged in state
             navigate('loggedInFlow')
         } catch (err) {
-            console.log(err.response)
+            console.log(err.response.data.error)
             // if we get an error back from signing up, need to display the appropriate error
             // message to the user
-            dispatch({ type: 'add_error_message', payload: err.response.data})
+            dispatch({ type: 'add_error_message', payload: err.response.data.error})
         }
     }
 }
@@ -67,6 +67,35 @@ const signin = (dispatch) => {
     }
 }
 
+//Sends post request to /forgotPassword route on server to send email & get token
+const forgotPassword = (dispatch) => {
+    return async({emailOrId}) => {
+        try {
+            const response = await ServerApi.post('/forgotPassword', {emailOrId},
+                { 'Accept' : 'application/json', 'Content-type' : 'application/json'});
+
+            //navigate('ForgotPassword')
+        } catch (err) {
+            console.log(err.response.data.error.errmsg);
+            dispatch({type: 'add_error_message', payload: err.response.data.error.errmsg})
+
+        }
+    }
+}
+
+const resetPassword = (dispatch) => {
+    return async({email, resetCode, newPassword}) => {
+        try {
+            const response = await ServerApi.post('/resetPassword', {email, resetCode, newPassword},
+                { 'Accept' : 'application/json', 'Content-type' : 'application/json'});
+
+            navigate('PasswordResetSuccess')
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({tpe: 'add_error_message', payload: err.response.data.error})
+        }
+    }
+}
 const clearErrorMessage = dispatch => () => {
     dispatch({type: 'clear_error_message'})
 }
@@ -91,6 +120,6 @@ const signout = (dispatch) => {
 
 export const {Provider, Context} = createDataContext(
     authReducer,
-    {register, signin, signout, clearErrorMessage},// tryAutoSignin},
+    {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage},// tryAutoSignin},
     {token: null, errorMessage: ''}
 )
