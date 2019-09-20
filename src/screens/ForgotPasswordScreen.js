@@ -21,7 +21,7 @@ function validateEmail(mail) {
 
 const ForgotPasswordScreen = ({navigation}) => {
     const {state, forgotPassword, resetPassword, clearErrorMessage} = useContext(AuthContext)
-    const [email, setEmail] = useState('');
+    const [emailOrId, setEmailOrId] = useState('');
     const [resetCode, setResetCode ] = useState('');
     const [newPassword, setNewPassword ] = useState('');
     const [showEmail, setShowEmail] = useState(true);
@@ -41,10 +41,10 @@ const ForgotPasswordScreen = ({navigation}) => {
             <View style= {styles.textContainer}>
                     <TextInput
                         style={styles.textInput}
-                        value={email}
+                        value={emailOrId}
                         placeholder="Email"
                         onChangeText={(newEmail) => {
-                            setEmail(newEmail);
+                            setEmailOrId(newEmail);
                         }}
                         autoCapitalize="none"
                     />
@@ -120,7 +120,7 @@ const ForgotPasswordScreen = ({navigation}) => {
                     style={styles.button}
                     onPress={() => {
                             if (validatePass(newPassword) && newPassword == confirmPass ) {
-                                const response = resetPassword({email, resetCode, newPassword})
+                                const response = resetPassword({emailOrId, resetCode, newPassword})
                             } else if (newPassword != confirmPass) {
                                 setPassErrMsg("Passwords must match");
                             }
