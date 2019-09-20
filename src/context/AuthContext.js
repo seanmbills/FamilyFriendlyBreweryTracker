@@ -75,7 +75,7 @@ const signin = (dispatch) => {
 const forgotPassword = (dispatch) => {
     return async({emailOrId}) => {
         try {
-            const response = await ServerApi.post('/forgotPassword', {email},
+            const response = await ServerApi.post('/forgotPassword', {emailOrId},
                 { 'Accept' : 'application/json', 'Content-type' : 'application/json',
                 'authorization' : AsyncStorage.getItem('token')});
 
