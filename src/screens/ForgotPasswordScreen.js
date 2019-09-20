@@ -55,13 +55,9 @@ const ForgotPasswordScreen = ({navigation}) => {
                     title="Submit"
                     style={styles.button}
                     onPress={() => {
-                            const response = forgotPassword({email});
-                            if (validateEmail(email)) {
-                                setShowPass(true);
-                                setShowEmail(false);
-                            } else {
-                                setEmailErrMsg("Please enter a valid email.");
-                            }
+                            const response = forgotPassword({emailOrId});
+                            setShowPass(true);
+                            setShowEmail(false);
                         }
                     }
                 />
@@ -130,7 +126,7 @@ const ForgotPasswordScreen = ({navigation}) => {
             </View>
             <View style={styles.button}>
                 <WelcomeButton
-                    title="Cancel"
+                    title="Back"
                     style={styles.button}
                     onPress={() => {
                         setShowPass(false);

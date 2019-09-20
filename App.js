@@ -15,6 +15,7 @@ import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import {Provider as AuthProvider} from './src/context/AuthContext'
 import {setNavigator} from './src/navigationRef'
 import PasswordResetSuccessScreen from './src/screens/PasswordResetSuccessScreen';
+import UpdateAccountScreen from './src/screens/UpdateAccountScreen';
 
 const switchNavigator = createSwitchNavigator({
     loginFlow: createStackNavigator({
@@ -22,7 +23,7 @@ const switchNavigator = createSwitchNavigator({
         Registration: RegistrationScreen,
         Login: LoginScreen,
         ForgotPassword: ForgotPasswordScreen,
-        PasswordResetSuccess: PasswordResetSuccessScreen
+        PasswordResetSuccess: PasswordResetSuccessScreen,
     },
     {
         initialRouteName: 'Welcome',
@@ -38,6 +39,7 @@ const switchNavigator = createSwitchNavigator({
     loggedInFlow: createBottomTabNavigator({
         breweryListFlow: createStackNavigator({
             BreweryList: BreweryListScreen,
+            UpdateAccount: UpdateAccountScreen
         })
     })
 })

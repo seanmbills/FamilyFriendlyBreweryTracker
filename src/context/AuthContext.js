@@ -9,6 +9,10 @@ const authReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
+        case 'updatePassword':
+        case 'updateUser':
+        case 'updateEmail':
+        case 'updatePhone':
         case 'register':
         case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
@@ -76,7 +80,7 @@ const forgotPassword = (dispatch) => {
 
             //navigate('ForgotPassword')
         } catch (err) {
-            console.log(err.response.data.error.errmsg);
+            console.log(err.response.data);
             dispatch({type: 'add_error_message', payload: err.response.data.error.errmsg})
 
         }
@@ -92,10 +96,76 @@ const resetPassword = (dispatch) => {
             navigate('PasswordResetSuccess')
         } catch (err) {
             console.log(err.response.data.error);
-            dispatch({tpe: 'add_error_message', payload: err.response.data.error})
+            dispatch({type: 'add_error_message', payload: err.response.data.error})
         }
     }
 }
+
+
+const userUpdate = (dispatch) => {
+    return async({firstName, lastName, zipCode}) => {
+        try {
+            const response = await ServerApi.post('/userUpdate', {firstName, lastName, zipCode},{ headers: 
+                {'Accept' : 'application/json', 'Content-type' : 'application/json',
+                'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            await AsyncStorage.setItem('token', response.data.token)
+            dispatch({type: 'userUpdate', payload: response.data.token})
+        } catch (err) {
+            console.log(err.response.data);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
+const updatePassword = (dispatch) => {
+    return async({oldPassword, newPassword}) => {
+        try {
+            console.log('token: ')
+            console.log(await AsyncStorage.getItem('token'))
+            const response = await ServerApi.post('/updatePassword', {oldPassword, newPassword}, { headers: 
+            {'Accept' : 'application/json', 'Content-type' : 'application/json',
+            'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            
+            await AsyncStorage.setItem('token', response.data.token)
+            dispatch({type: 'updatePassword', payload: response.data.token})
+            console.log(response)
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
+const updateEmail = (dispatch) => {
+    return async({newEmail, password}) => {
+        try {
+            const response = await ServerApi.post('/updateEmail', {newEmail, password},{ headers: 
+                {'Accept' : 'application/json', 'Content-type' : 'application/json',
+                'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            await AsyncStorage.setItem('token', response.data.token)
+            dispatch({type: 'updateEmail', payload: response.data.token})
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
+const updatePhone = (dispatch) => {
+    return async({password, newPhone}) => {
+        try {
+            const response = await ServerApi.post('/updatePhone', {password, newPhone},{ headers: 
+                {'Accept' : 'application/json', 'Content-type' : 'application/json',
+                'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            await AsyncStorage.setItem('token', response.data.token)
+            dispatch({type: 'updatePhone', payload: response.data.token})
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
 const clearErrorMessage = dispatch => () => {
     dispatch({type: 'clear_error_message'})
 }
@@ -118,8 +188,11 @@ const signout = (dispatch) => {
     }
 }
 
+
+
 export const {Provider, Context} = createDataContext(
     authReducer,
-    {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage},// tryAutoSignin},
+    {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
+        userUpdate, updatePassword, updateEmail, updatePhone},// tryAutoSignin},
     {token: null, errorMessage: ''}
 )
