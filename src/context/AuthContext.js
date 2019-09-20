@@ -69,9 +69,9 @@ const signin = (dispatch) => {
 
 //Sends post request to /forgotPassword route on server to send email & get token
 const forgotPassword = (dispatch) => {
-    return async({email}) => {
+    return async({emailOrId}) => {
         try {
-            const response = await ServerApi.post('/forgotPassword', {email},
+            const response = await ServerApi.post('/forgotPassword', {emailOrId},
                 { 'Accept' : 'application/json', 'Content-type' : 'application/json'});
 
             //navigate('ForgotPassword')
