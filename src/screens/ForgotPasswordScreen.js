@@ -126,7 +126,7 @@ const ForgotPasswordScreen = ({navigation}) => {
             </View>
             <View style={styles.button}>
                 <WelcomeButton
-                    title="Cancel"
+                    title="Back"
                     style={styles.button}
                     onPress={() => {
                         setShowPass(false);
