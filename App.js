@@ -24,10 +24,9 @@ const switchNavigator = createSwitchNavigator({
         Login: LoginScreen,
         ForgotPassword: ForgotPasswordScreen,
         PasswordResetSuccess: PasswordResetSuccessScreen,
-        /** */UpdateAccount: UpdateAccountScreen
     },
     {
-        initialRouteName: 'UpdateAccount',
+        initialRouteName: 'Welcome',
         defaultNavigationOptions: {
             title: '',
             headerMode: 'none',
@@ -40,7 +39,7 @@ const switchNavigator = createSwitchNavigator({
     loggedInFlow: createBottomTabNavigator({
         breweryListFlow: createStackNavigator({
             BreweryList: BreweryListScreen,
-            //UpdateAccount: UpdateAccountScreen
+            UpdateAccount: UpdateAccountScreen
         })
     })
 })

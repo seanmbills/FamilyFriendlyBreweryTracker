@@ -82,9 +82,7 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> {
-                        console.log("Submit Pressed")
-                    }}
+                    onPress={()=> userUpdate({firstName, lastName, zipCode})}
                 />
             </View>
         </View> }
@@ -111,9 +109,9 @@ const UpdateAccountScreen = ({navigation}) => {
                 <WelcomeButton
                     title="Submit"
                     onPress={()=> {
-                        console.log("Submit New Email Pressed");
                         if (validateEmail(newEmail) && oldPassword.length > 8) {
-                            console.log("Email is valid")
+                            password = oldPassword;
+                            updateEmail({newEmail, password});
                         }
                     }}
                 />
@@ -147,9 +145,8 @@ const UpdateAccountScreen = ({navigation}) => {
                 <WelcomeButton
                     title="Submit"
                     onPress={()=> {
-                        console.log("Submit new pass");
-                        if (validatePassword(newPassword) && password == confirmPassword) {
-                            console.log("New Password is valid")
+                        if (validatePassword(newPassword) && newPassword == confirmPassword) {
+                            updatePassword({oldPassword, newPassword})
                         }
                     }}
                 />
@@ -160,8 +157,8 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.fieldContainer}>
                 <Text style={styles.inputTitle}>Confirm Password</Text>
                 <PasswordField
-                    value={confirmPassword}
-                    onChangeText={(newPassword) => setConfirmPassword(newPassword)}
+                    value={oldPassword}
+                    onChangeText={(newOldPass) => setOldPassword(newOldPass)}
                 />
             </View>
             <View style={styles.fieldContainer}>
@@ -178,10 +175,29 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> console.log("Submit new phone")}
+                    onPress={()=> {
+                        if (newPhone.length >= 10) {
+                            password = oldPassword;
+                            updatePhone({password, newPhone});
+                        }
+                    }}
                 />
             </View>
         </View>}
+        { needPassword &&
+        <View style={styles.buttonContainer}>
+            <WelcomeButton
+                onPress={()=> {
+                    setNeedPassword(false);
+                    setChangePass(false);
+                    setChangePhone(false);
+                    setChangeEmail(false);
+                }}
+                title="Cancel"
+            />
+        </View>
+        }
+        { !needPassword &&
         <View style={styles.buttonContainer}>
                 <WelcomeButton
                     onPress={()=> {
@@ -189,11 +205,12 @@ const UpdateAccountScreen = ({navigation}) => {
                         setChangePass(false);
                         setChangePhone(false);
                         setChangeEmail(false);
-                        navigation.navigate('BreweryListScreen');
+                        navigation.navigate('BreweryList');
                     }}
                     title="Cancel"
                 />
             </View>
+        }
         </ScrollView>
     );
 
