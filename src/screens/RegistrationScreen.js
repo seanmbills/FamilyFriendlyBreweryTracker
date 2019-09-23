@@ -295,7 +295,7 @@ const RegistrationScreen = ({navigation}) => {
                             const zipCode = zip;
                             register({email, userId, 
                                 password, birthDate, firstName, lastName,
-                                phoneNumber, zipCode })
+                                phoneNumber, zipCode });
                         } else {
                             console.log("Input was not valid");
                         }
