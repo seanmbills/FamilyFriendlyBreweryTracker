@@ -67,6 +67,7 @@ const RegistrationScreen = ({navigation}) => {
     const [ phoneErrMsg, setPhoneErrMsg ] = useState('');
     const [ zipErrMsg, setZipErrMsg ] = useState('');
     const [ birthDateErrMsg, setBirthDateErrMsg ] = useState('');
+    const [ confirmPass, setConfirmPass ] = useState('');
     
     function validateInput(inputMap) {
         var isValid = true
@@ -82,6 +83,9 @@ const RegistrationScreen = ({navigation}) => {
             setPassErrMsg("Password must be longer than 8 characters, contain "
                 + "one special character, capital letter, and number");
             isValid = false;
+        } else if (inputMap.get('confirmPass') != inputMap.get('password')) {
+            setPassErrMsg("Passwords must match.");
+            isValid = false;  
         } else {
             setPassErrMsg('');
         }
@@ -168,6 +172,22 @@ const RegistrationScreen = ({navigation}) => {
                         placeholder="password"
                         onChangeText={(newPass) => {
                             setPassword(newPass);
+                        }}
+                    />
+                </View>
+            </View>
+            <View style={styles.formElement}>
+                <Text style={styles.formLabel}>Confirm Password:</Text>
+                <View style= {styles.textContainer}>
+                    <TextInput
+                        style={styles.textPassword}
+                        value={confirmPass}
+                        secureTextEntry={true}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        placeholder="password"
+                        onChangeText={(newPass) => {
+                            setConfirmPass(newPass);
                         }}
                     />
                 </View>
@@ -266,6 +286,7 @@ const RegistrationScreen = ({navigation}) => {
                         inputMap.set('phone', phone);
                         inputMap.set('zip', zip);
                         inputMap.set('birthDate', birthDate);
+                        inputMap.set('confirmPass', confirmPass);
 
                         //Check the input & set error messages if somthing is wrong
                         if(validateInput(inputMap)) {
