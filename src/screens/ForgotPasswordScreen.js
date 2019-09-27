@@ -58,6 +58,7 @@ const ForgotPasswordScreen = ({navigation}) => {
                             const response = forgotPassword({emailOrId});
                             setShowPass(true);
                             setShowEmail(false);
+            
                         }
                     }
                 />
@@ -69,8 +70,8 @@ const ForgotPasswordScreen = ({navigation}) => {
             </View>
             </View>
             }
-
-            { clearErrorMessage && showPass && <View>
+            {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
+            { showPass && <View>
                 <View style= {styles.textContainer}>
                     <View >
                         <Text style={styles.resetMsg}>If the email entered exists, a reset code has been sent.
@@ -107,7 +108,6 @@ const ForgotPasswordScreen = ({navigation}) => {
                         setConfirmPass(newConfirmPass);
                     }}
                 />
-                {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
                 <Text style={styles.errorMsg}>{passErrMsg}</Text>
             </View>
             <View style={styles.button}>
@@ -119,6 +119,9 @@ const ForgotPasswordScreen = ({navigation}) => {
                                 const response = resetPassword({emailOrId, resetCode, newPassword})
                             } else if (newPassword != confirmPass) {
                                 setPassErrMsg("Passwords must match");
+                            } else {
+                                setPassErrMsg("Password must be longer than 8 characters, contain "
+                                + "one special character, capital letter, and number");
                             }
                         }
                     }

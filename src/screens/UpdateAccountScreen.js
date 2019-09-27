@@ -190,6 +190,7 @@ const UpdateAccountScreen = ({navigation}) => {
                 />
             </View>
         </View>}
+        
         { needPassword &&
         <View style={styles.buttonContainer}>
             <WelcomeButton
@@ -217,6 +218,7 @@ const UpdateAccountScreen = ({navigation}) => {
                 />
             </View>
         }
+        {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
         </ScrollView>
     );
 
