@@ -1,5 +1,14 @@
 import React from 'react'
+import {Rating} from 'react-native-ratings'
 import {View, Text, StyleSheet, Image} from 'react-native'
+
+function getPriceSymbol(price) {
+    var priceStr = ""
+    for (var x = 0; x < price; x++) {
+        priceStr += "$"
+    }
+    return priceStr
+}
 
 const ResultDetails = ({result}) => {
     return (
@@ -7,10 +16,17 @@ const ResultDetails = ({result}) => {
             {/* <Image style={styles.images} source={{ uri: result.image_url }} /> */}
             <Text style={styles.locationName}>{result.name}</Text> 
             <Text style={styles.locationName}>{result.address.street}</Text>
-            <Text style={styles.locationName}>{result.price}</Text>
-            <Text>{result.ratings} Stars, {result.numReviews} Reviews</Text>
+            <Text style={styles.locationName}>{getPriceSymbol(result.price)}</Text>
+            <Text>{result.numReviews} Reviews</Text>
+            <Rating
+                imageSize={20}
+                readonly
+                startingValue={result.rating}
+                style={styles.rating}
+                fractions={1}
+            />
             <Text>{result.distance}</Text>
-            {console.log(result.accommodations)}
+            {/* {console.log(result.accommodations)} */}
         </View>
     )
 }
@@ -27,6 +43,9 @@ const styles = StyleSheet.create({
     },
     locationName: {
         fontWeight: 'bold',
+    },
+    rating: {
+
     }
 })
 

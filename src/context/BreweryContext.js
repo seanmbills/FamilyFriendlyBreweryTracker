@@ -32,7 +32,6 @@ const getSearchResults = (dispatch) => {
                 {params: req}, 
                 {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
             );
-            console.log("Success: " + response.data.response);
             
             dispatch({type: 'search', payload: response.data})
 
