@@ -13,6 +13,7 @@ import BreweryListScreen from './src/screens/BreweryListScreen'
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 
 import {Provider as AuthProvider} from './src/context/AuthContext'
+import {Provider as BreweryProvider} from './src/context/BreweryContext'
 import {setNavigator} from './src/navigationRef'
 import PasswordResetSuccessScreen from './src/screens/PasswordResetSuccessScreen';
 import UpdateAccountScreen from './src/screens/UpdateAccountScreen';
@@ -48,9 +49,11 @@ const App = createAppContainer(switchNavigator)
 
 export default () => {
     return (
-        <AuthProvider>
-            <App ref={(navigator) => {setNavigator(navigator)}}/>
-        </AuthProvider>
+        <BreweryProvider>
+            <AuthProvider>
+                <App ref={(navigator) => {setNavigator(navigator)}}/>
+            </AuthProvider>
+        </BreweryProvider>
     )
 }
 

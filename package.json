@@ -22,6 +22,7 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.1",
     "react-native-phone-input": "^0.2.4",
     "react-native-pure-jwt": "^2.1.1",
+    "react-native-ratings": "^6.5.0",
     "react-native-reanimated": "^1.1.0",
     "react-native-vector-icons": "^6.6.0",
     "react-native-web": "^0.11.4",
