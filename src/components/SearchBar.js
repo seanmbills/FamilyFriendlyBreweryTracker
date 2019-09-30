@@ -33,9 +33,10 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
             // and a button that gives the option to use the zipcode associated with the user's account instead
             // if user enters zipCode, should pull lat/long pair from MapQuest api by sending zipCode with " USA" appended to
             // end (to filter out potential results from other countries)
-                useLocation ? 
-                <Text style={styles.errorMsg}>{state.errorMessage}</Text>
-                : null
+            // this should all be done in the backend
+                // useLocation ? 
+                // <Text style={styles.errorMsg}>{state.errorMessage}</Text>
+                // : null
             }
             <View style={{flexDirection: 'row'}}>
                 <Text style={styles.filterText}>Open Now</Text>
