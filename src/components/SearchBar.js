@@ -71,6 +71,11 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
                     onSelect={(index) => {setDistance(parseInt(index))}}
                 />
             </View>
+
+            {
+                /* need to display the possible accommodations to filter based on...probably easiest to use
+                groups of radio buttons, each one of which can be selected */
+            }
         </View>
     );
 
