@@ -88,9 +88,9 @@ const forgotPassword = (dispatch) => {
 }
 
 const resetPassword = (dispatch) => {
-    return async({email, resetCode, newPassword}) => {
+    return async({emailOrId, resetCode, newPassword}) => {
         try {
-            const response = await ServerApi.post('/resetPassword', {email, resetCode, newPassword},
+            const response = await ServerApi.post('/resetPassword', {emailOrId, resetCode, newPassword},
                 { 'Accept' : 'application/json', 'Content-type' : 'application/json'});
 
             navigate('PasswordResetSuccess')
