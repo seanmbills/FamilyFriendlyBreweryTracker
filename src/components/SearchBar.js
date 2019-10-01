@@ -1,12 +1,13 @@
 import React, {useState} from 'react'
-import {View, Text, StyleSheet, TextInput, Switch,} from 'react-native'
+import {View, Text, StyleSheet, TextInput, Switch, ScrollView,} from 'react-native'
 import {Feather } from '@expo/vector-icons'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Modal from 'react-native-modal'
 import { ButtonGroup } from 'react-native-elements'
 import {Rating} from 'react-native-ratings'
-import ModalDropdown from 'react-native-modal-dropdown'
-
+import ModalDropdown from 'react-native-modal-dropdown';
+import {Location, Permissions} from 'expo';
+import Checkbox from 'react-native-check-box';
 
 
 const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
@@ -16,19 +17,74 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
     const [maximumPrice, setPrice] = useState(0)
     const [minimumRating, setRating] = useState(5)
     const [distance, setDistance] = useState(1)
-    const [useLocation, setUseLocation] = useState(true)
+    const [useLocation, setUseLocation] = useState(false)
+    const [latitude, setLatitude] = useState('');
+    const [longitude, setLongitude] = useState('');
+    const [locState, setLocState] = useState('');
+    const [ zipCode, setZipCode ] = useState('');
+    const [waterStations, setWaterStations] = useState(false);
+    const [indoorSpaces, setIndoorSpaces] = useState(false);
+    const [outdoorSpaces, setOutdoorSpaces] = useState(false);
+    const [toddlers, setToddlers] = useState(false);
+    const [youngKids, setYoungKids] = useState(false);
+    const [teens, setTeens] = useState(false);
+    const [kidFriendlyFood, setKidFriendlyFood] = useState(false);
+    const [kidFriendlyDrinks, setKidFriendlyDrinks] = useState(false);
+    const [changingStations, setChangingStations] = useState(false);
+    const [indoorGames, setIndoorGames] = useState(false);
+    const [outdoorGames, setOutdoorGames] = useState(false);
+    const [childSeating, setChildSeating] = useState(false);
+    const [strollerSpace, setStrollerSpace] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
 
     const priceButtons = ["$", "$$", "$$$", "$$$$"]
 
+    findCurrentLocation = () => {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const lat = JSON.stringify(position.coords.latitude);
+                const long = JSON.stringify(position.coords.longitude);
+                setLatitude(lat);
+                setLongitude(long);
+            },
+            { enableHighAccuracty: false, timeout: 20000, maximumAge: 1000 }
+        );
+    };
+
+    findCurrentLocationAsync = async () => {
+        console.log("Finding current location")
+        let { status } = await Permissions.askAsync(Permissions.Location);
+
+        if ( status !== 'granted') {
+            setUseLocation(false);
+        } else {
+            let location = await Location.getCurrentPositionAsync({});
+            setLocState({location});
+        }
+    };
+
     renderModalContent = () => (
         <View style={styles.content}>
+            { !showFilters &&
+            <View>
             <Text style={styles.contentTitle}>Hi 👋!</Text>
             <View style={{flexDirection: 'row'}}>
                 {/* if the user provides permission to use their location, need to figure out how to pull this information*/}
                 <Text>Use Current Location:</Text>
-                <Switch onValueChange={() => setUseLocation(!useLocation)} value={useLocation}/>
+                <Switch onValueChange={() => {
+                    setUseLocation(!useLocation);
+                    if (useLocation) {
+                        this.findCurrentLocationAsync;
+                    }
+                }} 
+                value={useLocation}/>
+                <TouchableOpacity onPress={this.findCurrentLocationAsync}>
+                    <Text>Where Am I?</Text>
+                </TouchableOpacity>
+                <Text>{JSON.stringify(locState)}</Text>
             </View>
-            
+            </View>
+            }
             {// display an entry field to ask for zipcode entry
             // and a button that gives the option to use the zipcode associated with the user's account instead
             // if user enters zipCode, should pull lat/long pair from MapQuest api by sending zipCode with " USA" appended to
@@ -38,6 +94,18 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
                 // <Text style={styles.errorMsg}>{state.errorMessage}</Text>
                 // : null
             }
+            { !showFilters && 
+              !useLocation && 
+            <View style={{flexDirection: 'row'}}>
+                <Text style={styles.filterText}>Zip Code</Text>
+                <TextInput 
+                    onChangeText={(newZip) => setZipCode(newZip)} 
+                    value={zipCode}
+                />
+            </View>
+            }
+            {!showFilters && 
+            <View>
             <View style={{flexDirection: 'row'}}>
                 <Text style={styles.filterText}>Open Now</Text>
                 <Switch onValueChange={() => setOpenNow(!openNow)} value={openNow}/>
@@ -72,10 +140,115 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
                     onSelect={(index) => {setDistance(parseInt(index))}}
                 />
             </View>
-
+            <View style={{flexDirection: 'row', marginTop: 25}}>
+                <TouchableOpacity onPress={() => setShowFilters(true)}>
+                    <Text>Show other Filters</Text> 
+                </TouchableOpacity>
+            </View>
+            </View>
+            }
             {
                 /* need to display the possible accommodations to filter based on...probably easiest to use
                 groups of radio buttons, each one of which can be selected */
+            }
+            { showFilters && 
+            <View style={{flexDirection:'column'}}>
+            <ScrollView style={{marginBottom:25, paddingBottom:25}}>
+                <View style={{flexDirection: 'row', marginTop: 10}}>
+                <TouchableOpacity onPress={() => setShowFilters(false)}>
+                    <Text>Back</Text> 
+                </TouchableOpacity>
+            </View>
+            <View style={{marginTop: 10}}>
+                <Text>Additional Filters: </Text>
+                <Text>Pet Filters:</Text>
+                <Checkbox
+                    leftText={"Water Stations"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setWaterStations(!waterStations)}}
+                    isChecked={waterStations}
+                />
+                <Checkbox
+                    leftText={"Outdoor Pet Spaces"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setOutdoorSpaces(!outdoorSpaces)}}
+                    isChecked={outdoorSpaces}
+                />
+                <Checkbox
+                    leftText={"Indoor Pet Spaces"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setIndoorSpaces(!indoorSpaces)}}
+                    isChecked={indoorSpaces}
+                />
+            </View>
+            <View style={{ marginTop: 25}}>
+                <Text>Kid Age Filters: </Text>
+                <Checkbox
+                    leftText={"Toddler (0-3yrs) Friendly"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setToddlers(!toddlers)}}
+                    isChecked={toddlers}
+                />
+                <Checkbox
+                    leftText={"Toddler (4-12yrs) Friendly"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setYoungKids(!youngKids)}}
+                    isChecked={youngKids}
+                />
+                <Checkbox
+                    leftText={"Teen (13-18yrs) Friendly"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setTeens(!teens)}}
+                    isChecked={teens}
+                />
+            </View>
+            <View style={{ marginTop: 25, }}>
+                <Text>Child Accommodations: </Text>
+                <Checkbox
+                    leftText={"Child Menu Options"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setKidFriendlyFood(!kidFriendlyFood)}}
+                    isChecked={kidFriendlyFood}
+                />
+                <Checkbox
+                    leftText={"Child Drink Options"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setKidFriendlyDrinks(!kidFriendlyDrinks)}}
+                    isChecked={kidFriendlyDrinks}
+                />
+                <Checkbox
+                    leftText={"Changing Stations"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setChangingStations(!changingStations)}}
+                    isChecked={changingStations}
+                />
+                <Checkbox
+                    leftText={"Indoor Child Games"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setIndoorGames(!indoorGames)}}
+                    isChecked={indoorGames}
+                />
+                <Checkbox
+                    leftText={"Outdoor Child Games"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setOutdoorGames(!outdoorGames)}}
+                    isChecked={outdoorGames}
+                />
+                <Checkbox
+                    leftText={"Child Seats"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setChildSeating(!childSeating)}}
+                    isChecked={childSeating}
+                />
+                <Checkbox
+                    leftText={"Stroller Space"}
+                    style={{padding:10, color:'#000000'}}
+                    onClick={() => {setStrollerSpace(!strollerSpace)}}
+                    isChecked={strollerSpace}
+                />
+            </View>
+            </ScrollView>
+            </View>
             }
         </View>
     );

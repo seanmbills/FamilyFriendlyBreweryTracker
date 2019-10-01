@@ -15,6 +15,7 @@
     "react": "^16.8.3",
     "react-dom": "^16.8.6",
     "react-native": "^0.59.8",
+    "react-native-check-box": "^2.1.7",
     "react-native-date-picker": "^2.7.0",
     "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^1.2.3",
