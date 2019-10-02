@@ -15,19 +15,64 @@ const breweryReducer = (state, action) => {
     }
 }
 
+function stripAccommodationsSearch(accommodationsSearch) {
+    for (var outerKey in accommodationsSearch) {
+        var numInKeys = 0;
+        for (var innerKey in accommodationsSearch[outerKey]) {
+            numInKeys += 1;
+            if (!accommodationsSearch[outerKey][innerKey]) {
+                numInKeys -= 1;
+                delete accommodationsSearch[outerKey][innerKey];
+            }
+            var numInInkeys = 0;
+            for (var innerInnerKey in accommodationsSearch[outerKey][innerKey]) {
+                numInInkeys += 1;
+                if (!accommodationsSearch[outerKey][innerKey][innerInnerKey] ) {
+                    delete accommodationsSearch[outerKey][innerKey][innerInnerKey];
+                    numInInkeys -= 1;
+                }
+            }
+            if (numInInkeys == 0 && accommodationsSearch[outerKey][innerKey] instanceof Object) {
+                numInKeys -= 1;
+                delete accommodationsSearch[outerKey][innerKey];
+            }
+
+        }
+        if (numInKeys == 0 && accommodationsSearch[outerKey] instanceof Object) {
+            delete accommodationsSearch[outerKey];
+        }
+        if (!accommodationsSearch[outerKey]) {
+            delete accommodationsSearch[outerKey];
+        }
+    }
+    for (var key in accommodationsSearch) {
+        return accommodationsSearch
+    }
+    return null;
+}
 const getSearchResults = (dispatch) => {
     return async ({
         name, latitude, longitude, zipCode, distance,
         maximumPrice, accommodationsSearch, openNow, 
         kidFriendlyNow, minimumRating
     }) => {
+
+        accommodationsSearch = stripAccommodationsSearch(accommodationsSearch);
         // make api request to sign up with this information
-        const req = {
+       
+        var req = {
             name, latitude, longitude, zipCode, distance,
             maximumPrice, accommodationsSearch, openNow, 
             kidFriendlyNow, minimumRating
         }
-        console.log(accommodationsSearch);
+        if (latitude == '' || longitude == '') {
+            const req = {
+                name, zipCode, distance,
+                maximumPrice, accommodationsSearch, openNow, 
+                kidFriendlyNow, minimumRating
+            }
+        }
+        console.log(req);
         try { 
             const response = await ServerApi.get('/search',
                 {params: req}, 

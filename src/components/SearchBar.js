@@ -1,5 +1,5 @@
 import React, {useState, useContext } from 'react'
-import {View, Text, StyleSheet, TextInput, Switch, ScrollView,} from 'react-native'
+import {View, Text, Button, StyleSheet, TextInput, Switch, ScrollView,} from 'react-native'
 import {Feather } from '@expo/vector-icons'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Modal from 'react-native-modal'
@@ -12,14 +12,15 @@ import {Context as BreweryContext} from '../context/BreweryContext';
 
 
 
-const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
+const SearchBar = ({term, onTermChange}) => {
     const {state, getSearchResults, clearErrorMessage} = useContext(BreweryContext);
     const [modalOpen, setModalOpen] = useState(false)
     const [openNow, setOpenNow] = useState(false)
     const [kidFriendlyNow, setKidFriendlyNow] = useState(false)
     const [maximumPrice, setPrice] = useState(0)
     const [minimumRating, setRating] = useState(5)
-    const [distance, setDistance] = useState(1)
+    const [distanceIndex, setDistanceIndex] = useState(1);
+    const [distance, setDistance] = useState(1);
     const [useLocation, setUseLocation] = useState(false)
     const [latitude, setLatitude] = useState('');
     const [longitude, setLongitude] = useState('');
@@ -39,6 +40,8 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
     const [childSeating, setChildSeating] = useState(false);
     const [strollerSpace, setStrollerSpace] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
+    const [name, setName] = useState('');
+
     
     const priceButtons = ["$", "$$", "$$$", "$$$$"]
 
@@ -68,64 +71,32 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
                 strollerSpace: strollerSpace
             }
         }
-        for (var outerKey in accommodationsSearch) {
-            var numInKeys = 0;
-            for (var innerKey in accommodationsSearch[outerKey]) {
-                numInKeys += 1;
-                if (!accommodationsSearch[outerKey][innerKey]) {
-                    numInKeys -= 1;
-                    delete accommodationsSearch[outerKey][innerKey];
-                }
-                var numInInkeys = 0;
-                for (var innerInnerKey in accommodationsSearch[outerKey][innerKey]) {
-                    numInInkeys += 1;
-                    if (!accommodationsSearch[outerKey][innerKey][innerInnerKey] ) {
-                        delete accommodationsSearch[outerKey][innerKey][innerInnerKey];
-                        numInInkeys -= 1;
-                    }
-                }
-                if (numInInkeys == 0 && accommodationsSearch[outerKey][innerKey] instanceof Object) {
-                    numInKeys -= 1;
-                    delete accommodationsSearch[outerKey][innerKey];
-                }
-
-            }
-            if (numInKeys == 0 && accommodationsSearch[outerKey] instanceof Object) {
-                delete accommodationsSearch[outerKey];
-            }
-            if (!accommodationsSearch[outerKey]) {
-                delete accommodationsSearch[outerKey];
-            }
-        }
-        for (var key in accommodationsSearch) {
-            return accommodationsSearch
-        }
-        return null;
+        return accommodationsSearch;
     }
 
-    findCurrentLocation = () => {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const lat = JSON.stringify(position.coords.latitude);
-                const long = JSON.stringify(position.coords.longitude);
-                setLatitude(lat);
-                setLongitude(long);
-            },
-            { enableHighAccuracty: false, timeout: 20000, maximumAge: 1000 }
-        );
-    };
+    // findCurrentLocation = () => {
+    //     navigator.geolocation.getCurrentPosition(
+    //         position => {
+    //             const lat = JSON.stringify(position.coords.latitude);
+    //             const long = JSON.stringify(position.coords.longitude);
+    //             setLatitude(lat);
+    //             setLongitude(long);
+    //         },
+    //         { enableHighAccuracty: false, timeout: 20000, maximumAge: 1000 }
+    //     );
+    // };
 
-    findCurrentLocationAsync = async () => {
-        console.log("Finding current location")
-        let { status } = await Permissions.askAsync(Permissions.Location);
+    // findCurrentLocationAsync = async () => {
+    //     console.log("Finding current location")
+    //     let { status } = await Permissions.askAsync(Permissions.Location);
 
-        if ( status !== 'granted') {
-            setUseLocation(false);
-        } else {
-            let location = await Location.getCurrentPositionAsync({});
-            setLocState({location});
-        }
-    };
+    //     if ( status !== 'granted') {
+    //         setUseLocation(false);
+    //     } else {
+    //         let location = await Location.getCurrentPositionAsync({});
+    //         setLocState({location});
+    //     }
+    // };
 
     renderModalContent = () => (
         <View style={styles.content}>
@@ -137,15 +108,11 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
                 <Text>Use Current Location:</Text>
                 <Switch onValueChange={() => {
                     setUseLocation(!useLocation);
-                    if (useLocation) {
-                        this.findCurrentLocationAsync;
-                    }
+                    // if (useLocation) {
+                    //     this.findCurrentLocationAsync;
+                    // }
                 }} 
                 value={useLocation}/>
-                <TouchableOpacity onPress={this.findCurrentLocationAsync}>
-                    <Text>Where Am I?</Text>
-                </TouchableOpacity>
-                <Text>{JSON.stringify(locState)}</Text>
             </View>
             </View>
             }
@@ -160,11 +127,13 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
             }
             { !showFilters && 
               !useLocation && 
-            <View style={{flexDirection: 'row'}}>
+            <View style={{flexDirection: 'row', marginTop: 10}}>
                 <Text style={styles.filterText}>Zip Code</Text>
                 <TextInput 
                     onChangeText={(newZip) => setZipCode(newZip)} 
                     value={zipCode}
+                    placeholder="Enter Zip Code"
+                    style={styles.zipInput}
                 />
             </View>
             }
@@ -199,9 +168,15 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
                 <Text>Maximum Distance: </Text>
                 <ModalDropdown 
                     options={["1 mile", "5 miles", "10 miles", "25 miles", "50 miles"]}
-                    defaultIndex={distance}
+                    defaultIndex={distanceIndex}
                     defaultValue="5 miles"
-                    onSelect={(index) => {setDistance(parseInt(index))}}
+                    onSelect={(index) => {
+                        var options = [1, 5, 10, 25, 50];
+                        setDistanceIndex(parseInt(index));
+                        var miles = options[parseInt(index)];
+                        var meters = 1609.34 * miles;
+                        setDistance(meters);
+                    }}
                 />
             </View>
             <View style={{flexDirection: 'row', marginTop: 25}}>
@@ -314,6 +289,20 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
             </ScrollView>
             </View>
             }
+            <View style={{ marginTop: 25, }}>
+                <Button 
+                    onPress={()=> {
+                    const accommodationsSearch = buildAccommodationMap();
+                    //onSearchSubmit(accommodationsSearch);
+                    getSearchResults({
+                        name, latitude, longitude, zipCode, distance,
+                        maximumPrice, accommodationsSearch, openNow,
+                        kidFriendlyNow, minimumRating
+                    });}}
+                    title="Apply to Search"
+                    >
+                </Button>
+            </View>
         </View>
     );
 
@@ -324,10 +313,17 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
                 placeholder="Search"
                 placeholderTextColor="#686e72"
                 value={term}
-                onChangeText={onTermChange}
+                onChangeText={(newName) => setName(newName)}
                 autoCapitalize="none"
                 autoCorrect={false}
-                onEndEditing={onSearchSubmit}
+                onEndEditing={() => {
+                    const accommodationsSearch = buildAccommodationMap();
+                    getSearchResults({
+                        name, latitude, longitude, zipCode, distance,
+                        maximumPrice, accommodationsSearch, openNow,
+                        kidFriendlyNow, minimumRating
+                    });
+                }}
             />
             <TouchableOpacity onPress={
                 () => setModalOpen(!modalOpen)}
@@ -346,8 +342,13 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
                 backdropTransitionOutTiming={600}
                 onBackdropPress={() => {
                     setModalOpen(!modalOpen);
-                    const accommodationsSearch = buildAccommodationMap();
-                    onSearchSubmit(accommodationsSearch);
+                    // const accommodationsSearch = buildAccommodationMap();
+                    // //onSearchSubmit(accommodationsSearch);
+                    // getSearchResults({
+                    //     name, latitude, longitude, zipCode, distance,
+                    //     maximumPrice, accommodationsSearch, openNow,
+                    //     kidFriendlyNow, minimumRating
+                    // });
                 }}
             >
                     {this.renderModalContent()}
@@ -381,6 +382,13 @@ const styles = StyleSheet.create({
         color: 'black',
 
     },
+    zipInput: {
+        backgroundColor: 'white',
+        padding:5,
+        margin:2,
+        borderRadius:4,
+        textAlign:'center'
+    },
     content: {
         backgroundColor: 'white',
         padding: 22,
@@ -392,7 +400,7 @@ const styles = StyleSheet.create({
       contentTitle: {
         fontSize: 20,
         marginBottom: 12,
-      },
+      }
 })
 
 export default SearchBar
