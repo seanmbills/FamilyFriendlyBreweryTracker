@@ -16,7 +16,7 @@ const BreweryListScreen = ({navigation}) => {
         const zipCode = 30318
         const distance = 10500
         const maximumPrice = 3
-        const accommodationsSearch = {
+        var accommodationsSearch = {
             petFriendly: {
                 waterStations: true,
                 indoorSpaces: false
@@ -29,13 +29,21 @@ const BreweryListScreen = ({navigation}) => {
         <View>
             <SearchBar searchTerm={searchTerm}
                 onTermChange={setSearchTerm}
-                onSearchSubmit={() => getSearchResults(
+                name={name}
+                latitude={latitude}
+                longitude={longitude}
+                zipCode={zipCode}
+                distance={distance}
+                maximumPrice={maximumPrice}
+                onSearchSubmit={(newAccommodations) => {
+                    accommodationsSearch = newAccommodations;
+                    getSearchResults(
                     {
                         name, latitude, longitude,
                         zipCode, distance, accommodationsSearch,
                         maximumPrice, openNow, minimumRating
                     }
-                )}
+                )}}
             />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <ResultsList results={state.results} listName="Results" />

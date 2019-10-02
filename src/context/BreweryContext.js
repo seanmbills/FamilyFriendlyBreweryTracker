@@ -27,14 +27,14 @@ const getSearchResults = (dispatch) => {
             maximumPrice, accommodationsSearch, openNow, 
             kidFriendlyNow, minimumRating
         }
+        console.log(accommodationsSearch);
         try { 
             const response = await ServerApi.get('/search',
                 {params: req}, 
                 {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
             );
-            
+            console.log(response.data);
             dispatch({type: 'search', payload: response.data})
-
             // then need to navigate the user immediately to the logged in state
         } catch (err) {
             console.log(err.response.data.error)

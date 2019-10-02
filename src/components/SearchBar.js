@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useContext } from 'react'
 import {View, Text, StyleSheet, TextInput, Switch, ScrollView,} from 'react-native'
 import {Feather } from '@expo/vector-icons'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -8,9 +8,12 @@ import {Rating} from 'react-native-ratings'
 import ModalDropdown from 'react-native-modal-dropdown';
 import {Location, Permissions} from 'expo';
 import Checkbox from 'react-native-check-box';
+import {Context as BreweryContext} from '../context/BreweryContext';
+
 
 
 const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
+    const {state, getSearchResults, clearErrorMessage} = useContext(BreweryContext);
     const [modalOpen, setModalOpen] = useState(false)
     const [openNow, setOpenNow] = useState(false)
     const [kidFriendlyNow, setKidFriendlyNow] = useState(false)
@@ -21,7 +24,7 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
     const [latitude, setLatitude] = useState('');
     const [longitude, setLongitude] = useState('');
     const [locState, setLocState] = useState('');
-    const [ zipCode, setZipCode ] = useState('');
+    const [zipCode, setZipCode ] = useState('');
     const [waterStations, setWaterStations] = useState(false);
     const [indoorSpaces, setIndoorSpaces] = useState(false);
     const [outdoorSpaces, setOutdoorSpaces] = useState(false);
@@ -36,8 +39,69 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
     const [childSeating, setChildSeating] = useState(false);
     const [strollerSpace, setStrollerSpace] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
-
+    
     const priceButtons = ["$", "$$", "$$$", "$$$$"]
+
+    function buildAccommodationMap() {
+        const accommodationsSearch = {
+            petFriendly: {
+                waterStations: waterStations,
+                indoorSpaces: indoorSpaces,
+                outdoorSpaces: outdoorSpaces
+            },
+            friendlyKidAges: {
+                toddlers: toddlers,
+                youngKids: youngKids,
+                teens: teens
+            },
+            kidFoodDrinks: {
+                kidFriendlyFood: kidFriendlyFood,
+                kidFriendlyDrinks: kidFriendlyDrinks
+            },
+            changingStations: changingStations,
+            childAccommodations: {
+                games: {
+                    indoor: indoorGames,
+                    outdoor: outdoorGames
+                },
+                seating: childSeating,
+                strollerSpace: strollerSpace
+            }
+        }
+        for (var outerKey in accommodationsSearch) {
+            var numInKeys = 0;
+            for (var innerKey in accommodationsSearch[outerKey]) {
+                numInKeys += 1;
+                if (!accommodationsSearch[outerKey][innerKey]) {
+                    numInKeys -= 1;
+                    delete accommodationsSearch[outerKey][innerKey];
+                }
+                var numInInkeys = 0;
+                for (var innerInnerKey in accommodationsSearch[outerKey][innerKey]) {
+                    numInInkeys += 1;
+                    if (!accommodationsSearch[outerKey][innerKey][innerInnerKey] ) {
+                        delete accommodationsSearch[outerKey][innerKey][innerInnerKey];
+                        numInInkeys -= 1;
+                    }
+                }
+                if (numInInkeys == 0 && accommodationsSearch[outerKey][innerKey] instanceof Object) {
+                    numInKeys -= 1;
+                    delete accommodationsSearch[outerKey][innerKey];
+                }
+
+            }
+            if (numInKeys == 0 && accommodationsSearch[outerKey] instanceof Object) {
+                delete accommodationsSearch[outerKey];
+            }
+            if (!accommodationsSearch[outerKey]) {
+                delete accommodationsSearch[outerKey];
+            }
+        }
+        for (var key in accommodationsSearch) {
+            return accommodationsSearch
+        }
+        return null;
+    }
 
     findCurrentLocation = () => {
         navigator.geolocation.getCurrentPosition(
@@ -280,7 +344,11 @@ const SearchBar = ({term, onTermChange, onSearchSubmit}) => {
                 animationOutTiming={600}
                 backdropTransitionInTiming={600}
                 backdropTransitionOutTiming={600}
-                onBackdropPress={() => setModalOpen(!modalOpen)}
+                onBackdropPress={() => {
+                    setModalOpen(!modalOpen);
+                    const accommodationsSearch = buildAccommodationMap();
+                    onSearchSubmit(accommodationsSearch);
+                }}
             >
                     {this.renderModalContent()}
             </Modal>
