@@ -72,16 +72,17 @@ const LoginScreen = ({navigation}) => {
                 <WelcomeButton
                     title="Login"
                     onPress={ async () => {
-                        const validateMap = new Map();
-                        validateMap.set('email', email);
-                        validateMap.set('password', password);
+                        navigation.navigate('loggedInFlow');
+                        // const validateMap = new Map();
+                        // validateMap.set('email', email);
+                        // validateMap.set('password', password);
 
-                        if (validateInput(validateMap)) {
-                            const emailOrId = email;
-                            signin({emailOrId, password})
-                        } else {
-                            console.log("input was not valid");
-                        }
+                        // if (validateInput(validateMap)) {
+                        //     const emailOrId = email;
+                        //     signin({emailOrId, password})
+                        // } else {
+                        //     console.log("input was not valid");
+                        // }
                     }}
                 />
             </View>
