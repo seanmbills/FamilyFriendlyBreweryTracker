@@ -16,6 +16,7 @@ import {Provider as AuthProvider} from './src/context/AuthContext'
 import {setNavigator} from './src/navigationRef'
 import PasswordResetSuccessScreen from './src/screens/PasswordResetSuccessScreen';
 import UpdateAccountScreen from './src/screens/UpdateAccountScreen';
+import MoreScreen from './src/screens/MoreScreen';
 
 const switchNavigator = createSwitchNavigator({
     loginFlow: createStackNavigator({
@@ -39,7 +40,8 @@ const switchNavigator = createSwitchNavigator({
     loggedInFlow: createBottomTabNavigator({
         breweryListFlow: createStackNavigator({
             BreweryList: BreweryListScreen,
-            UpdateAccount: UpdateAccountScreen
+            UpdateAccount: UpdateAccountScreen,
+            More: MoreScreen
         })
     })
 })

@@ -12,6 +12,10 @@ const BreweryListScreen = ({navigation}) => {
                 title="Update Account"
                 onPress={()=> navigation.navigate("UpdateAccount")}
             />
+            <WelcomeButton
+                title="More"
+                onPress={()=> navigation.navigate('More')}
+            />
         </View>
         
     );
@@ -19,4 +23,4 @@ const BreweryListScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({})
 
-export default BreweryListScreen
+export default BreweryListScreen;
