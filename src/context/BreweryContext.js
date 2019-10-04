@@ -6,6 +6,7 @@ const breweryReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
+        case 'brewery':
         case 'search':
             return {...state, count: action.payload.count, results: action.payload.response}
         case 'clear_error_message':
@@ -47,30 +48,26 @@ const getSearchResults = (dispatch) => {
 
 const getBrewery = (dispatch) => {
     return async ({
-        name, latitude, longitude, zipCode, distance,
-        maximumPrice, accommodationsSearch, openNow,
-        kidFriendlyNow, minimumRating
+        breweryId
     }) => {
         // make api request to sign up with this information
         const req = {
-            name, latitude, longitude, zipCode, distance,
-            maximumPrice, accommodationsSearch, openNow,
-            kidFriendlyNow, minimumRating
+            breweryId
         }
         try {
-            const response = await ServerApi.get('/search',
+            const response = await ServerApi.get('/brewery',
                 {params: req},
                 {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
             );
 
-            dispatch({type: 'search', payload: response.data})
+            dispatch({type: 'brewery', payload: response.data})
 
             // then need to navigate the user immediately to the logged in state
         } catch (err) {
             console.log(err.response.data.error)
             // if we get an error back from signing up, need to display the appropriate error
             // message to the user
-            dispatch({ type: 'add_error_message', payload: err.response.data.error})
+            dispatch({ type: 'add_error_message', payload: err.response.data})
         }
     }
 }
