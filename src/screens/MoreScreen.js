@@ -1,12 +1,31 @@
-import React from 'react';
+import React, {useState, useContext} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import {Context as BreweryContext} from '../context/BreweryContext'
+import BreweryForm from '../components/BreweryForm';
 
-const MoreScreen = () => {
+const MoreScreen = ({breweryListResults, navigation}) => {
+    const {state, getOwnedBreweries} = useContext(BreweryContext);
+
+    // if (breweryListResults == null || !breweryListResults.length ) {
+    //     return null;
+    // }
     return (
         <View style={styles.backgroundContainer}>
             <View>
                 <Text style={styles.subHeader}>My Breweries</Text>
+                <FlatList
+                data={breweryListResults}
+                keyExtractor={(result) => result.breweryId}
+                renderItem={({item}) => {
+                    return (
+                        <Text>brewery here</Text>
+                    )
+                }}
+                showsHorizontalScrollIndicator={false}
+                />
             </View>
+            <BreweryForm/>
         </View>
     );
 }

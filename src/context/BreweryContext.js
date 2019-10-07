@@ -90,6 +90,22 @@ const getSearchResults = (dispatch) => {
     }
 }
 
+const getOwnedBreweries = (dispatch) => {
+    return async () => {
+        try {
+            const response = await ServerApi.post('/getOwnedBreweries', { headers: {
+              'Accept' : 'application/json', 'Content-type' : 'application/json',
+              'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
+            }});
+            console.log("response: ");
+            console.log(response);
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
 const clearErrorMessage = dispatch => () => {
     dispatch({type: 'clear_error_message'})
 }
@@ -98,7 +114,8 @@ const clearErrorMessage = dispatch => () => {
 export const {Provider, Context} = createDataContext(
     breweryReducer,
     {
-        getSearchResults
+        getSearchResults,
+        getOwnedBreweries
     },
     {results: [], count: 0, errorMessage: ''}
 )

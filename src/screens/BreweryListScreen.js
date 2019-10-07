@@ -7,7 +7,7 @@ import SearchBar from '../components/SearchBar'
 import ResultsList from '../components/ResultsList'
 
 const BreweryListScreen = ({navigation}) => {
-    const {state, getSearchResults} = useContext(BreweryContext)
+    const {state, getSearchResults, getOwnedBreweries} = useContext(BreweryContext)
     const [searchTerm, setSearchTerm] = useState("")
 
     return ( 
@@ -22,7 +22,10 @@ const BreweryListScreen = ({navigation}) => {
             />
             <WelcomeButton
                 title="More"
-                onPress={()=> navigation.navigate('More')}
+                onPress={()=> {
+                    //getOwnedBreweries();
+                    navigation.navigate('More')
+                }}
             />
         </View>
         
