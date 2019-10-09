@@ -5,7 +5,7 @@ import {navigate} from '../navigationRef'
 const breweryReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
-            return {...state, errorMessage: action.payload}
+            return {...state, errorMessage: action.payload, results: null}
         case 'brewery':
         case 'search':
             return {...state, count: action.payload.count, results: action.payload.response}
@@ -54,11 +54,15 @@ const getBrewery = (dispatch) => {
         const req = {
             breweryId
         }
+        console.log("Brewery ID: " + breweryId)
+        console.log("Req: " + JSON.stringify(req))
         try {
             const response = await ServerApi.get('/brewery',
                 {params: req},
                 {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
             );
+
+            console.log("response: " + response)
 
             dispatch({type: 'brewery', payload: response.data})
 

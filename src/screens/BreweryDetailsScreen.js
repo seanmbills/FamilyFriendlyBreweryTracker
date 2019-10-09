@@ -5,9 +5,10 @@ import {Rating} from 'react-native-ratings'
 import Emoji from 'react-native-emoji'
 
 
-const BreweryDetailsScreen = ({navigation}) => {
+const BreweryDetailsScreen = async ({navigation}) => {
   const breweryId = navigation.getParam('id')
-    const {state, getBrewery} = useContext(BreweryContext)
+  console.log("Details Brew Id: " + breweryId)
+    var {state, getBrewery} = useContext(BreweryContext)
     const [searchTerm, setSearchTerm] = useState("")
     const screenWidth = Math.round(Dimensions.get('window').width);
     const screenHeight = 50;
@@ -24,12 +25,14 @@ const BreweryDetailsScreen = ({navigation}) => {
       true:'yes'
     };
 
-    useEffect(() => {
-      getBrewery(breweryId)
-    }, []);
+    // useEffect(() => {
+    //   getBrewery(breweryId)
+    // }, []);
+    await getBrewery(breweryId)
 
     console.log(breweryId);
-    console.log(state.results);
+    console.log(state)
+    // console.log(state.results);
 
     var petsAllowedInside =  state.results[0].accommodations.petFriendly.indoorSpaces
     var petsAllowedOutside = state.results[0].accommodations.petFriendly.outdoorSpaces
