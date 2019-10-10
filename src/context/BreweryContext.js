@@ -50,27 +50,20 @@ const getBrewery = (dispatch) => {
     return async ({
         breweryId
     }) => {
-        // make api request to sign up with this information
+        // make api request to get a single brewery with this id
         const req = {
             breweryId
         }
-        console.log("Brewery ID: " + breweryId)
-        console.log("Req: " + JSON.stringify(req))
         try {
             const response = await ServerApi.get('/brewery',
                 {params: req},
                 {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
             );
 
-            console.log("response: " + response)
-
             dispatch({type: 'brewery', payload: response.data})
 
-            // then need to navigate the user immediately to the logged in state
         } catch (err) {
             console.log(err.response.data.error)
-            // if we get an error back from signing up, need to display the appropriate error
-            // message to the user
             dispatch({ type: 'add_error_message', payload: err.response.data})
         }
     }

@@ -5,34 +5,28 @@ import {Rating} from 'react-native-ratings'
 import Emoji from 'react-native-emoji'
 
 
-const BreweryDetailsScreen = async ({navigation}) => {
-  const breweryId = navigation.getParam('id')
-  console.log("Details Brew Id: " + breweryId)
+const BreweryDetailsScreen = ({navigation}) => {
+    const breweryId = navigation.getParam('id')
     var {state, getBrewery} = useContext(BreweryContext)
-    const [searchTerm, setSearchTerm] = useState("")
     const screenWidth = Math.round(Dimensions.get('window').width);
     const screenHeight = 50;
     var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(state.results[0].name.length))
     breweryFont = Math.min(breweryFont, 35)
     var waterBowl = ' '
     if (!state.results[0].accommodations.petFriendly.waterStations) {
-      waterBowl = ' not '
+        waterBowl = ' not '
     }
 
 
     var boolToAnswerDict = {
-      false:'no',
-      true:'yes'
+        false:'no',
+        true:'yes'
     };
 
-    // useEffect(() => {
-    //   getBrewery(breweryId)
-    // }, []);
-    await getBrewery(breweryId)
-
-    console.log(breweryId);
-    console.log(state)
-    // console.log(state.results);
+    useEffect(() => {
+        getBrewery({breweryId})
+    }, []);
+    
 
     var petsAllowedInside =  state.results[0].accommodations.petFriendly.indoorSpaces
     var petsAllowedOutside = state.results[0].accommodations.petFriendly.outdoorSpaces
@@ -72,6 +66,8 @@ const BreweryDetailsScreen = async ({navigation}) => {
         <Text style={styles.textStyleAddress}>{state.results[0].address.street}, {state.results[0].address.city}
         , {state.results[0].address.state} {state.results[0].address.zipCode}
         </Text>
+
+        <Text>{state.results[0].website}</Text>
 
         <Text style={styles.accommodationsHeaders}>Are pets allowed?</Text>
 
