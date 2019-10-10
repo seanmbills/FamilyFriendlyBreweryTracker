@@ -106,6 +106,33 @@ const getOwnedBreweries = (dispatch) => {
     }
 }
 
+const createBrewery = (dispatch) => {
+    return async ({
+            name, address, price, phoneNumber, 
+            email, website, businessHours, kidHoursSameAsNormal, 
+            alternativeKidFriendlyHours, accommodations
+            }) => {
+        accommodations = stripAccommodationsSearch(accommodations);
+
+        var req = {name, address, price, phoneNumber, email, website,
+                    businessHours, kidHoursSameAsNormal, alternativeKidFriendlyHours,
+                    accommodationsSearch
+                };
+        try {
+            const response = await ServerApi.post('/createBrewery',
+                {params: req}, 
+                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
+            );
+            console.log("response: ");
+            console.log(response);
+        }
+        catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
 const clearErrorMessage = dispatch => () => {
     dispatch({type: 'clear_error_message'})
 }
@@ -115,7 +142,8 @@ export const {Provider, Context} = createDataContext(
     breweryReducer,
     {
         getSearchResults,
-        getOwnedBreweries
+        getOwnedBreweries,
+        createBrewery
     },
     {results: [], count: 0, errorMessage: ''}
 )

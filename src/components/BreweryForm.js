@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
+import WelcomeButton from '../components/WelcomeButton'
 
-const BreweryForm = () => {
+const BreweryForm = ({route}) => {
     const [breweryName, setBreweryName] = useState('');
     const [address, setAddress] = useState('');
     const [street, setStreet] = useState('');
@@ -187,6 +188,7 @@ const BreweryForm = () => {
             { showTimes && 
             <View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Monday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -202,7 +204,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Tuesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -218,7 +222,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Wednesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -234,7 +240,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Thursday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -250,7 +258,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Friday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -266,7 +276,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Saturday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -282,7 +294,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Sunday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -297,6 +311,7 @@ const BreweryForm = () => {
                         <Text>{mondayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
+            </View>
             </View>
             <View style={styles.fieldView}>
                 <TouchableOpacity onPress={() => setShowTimes(false)}>
@@ -306,8 +321,9 @@ const BreweryForm = () => {
         </View>
         }
         { showKidTimes && 
-            <View>
+        <View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Monday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -323,7 +339,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Tuesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -339,7 +357,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Wednesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -355,7 +375,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Thursday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -371,7 +393,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Friday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -387,7 +411,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Saturday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -403,7 +429,9 @@ const BreweryForm = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            </View>
             <View style={styles.fieldView}>
+            <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Sunday Open Time:</Text>
                     <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
@@ -418,6 +446,7 @@ const BreweryForm = () => {
                         <Text>{mondayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
+            </View>
             </View>
             <View style={styles.fieldView}>
                 <TouchableOpacity onPress={() => setShowKidTimes(false)}>
@@ -429,7 +458,6 @@ const BreweryForm = () => {
 
         { showFilters && 
             <View style={styles.filtersContainer}>
-            <ScrollView style={{marginBottom:25, paddingBottom:25}}>
             <View style={{marginTop: 10}}>
                 <Text>Additional Filters: </Text>
                 <Text>Pet Filters:</Text>
@@ -518,7 +546,6 @@ const BreweryForm = () => {
                     isChecked={strollerSpace}
                 />
             </View>
-            </ScrollView>
             <View style={styles.fieldView}>
                 <TouchableOpacity onPress={() => setShowFilters(false)}>
                     <Text style={styles.timeTitle}>Close</Text>
@@ -526,7 +553,6 @@ const BreweryForm = () => {
             </View>
             </View>
             }
-
         </ScrollView>
     );
 }
@@ -557,7 +583,7 @@ const styles = StyleSheet.create({
         marginLeft:4,
         color: 'black',
         marginBottom:5,
-        fontSize:20,
+        fontSize:15,
         fontWeight:'bold',
     },
     filtersContainer: {
@@ -566,7 +592,21 @@ const styles = StyleSheet.create({
         margin:5,
         padding:5,
         borderRadius:5
-    }
+    },
+    timeContainers: {
+        backgroundColor: 'white',
+        margin:5,
+        padding:5,
+        borderRadius:5,
+        borderColor: 'black',
+        borderWidth:2,
+        flexDirection:'column',
+        flex:1
+    },
+    contentContainer: {
+        margin:5,
+        padding:5,
+    },
 });
 
 export default BreweryForm;
