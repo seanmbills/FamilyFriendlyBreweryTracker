@@ -5,7 +5,7 @@ import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
 import WelcomeButton from '../components/WelcomeButton'
 
-const BreweryForm = ({route}) => {
+const BreweryForm = ({isNew}) => {
     const [breweryName, setBreweryName] = useState('');
     const [address, setAddress] = useState('');
     const [street, setStreet] = useState('');
@@ -17,38 +17,39 @@ const BreweryForm = ({route}) => {
     const [website, setWebsite] = useState('');
     const priceButtons = [ '$', '$$', '$$$' , '$$$$']
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [dayPicked, setDayPicked] = useState('');
 
 
     const [timePickerVisible, setTimePickerVisible] = useState(false);
-    const [mondayOpenTime, setMondayOpenTime] = useState('8:00 a.m');
-    const [mondayCloseTime, setMondayCloseTime] = useState('8:00 a.m');
-    const [tuesdayOpenTime, setTuesdayOpenTime] = useState('8:00 a.m');
-    const [tuesdayCloseTime, setTuesdayCloseTime] = useState('8:00 a.m');
-    const [wednesdayOpenTime, setWednesdayOpenTime] = useState('8:00 a.m');
-    const [wednesdayCloseTime, setWednesdayCloseTime] = useState('8:00 a.m');
-    const [thursdayOpenTime, setThursdayOpenTime] = useState('8:00 a.m');
-    const [thursdayCloseTime, setThursdayCloseTime] = useState('8:00 a.m');
-    const [fridayOpenTime, setFridayOpenTime] = useState('8:00 a.m');
-    const [fridayCloseTime, setFridayCloseTime] = useState('8:00 a.m');
-    const [saturdayOpenTime, setSaturdayOpenTime] = useState('8:00 a.m');
-    const [saturdayCloseTime, setSaturdayCloseTime] = useState('8:00 a.m');
-    const [sundayOpenTime, setSundayOpenTime] = useState('8:00 a.m');
-    const [sundayCloseTime, setSundayCloseTime] = useState('8:00 a.m');
+    const [mondayOpenTime, setMondayOpenTime] = useState('8:00AM');
+    const [mondayCloseTime, setMondayCloseTime] = useState('8:00PM');
+    const [tuesdayOpenTime, setTuesdayOpenTime] = useState('8:00AM');
+    const [tuesdayCloseTime, setTuesdayCloseTime] = useState('8:00PM');
+    const [wednesdayOpenTime, setWednesdayOpenTime] = useState('8:00AM');
+    const [wednesdayCloseTime, setWednesdayCloseTime] = useState('8:00PM');
+    const [thursdayOpenTime, setThursdayOpenTime] = useState('8:00AM');
+    const [thursdayCloseTime, setThursdayCloseTime] = useState('8:00PM');
+    const [fridayOpenTime, setFridayOpenTime] = useState('8:00AM');
+    const [fridayCloseTime, setFridayCloseTime] = useState('8:00PM');
+    const [saturdayOpenTime, setSaturdayOpenTime] = useState('8:00AM');
+    const [saturdayCloseTime, setSaturdayCloseTime] = useState('8:00PM');
+    const [sundayOpenTime, setSundayOpenTime] = useState('8:00AM');
+    const [sundayCloseTime, setSundayCloseTime] = useState('8:00PM');
 
-    const [mondayKidOpenTime, setMondayKidOpenTime] = useState('8:00 a.m');
-    const [mondayKidCloseTime, setMondayKidCloseTime] = useState('8:00 a.m');
-    const [tuesdayKidOpenTime, setTuesdayKidOpenTime] = useState('8:00 a.m');
-    const [tuesdayKidCloseTime, setTuesdayKidCloseTime] = useState('8:00 a.m');
-    const [wednesdayKidOpenTime, setWednesdayKidOpenTime] = useState('8:00 a.m');
-    const [wednesdayKidCloseTime, setWednesdayKidCloseTime] = useState('8:00 a.m');
-    const [thursdayKidOpenTime, setThursdayKidOpenTime] = useState('8:00 a.m');
-    const [thursdayKidCloseTime, setThursdayKidCloseTime] = useState('8:00 a.m');
-    const [fridayKidOpenTime, setFridayKidOpenTime] = useState('8:00 a.m');
-    const [fridayKidCloseTime, setFridayKidCloseTime] = useState('8:00 a.m');
-    const [saturdayKidOpenTime, setSaturdayKidOpenTime] = useState('8:00 a.m');
-    const [saturdayKidCloseTime, setSaturdayKidCloseTime] = useState('8:00 a.m');
-    const [sundayKidOpenTime, setSundayKidOpenTime] = useState('8:00 a.m');
-    const [sundayKidCloseTime, setSundayKidCloseTime] = useState('8:00 a.m');
+    const [mondayKidOpenTime, setMondayKidOpenTime] = useState('8:00AM');
+    const [mondayKidCloseTime, setMondayKidCloseTime] = useState('8:00PM');
+    const [tuesdayKidOpenTime, setTuesdayKidOpenTime] = useState('8:00AM');
+    const [tuesdayKidCloseTime, setTuesdayKidCloseTime] = useState('8:00PM');
+    const [wednesdayKidOpenTime, setWednesdayKidOpenTime] = useState('8:00AM');
+    const [wednesdayKidCloseTime, setWednesdayKidCloseTime] = useState('8:00PM');
+    const [thursdayKidOpenTime, setThursdayKidOpenTime] = useState('8:00AM');
+    const [thursdayKidCloseTime, setThursdayKidCloseTime] = useState('8:00PM');
+    const [fridayKidOpenTime, setFridayKidOpenTime] = useState('8:00AM');
+    const [fridayKidCloseTime, setFridayKidCloseTime] = useState('8:00PM');
+    const [saturdayKidOpenTime, setSaturdayKidOpenTime] = useState('8:00AM');
+    const [saturdayKidCloseTime, setSaturdayKidCloseTime] = useState('8:00PM');
+    const [sundayKidOpenTime, setSundayKidOpenTime] = useState('8:00AM');
+    const [sundayKidCloseTime, setSundayKidCloseTime] = useState('8:00PM');
 
     const [waterStations, setWaterStations] = useState(false);
     const [indoorSpaces, setIndoorSpaces] = useState(false);
@@ -68,9 +69,163 @@ const BreweryForm = ({route}) => {
     const [showTimes, setShowTimes] = useState(false);
     const [showKidTimes, setShowKidTimes] = useState(false);
 
+    const formatTime = (time) => {
+        time = time.toString();
+        var colonIndex = time.indexOf(':');
+        var formatTime = time.substring(colonIndex-2, colonIndex);
+        var hours = parseInt(formatTime);
+        var minutes = time.substring(colonIndex+1, colonIndex +3);
+        if (12 <= hours && hours <= 23) {
+
+            if (hours > 12){
+                formatTime = (hours % 12)
+            } else {
+                formatTime = hours
+            }
+            formatTime += ":" + minutes + "PM"
+        } else {
+            if (hours == 0) {
+                formatTime = 12;
+            } else {
+                formatTime = hours;
+            }
+            formatTime += ":" + minutes + "AM"
+        }
+        return formatTime;
+    }
     const handleTimePicked = (time)=> {
-        var timeString = time.toString();
-        console.log(timeString);
+        time = formatTime(time);
+        switch(dayPicked) {
+            case 'mondayOpen':
+                setMondayOpenTime(time);
+                break;
+            case 'mondayClose':
+                setMondayCloseTime(time);
+                break;
+            case 'tuesdayOpen':
+                setTuesdayOpenTime(time);
+                break;
+            case 'tuesdayClose':
+                setTuesdayCloseTime(time);
+                break;
+            case 'wednesdayOpen':
+                setWednesdayOpenTime(time);
+                break;
+            case 'wednesdayClose':
+                setWednesdayCloseTime(time);
+                break;
+            case 'thursdayOpen':
+                setThursdayOpenTime(time);
+                break;
+            case 'thursdayClose':
+                setThursdayCloseTime(time);
+                break;
+            case 'fridayOpen':
+                setFridayOpenTime(time);
+                break;
+            case 'fridayClose':
+                setFridayCloseTime(time);
+                break;
+            case 'saturdayOpen':
+                setSaturdayOpenTime(time);
+                break;
+            case 'saturdayClose':
+                setSaturdayCloseTime(time);
+                break;
+            case 'sundayOpen':
+                setSundayOpenTime(time);
+                break;
+            case 'sundayClose':
+                setSundayCloseTime(time);
+                break;
+
+            case 'mondayKidOpen':
+                setMondayKidOpenTime(time);
+                break;
+            case 'mondayKidClose':
+                setMondayKidCloseTime(time);
+                break;
+            case 'tuesdayKidOpen':
+                setTuesdayKidOpenTime(time);
+                break;
+            case 'tuesdayKidClose':
+                setTuesdayKidCloseTime(time);
+                break;
+            case 'wednesdayKidOpen':
+                setWednesdayKidOpenTime(time);
+                break;
+            case 'wednesdayKidClose':
+                setWednesdayKidCloseTime(time);
+                break;
+            case 'thursdayKidOpen':
+                setThursdayKidOpenTime(time);
+                break;
+            case 'thursdayKidClose':
+                setThursdayKidCloseTime(time);
+                break;
+            case 'fridayKidOpen':
+                setFridayKidOpenTime(time);
+                break;
+            case 'fridayKidClose':
+                setFridayKidCloseTime(time);
+                break;
+            case 'saturdayKidOpen':
+                setSaturdayKidOpenTime(time);
+                break;
+            case 'saturdayKidClose':
+                setSaturdayKidCloseTime(time);
+                break;
+            case 'sundayKidOpen':
+                setSundayKidOpenTime(time);
+                break;
+            case 'sundayKidClose':
+                setSundayKidCloseTime(time);
+                break;
+            case 'mondayKidOpen':
+                setMondayKidOpenTime(time);
+                break;
+            case 'mondayKidClose':
+                setMondayKidCloseTime(time);
+                break;
+            case 'tuesdayKidOpen':
+                setTuesdayKidOpenTime(time);
+                break;
+            case 'tuesdayKidClose':
+                setTuesdayKidCloseTime(time);
+                break;
+            case 'wednesdayKidOpen':
+                setWednesdayKidOpenTime(time);
+                break;
+            case 'wednesdayKidClose':
+                setWednesdayKidCloseTime(time);
+                break;
+            case 'thursdayKidOpen':
+                setThursdayKidOpenTime(time);
+                break;
+            case 'thursdayKidClose':
+                setThursdayKidCloseTime(time);
+                break;
+            case 'fridayKidOpen':
+                setFridayKidCloseTime(time);
+                break;
+            case 'fridayKidClose':
+                setFridayKidCloseTime(time);
+                break;
+            case 'saturdayKidOpen':
+                setSaturdayKidOpenTime(time);
+                break;
+            case 'saturdayKidClose':
+                setSaturdayKidCloseTime(time);
+                break;
+            case 'sundayKidOpen':
+                setSundayKidOpenTime(time);
+                break;
+            case 'sundayKidClose':
+                setSundayKidCloseTime(time);
+                break;
+            default:
+                setDayPicked('');
+        }
     }
     return (
         <ScrollView>
@@ -191,7 +346,10 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Monday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('mondayOpen');
+                    }}
                         style={{display:'inline-block'}}
                     >
                         <Text>{mondayOpenTime}</Text>
@@ -199,8 +357,12 @@ const BreweryForm = ({route}) => {
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Monday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('mondayClose');
+                    }}
+                    >
+                        <Text>{mondayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -209,16 +371,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Tuesday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('tuesdayOpen');
+                    }}
                       
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{tuesdayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Tuesday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible);
+                        setDayPicked('tuesdayClose');
+                    }}>
+                        <Text>{tuesdayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -227,16 +395,23 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Wednesday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('wednesdayOpen');
+                    }}
                       
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{wednesdayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Wednesday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked("wednesdayClosed");
+                    }}
+                    >
+                        <Text>{wednesdayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -245,16 +420,23 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Thursday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('thursdayOpen');
+                    }}
                         
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{thursdayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Thursday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('thursdayClose');
+                    }
+                    }>
+                        <Text>{thursdayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -263,16 +445,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Friday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('fridayOpen');
+                    }}
                       
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{fridayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Friday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('fridayClose');
+                    }}>
+                        <Text>{fridayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -281,16 +469,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Saturday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked("saturdayOpen")
+                    }}
                         
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{saturdayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Saturday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked("saturdayClose");
+                    }}>
+                        <Text>{saturdayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -299,16 +493,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Sunday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('sundayOpen');
+                    }}
                         
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{sundayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Sunday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('sundayClose');
+                    }}>
+                        <Text>{sundayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -326,16 +526,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Monday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked("mondayKidOpen");
+                    }}
                         style={{display:'inline-block'}}
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{mondayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Monday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('mondayKidClosed');
+                    }}>
+                        <Text>{mondayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -344,16 +550,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Tuesday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('tuesdayKidOpen');
+                    }}
                       
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{tuesdayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Tuesday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('tuesdayKidClose');
+                    }}>
+                        <Text>{tuesdayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -362,16 +574,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Wednesday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('wednesdayKidOpen');
+                    }}
                       
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{wednesdayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Wednesday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('wednesdayKidClose');
+                    }}>
+                        <Text>{wednesdayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -380,16 +598,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Thursday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible);
+                        setDayPicked('thursdayKidOpen');
+                    }}
                         
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{thursdayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Thursday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('thursdayKidClose');
+                    }}>
+                        <Text>{thursdayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -398,16 +622,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Friday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('fridayKidOpen');
+                    }}
                       
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{fridayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Friday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('fridayKidClose');
+                    }}>
+                        <Text>{fridayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -416,16 +646,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Saturday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('saturdayKidOpen');
+                    }}
                         
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{saturdayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Saturday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('saturdayKidClose');
+                    }}>
+                        <Text>{saturdayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -434,16 +670,22 @@ const BreweryForm = ({route}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Sunday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('sundayKidOpen');
+                    }}
                         
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text>{sundayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Sunday Close Time:</Text>
-                    <TouchableOpacity onPress={()=>setTimePickerVisible(!timePickerVisible)}>
-                        <Text>{mondayOpenTime}</Text>
+                    <TouchableOpacity onPress={()=>{
+                        setTimePickerVisible(!timePickerVisible)
+                        setDayPicked('sundayKidClose');
+                    }}>
+                        <Text>{sundayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -556,6 +798,7 @@ const BreweryForm = ({route}) => {
         </ScrollView>
     );
 }
+//8:00AM or 8:00PM
 
 const styles = StyleSheet.create({
     fieldView: {

@@ -14,7 +14,7 @@ const CreateBreweryScreen = ({navigation}) => {
             </View>
             <View style={styles.contentContainer}>
                 <BreweryForm
-                    route={createBrewery}
+                    isNew={false}
                 />
             </View>
             <View style={styles.contentContainer}>
