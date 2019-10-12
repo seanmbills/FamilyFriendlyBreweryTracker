@@ -1,5 +1,5 @@
 import React, {useState, useContext, useEffect} from 'react'
-import {View, StyleSheet, Text, ScrollView, Dimensions, TouchableOpacity} from 'react-native'
+import {View, StyleSheet, Text, ScrollView, Dimensions, TouchableOpacity, Linking, Platform} from 'react-native'
 import {Context as BreweryContext} from '../context/BreweryContext'
 import {Rating} from 'react-native-ratings'
 import Emoji from 'react-native-emoji'
@@ -17,16 +17,41 @@ const BreweryDetailsScreen = ({navigation}) => {
         waterBowl = ' not '
     }
 
+    dialCall = () => {
+      var phoneNumber = state.results[0].phoneNumber;
+      if (Platform.OS === 'android') {
+        phoneNumber = 'tel:${' + phoneNumber + '}';
+      }
+      else {
+        phoneNumber = 'telprompt:${' + phoneNumber + '}';
+      }
+      Linking.openURL(phoneNumber);
+  };
+
 
     var boolToAnswerDict = {
         false:'no',
         true:'yes'
     };
+    //console.log(state.results);
 
     useEffect(() => {
         getBrewery({breweryId})
     }, []);
-    
+
+    const lat = state.results[0].geoLocation;
+    //const lng = state.results[0].geoLocation.coordinates[1];
+    console.log('Latitude: '+ lat);
+    //console.log('longitude: '+ lng);
+    // const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+    // const latLng = '${lat},${lng}';
+    // const label = 'Custom Label';
+    // const url = Platform.select({
+    //   ios: `${scheme}${label}@${latLng}`,
+    //   android: `${scheme}${latLng}(${label})`
+    // });
+
+
 
     var petsAllowedInside =  state.results[0].accommodations.petFriendly.indoorSpaces
     var petsAllowedOutside = state.results[0].accommodations.petFriendly.outdoorSpaces
@@ -43,11 +68,13 @@ const BreweryDetailsScreen = ({navigation}) => {
 
     return (
     <ScrollView style={styles.scrollView}>
+
+        {/*Displays the brewery name at the top of the screen*/}
         <Text
               style={{fontSize: breweryFont, textAlign: 'center', fontWeight: 'bold', marginTop: 25, paddingBottom: 15}}>{state.results[0].name}
         </Text>
 
-
+        {/*Displays the number and rating of reviews (clickable)*/}
         <TouchableOpacity>
           <Rating
               imageSize={20}
@@ -55,20 +82,33 @@ const BreweryDetailsScreen = ({navigation}) => {
               startingValue={state.results[0].rating}
               fractions={1}
           />
+
           <Text
               style={{textAlign: 'center'}}> {state.results[0].numReviews} reviews
           </Text>
         </TouchableOpacity>
 
+        {/*Displays the pictures*/}
         <Text style={{textAlign: 'center', paddingTop: 120, paddingBottom: 120}}> pics here
         </Text>
 
-        <Text style={styles.textStyleAddress}>{state.results[0].address.street}, {state.results[0].address.city}
+        {/*Displays the address      onPress={ ()=> Linking.openURL(url)*/}
+
+        <Text style={styles.textStyleAddress} ><Emoji name="round_pushpin" style={{fontSize: 18}} />{state.results[0].address.street}, {state.results[0].address.city}
         , {state.results[0].address.state} {state.results[0].address.zipCode}
         </Text>
 
-        <Text>{state.results[0].website}</Text>
+        {/*Displays the website (clickable)*/}
+        <Text style={styles.textWebsite} onPress={ ()=> Linking.openURL(state.results[0].website) } ><Emoji name="globe_with_meridians" style={{fontSize: 18}} />View this brewery's website</Text>
 
+        {/*Displays the phone number (clickable)*/}
+        <TouchableOpacity onPress={this.dialCall} style={styles.button} >
+
+          <Text style={styles.textPhone}><Emoji name="telephone_receiver" style={{fontSize: 18}} />Call this location {state.results[0].phoneNumber}</Text>
+
+        </TouchableOpacity>
+
+        {/*Displays pet accommodations*/}
         <Text style={styles.accommodationsHeaders}>Are pets allowed?</Text>
 
         {petsAllowedInside && <Text style={styles.accommodations}> inside: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
@@ -79,6 +119,7 @@ const BreweryDetailsScreen = ({navigation}) => {
 
         {(petsAllowedInside || petsAllowedOutside) && <Text style={styles.accommodations}> there are{waterBowl}water stations for pets</Text>}
 
+        {/*Displays kid accommodations*/}
         <Text style={styles.accommodationsHeaders}>Are kids allowed?</Text>
 
         {toddlerAllowed && <Text style={styles.accommodations}> toddlers: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
@@ -138,16 +179,47 @@ const BreweryDetailsScreen = ({navigation}) => {
 
 
 const styles = StyleSheet.create({
-    textStyleAddress: {
-        fontSize: 25,
-        paddingLeft: 10
+    spaceAtTop: {
+        fontSize: 10
     },
     textStylename: {
         fontSize: 40
     },
-    spaceAtTop: {
-        fontSize: 10
+    textStyleAddress: {
+        fontSize: 18,
+        paddingLeft: 10,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderRadius: 10,
+        marginLeft: 10,
+        marginRight: 10
+
     },
+    textWebsite: {
+      fontSize:18,
+      paddingLeft: 10,
+      paddingRight: 10,
+      borderColor: 'gray',
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderRadius: 10,
+      marginLeft: 10,
+      marginRight: 10,
+      marginTop: 5
+    },
+    textPhone: {
+      fontSize:18,
+      paddingLeft: 10,
+      paddingRight: 10,
+      borderColor: 'gray',
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderRadius: 10,
+      marginLeft: 10,
+      marginRight: 10,
+      marginTop: 5
+},
     accommodationsHeaders: {
       fontSize: 22,
       paddingTop: 12,
