@@ -35,9 +35,9 @@ const BreweryDetailsScreen = ({navigation}) => {
     };
     //console.log(state.results);
 
-    useEffect(() => {
-        getBrewery({breweryId})
-    }, []);
+    // useEffect(() => {
+    //     getBrewery({breweryId})
+    // }, []);
 
     const lat = state.results[0].geoLocation;
     //const lng = state.results[0].geoLocation.coordinates[1];

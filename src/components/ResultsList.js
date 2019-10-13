@@ -2,6 +2,8 @@ import React from 'react'
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native'
 import ResultDetails from './ResultDetails';
 import {withNavigation} from 'react-navigation'
+//import BreweryContext from '../context/BreweryContext'
+import {Context as BreweryContext} from '../context/BreweryContext'
 
 const ResultsList = ({listName, results, navigation}) => {
     if (!results.length){
@@ -10,15 +12,18 @@ const ResultsList = ({listName, results, navigation}) => {
     return (
         <View style={styles.container}>
             <Text style={styles.listHeader}> {listName} </Text>
-            <FlatList 
+            <FlatList
                 horizontal
                 data={results}
                 keyExtractor={(result) => result.breweryId}
                 renderItem={({item}) => {
                     return (
                         <TouchableOpacity onPress={
-                            () => navigation.navigate("BreweryDetails", {id: item.breweryId})}
-                        >
+                            () => {
+                              getBrewery({breweryId: item.breweryId})
+                              navigation.navigate("BreweryDetails")
+                            }
+                        }>
                             <ResultDetails result={item}/>
                         </TouchableOpacity>
                     )
