@@ -28,21 +28,15 @@ const BreweryDetailsScreen = ({navigation}) => {
       Linking.openURL(phoneNumber);
   };
 
+    console.log(state.results[0].geoLocation);
 
-    var boolToAnswerDict = {
-        false:'no',
-        true:'yes'
-    };
-    //console.log(state.results);
+    // console.log("results 0: " + state.results[0]);
+    // console.log("results 1: " + state.results[1]);
 
-    // useEffect(() => {
-    //     getBrewery({breweryId})
-    // }, []);
-
-    const lat = state.results[0].geoLocation;
-    //const lng = state.results[0].geoLocation.coordinates[1];
-    console.log('Latitude: '+ lat);
-    //console.log('longitude: '+ lng);
+    // const lat = state.results[0].geoLocation.coordinates[0];
+    // const lng = state.results[0].geoLocation.coordinates[1];
+    // console.log('Latitude: '+ lat);
+    // console.log('longitude: '+ lng);
     // const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
     // const latLng = '${lat},${lng}';
     // const label = 'Custom Label';
