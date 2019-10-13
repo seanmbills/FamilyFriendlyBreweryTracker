@@ -28,22 +28,22 @@ const BreweryDetailsScreen = ({navigation}) => {
       Linking.openURL(phoneNumber);
   };
 
-    console.log(state.results[0].geoLocation);
+    const lat = 33.813714
+    const lng = -84.444927
 
-    // console.log("results 0: " + state.results[0]);
-    // console.log("results 1: " + state.results[1]);
+    // console.log(state.results[0]);
 
-    // const lat = state.results[0].geoLocation.coordinates[0];
-    // const lng = state.results[0].geoLocation.coordinates[1];
-    // console.log('Latitude: '+ lat);
-    // console.log('longitude: '+ lng);
-    // const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
-    // const latLng = '${lat},${lng}';
-    // const label = 'Custom Label';
-    // const url = Platform.select({
-    //   ios: `${scheme}${label}@${latLng}`,
-    //   android: `${scheme}${latLng}(${label})`
-    // });
+    // const lat = state.results[0].geoLocation.coordinates[1]
+    // const lng = state.results[0].geoLocation.coordinates[0]
+
+
+    const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
+    const latLng = `${lat},${lng}`;
+    const label = state.results[0].name;
+    const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`
+    });
 
 
 
@@ -88,7 +88,7 @@ const BreweryDetailsScreen = ({navigation}) => {
 
         {/*Displays the address      onPress={ ()=> Linking.openURL(url)*/}
 
-        <Text style={styles.textStyleAddress} ><Emoji name="round_pushpin" style={{fontSize: 18}} />{state.results[0].address.street}, {state.results[0].address.city}
+        <Text style={styles.textStyleAddress} onPress={ ()=> Linking.openURL(url) }><Emoji name="round_pushpin" style={{fontSize: 18}} />{state.results[0].address.street}, {state.results[0].address.city}
         , {state.results[0].address.state} {state.results[0].address.zipCode}
         </Text>
 
