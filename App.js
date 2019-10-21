@@ -18,6 +18,7 @@ import {setNavigator} from './src/navigationRef'
 import PasswordResetSuccessScreen from './src/screens/PasswordResetSuccessScreen';
 import UpdateAccountScreen from './src/screens/UpdateAccountScreen';
 import MoreScreen from './src/screens/MoreScreen';
+import CreateBreweryScreen from './src/screens/CreateBreweryScreen';
 
 const switchNavigator = createSwitchNavigator({
     loginFlow: createStackNavigator({
@@ -26,6 +27,8 @@ const switchNavigator = createSwitchNavigator({
         Login: LoginScreen,
         ForgotPassword: ForgotPasswordScreen,
         PasswordResetSuccess: PasswordResetSuccessScreen,
+        // More: MoreScreen, //Comment me out
+        // CreateBrewery: CreateBreweryScreen //comment me out
     },
     {
         initialRouteName: 'Welcome',
@@ -42,7 +45,8 @@ const switchNavigator = createSwitchNavigator({
         breweryListFlow: createStackNavigator({
             BreweryList: BreweryListScreen,
             UpdateAccount: UpdateAccountScreen,
-            More: MoreScreen
+            More: MoreScreen,
+            CreateBrewery: CreateBreweryScreen
         })
     })
 })

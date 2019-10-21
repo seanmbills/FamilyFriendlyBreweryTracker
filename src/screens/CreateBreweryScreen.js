@@ -14,18 +14,10 @@ const CreateBreweryScreen = ({navigation}) => {
             </View>
             <View style={styles.contentContainer}>
                 <BreweryForm
-                    isNew={false}
+                    isNew={true}
+                    navigation={navigation}
                 />
             </View>
-            <View style={styles.contentContainer}>
-                <WelcomeButton
-                    title="Save"
-                />
-                <WelcomeButton
-                    title="Cancel"
-                    onPress={() => navigation.navigate("More")}
-                />
-        </View>
         </ScrollView>
     );  
 }

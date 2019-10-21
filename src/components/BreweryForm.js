@@ -1,13 +1,17 @@
-import React, {useState} from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import React, {useState, useContext} from 'react';
+import {Context as BreweryContext} from '../context/BreweryContext';
+
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch} from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
 import WelcomeButton from '../components/WelcomeButton'
+import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
 
-const BreweryForm = ({isNew}) => {
+const BreweryForm = ({isNew, navigation}) => {
+    const {clearErrorMessage, createBrewery} = useContext(BreweryContext);
+
     const [breweryName, setBreweryName] = useState('');
-    const [address, setAddress] = useState('');
     const [street, setStreet] = useState('');
     const [city, setCity] = useState('');
     const [state, setState] = useState('');
@@ -18,6 +22,13 @@ const BreweryForm = ({isNew}) => {
     const priceButtons = [ '$', '$$', '$$$' , '$$$$']
     const [phoneNumber, setPhoneNumber] = useState('');
     const [dayPicked, setDayPicked] = useState('');
+    const [kidHoursSame, setKidHoursSame] = useState(false);
+
+    const [nameErrorMsg, setNameErrorMsg] = useState('');
+    const [addressErrorMsg, setAddressErrorMsg] = useState('');
+    const [phoneErrorMsg, setPhoneErrorMsg] = useState('');
+    const [emailErrorMsg, setEmailErrorMsg]= useState('');
+    const [websiteErrorMsg, setWebsiteErrorMsg] = useState('');
 
 
     const [timePickerVisible, setTimePickerVisible] = useState(false);
@@ -227,6 +238,99 @@ const BreweryForm = ({isNew}) => {
                 setDayPicked('');
         }
     }
+
+
+    const formatAddress = () => {
+        var address = new Object();
+        if (street == '' || city == '' || state == '' || zipCode == '') {
+            setAddressErrorMsg("Must provide all address information.")
+        } else {
+            setAddressErrorMsg();
+        }
+        address['street'] = street;
+        address['city'] = city;
+        address['state'] = state;
+        address['zipCode'] = zipCode;
+
+        return address;
+    }
+
+
+    const formatBusinessHours = () => {
+        var mon = mondayOpenTime + " - " + mondayCloseTime;
+        var tue = tuesdayOpenTime + ' - ' + tuesdayCloseTime;
+        var wed = wednesdayOpenTime + ' - ' + wednesdayCloseTime;
+        var thu = thursdayOpenTime + ' - ' + thursdayCloseTime;
+        var fri = fridayOpenTime + ' - ' + fridayCloseTime;
+        var sat = saturdayOpenTime + ' - ' + saturdayCloseTime;
+        var sun = sundayOpenTime + ' - ' + sundayCloseTime;
+        var businessHours = new Object();
+        businessHours['mon'] = mon;
+        businessHours['tue'] = tue;
+        businessHours['wed'] = wed;
+        businessHours['thu'] = thu;
+        businessHours['fri'] = fri;
+        businessHours['sat'] = sat;
+        businessHours['sun'] = sun;
+        return businessHours;
+    }
+
+    const formatKidsHours = () => {
+        var mon = mondayKidOpenTime + " - " + mondayKidCloseTime;
+        var tue = tuesdayKidOpenTime + ' - ' + tuesdayKidCloseTime;
+        var wed = wednesdayKidOpenTime + ' - ' + wednesdayKidCloseTime;
+        var thu = thursdayKidOpenTime + ' - ' + thursdayKidCloseTime;
+        var fri = fridayKidOpenTime + ' - ' + fridayKidCloseTime;
+        var sat = saturdayKidOpenTime + ' - ' + saturdayKidCloseTime;
+        var sun = sundayKidOpenTime + ' - ' + sundayKidCloseTime;
+        var businessHours = new Object();
+        businessHours['mon'] = mon;
+        businessHours['tue'] = tue;
+        businessHours['wed'] = wed;
+        businessHours['thu'] = thu;
+        businessHours['fri'] = fri;
+        businessHours['sat'] = sat;
+        businessHours['sun'] = sun;
+        return businessHours;
+    }
+
+    const buildAccommodationMap = () => {
+        const accommodationsSearch = {
+            petFriendly: {
+                waterStations: waterStations,
+                indoorSpaces: indoorSpaces,
+                outdoorSpaces: outdoorSpaces
+            },
+            friendlyKidAges: {
+                toddlers: toddlers,
+                youngKids: youngKids,
+                teens: teens
+            },
+            kidFoodDrinks: {
+                kidFriendlyFood: kidFriendlyFood,
+                kidFriendlyDrinks: kidFriendlyDrinks
+            },
+            changingStations: changingStations,
+            childAccommodations: {
+                games: {
+                    indoor: indoorGames,
+                    outdoor: outdoorGames
+                },
+                seating: childSeating,
+                strollerSpace: strollerSpace
+            }
+        }
+        return accommodationsSearch;
+    }
+
+    const clearErrorMsgs = () => {
+        setAddressErrorMsg('');
+        setEmailErrorMsg('');
+        setPhoneErrorMsg('');
+        setNameErrorMsg('');
+        setWebsiteErrorMsg('');
+    }
+
     return (
         <ScrollView>
             <View style={styles.fieldView}>
@@ -235,7 +339,9 @@ const BreweryForm = ({isNew}) => {
                     value={breweryName}
                     onChangeText={(newName) => setBreweryName(newName)}
                     placeholder="Brewery Name"
+                    autoCapitalize="words"
                 />
+                <Text style={styles.errorMsg}>{nameErrorMsg}</Text>
             </View>
             <View style={styles.fieldView}>
                 <Text style={styles.fieldTitle}>Brewery Address:</Text>
@@ -243,22 +349,28 @@ const BreweryForm = ({isNew}) => {
                     value={street}
                     onChangeText={(newStreet) => setStreet(newStreet)}
                     placeholder="Street"
+                    autoCapitalize="words"
                 />
                 <TextInput style={styles.textInput}
                     value={city}
                     onChangeText={(newCity) => setCity(newCity)}
                     placeholder="City"
+                    autoCapitalize="words"
                 />
                 <TextInput style={styles.textInput}
                     value={state}
                     onChangeText={(newState) => setState(newState)}
                     placeholder="State"
+                    autoCapitalize="characters"
+                    maxLength={2}
                 />
                 <TextInput style={styles.textInput}
                     value={zipCode}
                     onChangeText={(newZip) => setZipCode(newZip)}
                     placeholder="Zip Code"
+                    maxLength={5}
                 />
+                <Text style={styles.errorMsg}>{addressErrorMsg}</Text>
             </View>
 
             <View style={styles.fieldView}>
@@ -278,7 +390,9 @@ const BreweryForm = ({isNew}) => {
                     onChangeText={(newPhone) => setPhoneNumber(newPhone)}
                     placeholder="Phone Number"
                     keyboardType="number-pad"
+                    maxLength={10}
                 />
+                <Text style={styles.errorMsg}>{phoneErrorMsg}</Text>
             </View>
 
             <View style={styles.fieldView}>
@@ -288,7 +402,9 @@ const BreweryForm = ({isNew}) => {
                     onChangeText={(newEmail) => setEmail(newEmail)}
                     placeholder="Email"
                     keyboardType='email-address'
+                    autoCapitalize="none"
                 />
+                <Text style={styles.errorMsg}>{emailErrorMsg}</Text>
             </View>
 
             <View style={styles.fieldView}>
@@ -298,7 +414,9 @@ const BreweryForm = ({isNew}) => {
                     onChangeText={(newWeb) => setWebsite(newWeb)}
                     placeholder="Website"
                     keyboardType='email-address'
+                    autoCapitalize="none"
                 />
+                <Text style={styles.errorMsg}>{websiteErrorMsg}</Text>
             </View>
 
 
@@ -323,19 +441,29 @@ const BreweryForm = ({isNew}) => {
             }
 
             { !showTimes &&
+            <View>
             <View style={styles.fieldView}>
                 <TouchableOpacity onPress={() => setShowTimes(true)}>
                     <Text style={styles.timeTitle}>Edit Operational Hours</Text>
                 </TouchableOpacity>
             </View>
-            }
-            { !showKidTimes &&
             <View style={styles.fieldView}>
-                <TouchableOpacity onPress={() => setShowKidTimes(true)}>
-                    <Text style={styles.timeTitle}>Edit Kid Friendly Hours</Text>
-                </TouchableOpacity>
+                <Text style={styles.timeTitle}> Kids Hours Same as Operational: </Text>
+                <Switch
+                    value={kidHoursSame}
+                    onValueChange={()=>setKidHoursSame(!kidHoursSame)}
+                />
+            </View>
             </View>
             }
+            { !kidHoursSame &&
+                <View style={styles.fieldView}>
+                    <TouchableOpacity onPress={() => setShowKidTimes(true)}>
+                      <Text style={styles.timeTitle}>Edit Kid Friendly Hours</Text>
+                    </TouchableOpacity>
+                </View>
+            }
+
             {/*
               * Show times segment will allow users to set the operational hours of their brewery
               * All options refer to the singular DateTimePicker component on screen
@@ -795,6 +923,69 @@ const BreweryForm = ({isNew}) => {
             </View>
             </View>
             }
+            <View style={styles.fieldView}>
+                <WelcomeButton
+                    title="Submit"
+                    onPress={()=> {
+                        clearErrorMsgs();
+                        console.log("submit pressed")
+                        var name = breweryName;
+                        var address = formatAddress();
+                        var businessHours = formatBusinessHours();
+                        var alternativeKidFriendlyHours = businessHours;
+                        if (!kidHoursSame) {
+                            alternativeKidFriendlyHours = formatKidsHours();
+                        }
+                        var accommodationsSearch = buildAccommodationMap();
+                        
+                        console.log("Made it through formatting");
+                        if (!validateBreweryName(name)) {
+                            setNameErrorMsg("Brewery Name cannot be empty.");
+                            return;
+                        } else if (!validateAddress(address)) {
+                            setAddressErrorMsg('Must fill all address fields');
+                            return;
+                        } else if (!validatePhoneNumber) {
+                            setPhoneErrorMsg("Must provide a valid phone number");
+                            return;
+                        } else if (!validateEmail(email)) {
+                            setEmailErrorMsg("Must provide a valid email address");
+                            return;
+                        } else if (!validateURL(website)) {
+                            setWebsiteErrorMsg("Must provide a valid website URL");
+                            return;
+                        } 
+                        var kidHoursSameAsNormal = kidHoursSame;
+                        
+                        if (isNew) {
+                            console.log("calling create brewery");
+                            console.log("name: " + name);
+                            console.log('address: ', address);
+                            console.log('price: ' + price);
+                            console.log('phoneNumber: ' + phoneNumber);
+                            console.log('email: ' + email);
+                            console.log('website: ' + website);
+                            console.log('businessHours: ' , businessHours);
+                            console.log('kidHoursSameAsNormal: ' + kidHoursSameAsNormal);
+                            console.log('alternativeKidFriendlyHours: ' , alternativeKidFriendlyHours);
+                            console.log('accommodationsSearch: ' , accommodationsSearch)
+                            createBrewery({
+                                name, address, price, phoneNumber, 
+                                email, website, businessHours, kidHoursSameAsNormal, 
+                                alternativeKidFriendlyHours, accommodationsSearch
+                                });
+                            console.log("checking")
+                        }
+                        
+                    }}
+                />
+            </View>
+            <View style={styles.fieldView}>
+                <WelcomeButton
+                    title="Cancel"
+                    onPress={() => navigation.navigate("More")}
+                />
+            </View>            
         </ScrollView>
     );
 }
@@ -850,6 +1041,10 @@ const styles = StyleSheet.create({
         margin:5,
         padding:5,
     },
+    errorMsg: {
+        color:'red',
+        fontSize:15
+    }
 });
 
 export default BreweryForm;
