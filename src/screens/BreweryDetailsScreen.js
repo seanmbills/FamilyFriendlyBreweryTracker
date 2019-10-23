@@ -32,6 +32,7 @@ const BreweryDetailsScreen = ({navigation}) => {
     const lng = -84.444927
 
     // console.log(state.results[0]);
+    // console.log('please log!');
 
     // const lat = state.results[0].geoLocation.coordinates[1]
     // const lng = state.results[0].geoLocation.coordinates[0]
@@ -46,7 +47,7 @@ const BreweryDetailsScreen = ({navigation}) => {
     });
 
 
-
+    var hours = state.results[0].businessHours
     var petsAllowedInside =  state.results[0].accommodations.petFriendly.indoorSpaces
     var petsAllowedOutside = state.results[0].accommodations.petFriendly.outdoorSpaces
     var toddlerAllowed = state.results[0].accommodations.friendlyKidAges.toddlers
@@ -59,6 +60,10 @@ const BreweryDetailsScreen = ({navigation}) => {
     var kidSeating = state.results[0].accommodations.childAccommodations.seating
     var strollerSpace = state.results[0].accommodations.childAccommodations.strollerSpace
     var changingStations = state.results[0].accommodations.changingStations
+
+    //console.log(state.results[0]);
+    // console.log(hours);
+    // console.log(petsAllowedInside);
 
     return (
     <ScrollView style={styles.scrollView}>
@@ -101,6 +106,17 @@ const BreweryDetailsScreen = ({navigation}) => {
           <Text style={styles.textPhone}><Emoji name="telephone_receiver" style={{fontSize: 18}} />Call this location {state.results[0].phoneNumber}</Text>
 
         </TouchableOpacity>
+
+        {/*Displays hours  NOT YET WORKING }
+        <Text style={styles.businessHoursHeader}>Business Hours</Text>
+        <Text style={styles.businessHours}>Sunday: {hours.sun}{"\n"}
+                                           Monday: {hours.mon}{"\n"}
+                                           Tuesday: {hours.tue}{"\n"}
+                                           Wednesday: {hours.wed}{"\n"}
+                                           Thursday: {hours.thu}{"\n"}
+                                           Friday: {hours.fri}{"\n"}
+                                           Saturday: {hours.sat}</Text>
+        */}
 
         {/*Displays pet accommodations*/}
         <Text style={styles.accommodationsHeaders}>Are pets allowed?</Text>
@@ -200,7 +216,7 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       marginLeft: 10,
       marginRight: 10,
-      marginTop: 5
+      marginTop: 10
     },
     textPhone: {
       fontSize:18,
@@ -212,8 +228,17 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       marginLeft: 10,
       marginRight: 10,
-      marginTop: 5
-},
+      marginTop: 10
+    },
+    businessHoursHeader: {
+      fontSize: 22,
+      paddingTop: 12,
+      paddingLeft: 10
+    },
+    businessHours: {
+      fontSize: 18,
+      paddingLeft: 25
+    },
     accommodationsHeaders: {
       fontSize: 22,
       paddingTop: 12,
