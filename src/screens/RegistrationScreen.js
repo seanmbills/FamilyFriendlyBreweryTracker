@@ -127,129 +127,121 @@ const RegistrationScreen = ({navigation}) => {
             <TitleText title="Registration"/>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Email:</Text>
-                <View style= {styles.textContainer}>
-                    <TextInput
-                        style={styles.textInput}
-                        value={email}
-                        placeholder="Email"
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        onChangeText={(newEmail) => {
-                            setEmail(newEmail);
-                        }}
-                    />
-                </View>
+                <TextInput
+                    style={styles.textInput}
+                    value={email}
+                    placeholder="Email"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onChangeText={(newEmail) => {
+                        setEmail(newEmail);
+                    }}
+                />
                 <View>
                     <Text style={styles.errorMsg}>{emailErrMsg}</Text>
                 </View>
             </View>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Username:</Text>
-                <View style= {styles.textContainer}>
-                    <TextInput
-                        style={styles.textInput}
-                        value={username}
-                        placeholder="username"
-                        autoCapitalize="none"
-                        onChangeText={(newUsername) => {
-                            setUsername(newUsername);
-                        }}
-                    />
-                </View>
+                <TextInput
+                    style={styles.textInput}
+                    value={username}
+                    placeholder="Username"
+                    autoCapitalize="none"
+                    onChangeText={(newUsername) => {
+                        setUsername(newUsername);
+                    }}
+                />
                 <View>
                     <Text style={styles.errorMsg}>{inputErrMsg}</Text>
                 </View>
             </View>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Password:</Text>
-                <View style= {styles.textContainer}>
-                    <TextInput
-                        style={styles.textPassword}
-                        value={password}
-                        secureTextEntry={true}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        placeholder="password"
-                        onChangeText={(newPass) => {
-                            setPassword(newPass);
-                        }}
-                    />
+                <TextInput
+                    style={styles.textPassword}
+                    value={password}
+                    secureTextEntry={true}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    placeholder="Password"
+                    onChangeText={(newPass) => {
+                        setPassword(newPass);
+                    }}
+                />
+                <View>
+                    <Text style={styles.errorMsg}></Text>
                 </View>
             </View>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Confirm Password:</Text>
-                <View style= {styles.textContainer}>
-                    <TextInput
-                        style={styles.textPassword}
-                        value={confirmPass}
-                        secureTextEntry={true}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        placeholder="password"
-                        onChangeText={(newPass) => {
-                            setConfirmPass(newPass);
-                        }}
-                    />
-                </View>
+                <TextInput
+                    style={styles.textPassword}
+                    value={confirmPass}
+                    secureTextEntry={true}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    placeholder="Password"
+                    onChangeText={(newPass) => {
+                        setConfirmPass(newPass);
+                    }}
+                />
                 <View>
                     <Text style={styles.errorMsg}>{passErrMsg}</Text>
                 </View>
             </View>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>First Name:</Text>
-                <View style= {styles.textContainer}>
-                    <TextInput
-                        style={styles.textInput}
-                        value={firstName}
-                        placeholder="First Name"
-                        onChangeText={(newName) => {
-                            setFirstName(newName);
-                        }}
-                    />
+                <TextInput
+                    style={styles.textInput}
+                    value={firstName}
+                    placeholder="First Name"
+                    onChangeText={(newName) => {
+                        setFirstName(newName);
+                    }}
+                />
+                <View>
+                    <Text style={styles.errorMsg}></Text>
                 </View>
             </View>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Last Name:</Text>
-                <View style= {styles.textContainer}>
-                    <TextInput
-                        style={styles.textInput}
-                        value={lastName}
-                        placeholder="Last Name"
-                        onChangeText={(newName) => {
-                            setLastName(newName)
-                        }}
-                    />
+                <TextInput
+                    style={styles.textInput}
+                    value={lastName}
+                    placeholder="Last Name"
+                    onChangeText={(newName) => {
+                        setLastName(newName)
+                    }}
+                />
+                <View>
+                    <Text style={styles.errorMsg}></Text>
                 </View>
             </View>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Zip Code:</Text>
-                <View style= {styles.textContainer}>
-                    <TextInput
-                        keyboardType="number-pad"
-                        style={styles.textInput}
-                        value={zip}
-                        placeholder="zip code"
-                        onChangeText={(newZip) => {
-                            setZip(newZip);
-                        }}
-                    />
-                </View>
+                <TextInput
+                    keyboardType="number-pad"
+                    style={styles.textInput}
+                    value={zip}
+                    placeholder="Zip Code"
+                    onChangeText={(newZip) => {
+                        setZip(newZip);
+                    }}
+                />
                 <View>
                     <Text style={styles.errorMsg}>{zipErrMsg}</Text>
                 </View>
             </View>
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Phone Number:</Text>
-                <View style= {styles.textContainer}>
-                    <PhoneInput
-                        placeholder="Enter phone number"
-                        value={phone}
-                        onChangePhoneNumber={ (newPhone)=> {
-                            setPhone(newPhone);
-                        }}
-                        style={styles.textInput}   
-                    />
-                </View>
+                <PhoneInput
+                    value={phone}
+                    onChangePhoneNumber={ (newPhone)=> {
+                        setPhone(newPhone);
+                    }}
+                    style={styles.textInput}   
+                />
                 <View>
                     <Text style={styles.errorMsg}>{phoneErrMsg}</Text>
                 </View>
@@ -302,7 +294,7 @@ const RegistrationScreen = ({navigation}) => {
                     }}
                 />
             </View>
-            <View style={styles.buttonContainer}>
+            <View style={styles.bottomButtonContainer}>
                 <WelcomeButton
                     title="Back"
                     onPress={ () => {
@@ -325,41 +317,45 @@ const RegistrationScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     background: {
         backgroundColor: "#fcc203",
-        paddingTop: 20
+        paddingTop: 30
     },
     formElement: {
         marginTop: 20,
-        marginBottom: 20
+        marginBottom: 20,
+        alignItems: 'center'
     },
     formLabel: {
         fontSize: 20,
         textAlign: 'left',
         flexDirection: 'column',
         alignSelf: 'flex-start',
-        marginLeft: 10,
-
+        marginBottom: 5,
+        marginLeft: 10
     },
     textInput: {
         backgroundColor: '#ffffff',
         opacity: 95,
         borderRadius: 10,
-        height: 30,
-        width: "75%",
+        height: 35,
+        width: "80%",
+        paddingLeft: 8
     },
     textPassword: {
         backgroundColor: '#ffffff',
         opacity: 95,
         borderRadius: 10,
-        height: 30,
-        width: "75%"
-    },
-    textContainer: {
-        alignItems: 'center'
+        height: 35,
+        width: "80%",
+        paddingLeft: 8
     },
     buttonContainer: {
         alignItems: "center",
+        marginTop: 20
+    },
+    bottomButtonContainer: {
+        alignItems: "center",
         marginTop: 20,
-        marginBottom: 20
+        marginBottom: 60
     },
     datePicker: {
         alignItems: "center",
