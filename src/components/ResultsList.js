@@ -21,8 +21,9 @@ const ResultsList = ({listName, results, navigation}) => {
                 renderItem={({item}) => {
                     return (
                         <TouchableOpacity onPress={
-                            () => {
-                              getBrewery({breweryId: item.breweryId})
+                            async () => {
+                              await getBrewery({breweryId: item.breweryId})
+                              // console.log(state.results[0]);
                               navigation.navigate("BreweryDetails")
                             }
                         }>

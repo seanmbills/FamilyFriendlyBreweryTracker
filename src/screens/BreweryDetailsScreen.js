@@ -8,17 +8,21 @@ import Emoji from 'react-native-emoji'
 const BreweryDetailsScreen = ({navigation}) => {
     const breweryId = navigation.getParam('id')
     var {state, getBrewery} = useContext(BreweryContext)
+
+    const breweryResult = state.individualResult[0]
+    console.log(breweryResult)
+
     const screenWidth = Math.round(Dimensions.get('window').width);
     const screenHeight = 50;
-    var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(state.results[0].name.length))
+    var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(breweryResult.name.length))
     breweryFont = Math.min(breweryFont, 35)
     var waterBowl = ' '
-    if (!state.results[0].accommodations.petFriendly.waterStations) {
+    if (!breweryResult.accommodations.petFriendly.waterStations) {
         waterBowl = ' not '
     }
 
     dialCall = () => {
-      var phoneNumber = state.results[0].phoneNumber;
+      var phoneNumber = breweryResult.phoneNumber;
       if (Platform.OS === 'android') {
         phoneNumber = 'tel:${' + phoneNumber + '}';
       }
@@ -31,38 +35,52 @@ const BreweryDetailsScreen = ({navigation}) => {
     const lat = 33.813714
     const lng = -84.444927
 
-    // console.log(state.results[0]);
+    // console.log(breweryResult);
     // console.log('please log!');
 
-    // const lat = state.results[0].geoLocation.coordinates[1]
-    // const lng = state.results[0].geoLocation.coordinates[0]
+    // const lat = breweryResult.geoLocation.coordinates[1]
+    // const lng = breweryResult.geoLocation.coordinates[0]
 
 
     const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
     const latLng = `${lat},${lng}`;
-    const label = state.results[0].name;
+    const label = breweryResult.name;
     const url = Platform.select({
       ios: `${scheme}${label}@${latLng}`,
       android: `${scheme}${latLng}(${label})`
     });
 
 
-    var hours = state.results[0].businessHours
-    var petsAllowedInside =  state.results[0].accommodations.petFriendly.indoorSpaces
-    var petsAllowedOutside = state.results[0].accommodations.petFriendly.outdoorSpaces
-    var toddlerAllowed = state.results[0].accommodations.friendlyKidAges.toddlers
-    var youngKidsAllowed = state.results[0].accommodations.friendlyKidAges.youngKids
-    var teensAllowed = state.results[0].accommodations.friendlyKidAges.teens
-    var kidFriendlyFood = state.results[0].accommodations.kidFoodDrinks.kidFriendlyFood
-    var kidFriendlyDrinks = state.results[0].accommodations.kidFoodDrinks.kidFriendlyDrinks
-    var kidGamesInside = state.results[0].accommodations.childAccommodations.games.indoor
-    var kidGamesOutdoor = state.results[0].accommodations.childAccommodations.games.outdoor
-    var kidSeating = state.results[0].accommodations.childAccommodations.seating
-    var strollerSpace = state.results[0].accommodations.childAccommodations.strollerSpace
-    var changingStations = state.results[0].accommodations.changingStations
+    // var hours = breweryResult.businessHours
+    // var petsAllowedInside =  breweryResult.accommodations.petFriendly.indoorSpaces
+    // var petsAllowedOutside = breweryResult.accommodations.petFriendly.outdoorSpaces
+    // var toddlerAllowed = breweryResult.accommodations.friendlyKidAges.toddlers
+    // var youngKidsAllowed = breweryResult.accommodations.friendlyKidAges.youngKids
+    // var teensAllowed = breweryResult.accommodations.friendlyKidAges.teens
+    // var kidFriendlyFood = breweryResult.accommodations.kidFoodDrinks.kidFriendlyFood
+    // var kidFriendlyDrinks = breweryResult.accommodations.kidFoodDrinks.kidFriendlyDrinks
+    // var kidGamesInside = breweryResult.accommodations.childAccommodations.games.indoor
+    // var kidGamesOutdoor = breweryResult.accommodations.childAccommodations.games.outdoor
+    // var kidSeating = breweryResult.accommodations.childAccommodations.seating
+    // var strollerSpace = breweryResult.accommodations.childAccommodations.strollerSpace
+    // var changingStations = breweryResult.accommodations.changingStations
 
-    //console.log(state.results[0]);
-    // console.log(hours);
+    var hours = breweryResult.businessHours
+    var petsAllowedInside =  breweryResult.accommodations.petFriendly.indoorSpaces
+    var petsAllowedOutside = breweryResult.accommodations.petFriendly.outdoorSpaces
+    var toddlerAllowed = breweryResult.accommodations.friendlyKidAges.toddlers
+    var youngKidsAllowed = breweryResult.accommodations.friendlyKidAges.youngKids
+    var teensAllowed = breweryResult.accommodations.friendlyKidAges.teens
+    var kidFriendlyFood = breweryResult.accommodations.kidFoodDrinks.kidFriendlyFood
+    var kidFriendlyDrinks = breweryResult.accommodations.kidFoodDrinks.kidFriendlyDrinks
+    var kidGamesInside = breweryResult.accommodations.childAccommodations.games.indoor
+    var kidGamesOutdoor = breweryResult.accommodations.childAccommodations.games.outdoor
+    var kidSeating = breweryResult.accommodations.childAccommodations.seating
+    var strollerSpace = breweryResult.accommodations.childAccommodations.strollerSpace
+    var changingStations = breweryResult.accommodations.changingStations
+
+    //console.log(breweryResult);
+    console.log(hours);
     // console.log(petsAllowedInside);
 
     return (
@@ -70,7 +88,7 @@ const BreweryDetailsScreen = ({navigation}) => {
 
         {/*Displays the brewery name at the top of the screen*/}
         <Text
-              style={{fontSize: breweryFont, textAlign: 'center', fontWeight: 'bold', marginTop: 25, paddingBottom: 15}}>{state.results[0].name}
+              style={{fontSize: breweryFont, textAlign: 'center', fontWeight: 'bold', marginTop: 25, paddingBottom: 15}}>{breweryResult.name}
         </Text>
 
         {/*Displays the number and rating of reviews (clickable)*/}
@@ -78,12 +96,12 @@ const BreweryDetailsScreen = ({navigation}) => {
           <Rating
               imageSize={20}
               readonly
-              startingValue={state.results[0].rating}
+              startingValue={breweryResult.rating}
               fractions={1}
           />
 
           <Text
-              style={{textAlign: 'center'}}> {state.results[0].numReviews} reviews
+              style={{textAlign: 'center'}}> {breweryResult.numReviews} reviews
           </Text>
         </TouchableOpacity>
 
@@ -93,21 +111,20 @@ const BreweryDetailsScreen = ({navigation}) => {
 
         {/*Displays the address      onPress={ ()=> Linking.openURL(url)*/}
 
-        <Text style={styles.textStyleAddress} onPress={ ()=> Linking.openURL(url) }><Emoji name="round_pushpin" style={{fontSize: 18}} />{state.results[0].address.street}, {state.results[0].address.city}
-        , {state.results[0].address.state} {state.results[0].address.zipCode}
+        <Text style={styles.textStyleAddress} onPress={ ()=> Linking.openURL(url) }><Emoji name="round_pushpin" style={{fontSize: 18}} />{breweryResult.address.street}, {breweryResult.address.city}
+        , {breweryResult.address.state} {breweryResult.address.zipCode}
         </Text>
 
         {/*Displays the website (clickable)*/}
-        <Text style={styles.textWebsite} onPress={ ()=> Linking.openURL(state.results[0].website) } ><Emoji name="globe_with_meridians" style={{fontSize: 18}} />View this brewery's website</Text>
+        <Text style={styles.textWebsite} onPress={ ()=> Linking.openURL(breweryResult.website) } ><Emoji name="globe_with_meridians" style={{fontSize: 18}} />View this brewery's website</Text>
 
         {/*Displays the phone number (clickable)*/}
         <TouchableOpacity onPress={this.dialCall} style={styles.button} >
 
-          <Text style={styles.textPhone}><Emoji name="telephone_receiver" style={{fontSize: 18}} />Call this location {state.results[0].phoneNumber}</Text>
+          <Text style={styles.textPhone}><Emoji name="telephone_receiver" style={{fontSize: 18}} />Call this location {breweryResult.phoneNumber}</Text>
 
         </TouchableOpacity>
 
-        {/*Displays hours  NOT YET WORKING }
         <Text style={styles.businessHoursHeader}>Business Hours</Text>
         <Text style={styles.businessHours}>Sunday: {hours.sun}{"\n"}
                                            Monday: {hours.mon}{"\n"}
@@ -116,7 +133,7 @@ const BreweryDetailsScreen = ({navigation}) => {
                                            Thursday: {hours.thu}{"\n"}
                                            Friday: {hours.fri}{"\n"}
                                            Saturday: {hours.sat}</Text>
-        */}
+
 
         {/*Displays pet accommodations*/}
         <Text style={styles.accommodationsHeaders}>Are pets allowed?</Text>

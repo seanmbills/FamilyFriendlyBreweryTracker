@@ -7,6 +7,7 @@ const breweryReducer = (state, action) => {
         case 'add_error_message':
             return {...state, errorMessage: action.payload, results: null}
         case 'brewery':
+            return {...state, errorMessage: '', individualResult: action.payload.response}
         case 'search':
             return {...state, count: action.payload.count, results: action.payload.response}
         case 'clear_error_message':
@@ -80,5 +81,5 @@ export const {Provider, Context} = createDataContext(
         getSearchResults,
         getBrewery
     },
-    {results: [], count: 0, errorMessage: ''}
+    {results: [], individualResult: null, count: 0, errorMessage: ''}
 )
