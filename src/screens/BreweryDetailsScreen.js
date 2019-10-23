@@ -9,8 +9,13 @@ const BreweryDetailsScreen = ({navigation}) => {
     const breweryId = navigation.getParam('id')
     var {state, getBrewery} = useContext(BreweryContext)
 
-    const breweryResult = state.individualResult[0]
+    const breweryResult = state.individualResult[0].brewery
+    const openNow = state.individualResult[0].openNow
+    const kidFriendlyNow = state.individualResult[0].kidFriendlyNow
     console.log(breweryResult)
+    console.log("Open now: " + openNow);
+    console.log("kid friendly now: " + kidFriendlyNow);
+
 
     const screenWidth = Math.round(Dimensions.get('window').width);
     const screenHeight = 50;
