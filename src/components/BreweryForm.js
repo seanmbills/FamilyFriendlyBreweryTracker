@@ -9,12 +9,12 @@ import WelcomeButton from '../components/WelcomeButton'
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
 
 const BreweryForm = ({isNew, navigation}) => {
-    const {clearErrorMessage, createBrewery} = useContext(BreweryContext);
+    const {state, createBrewery} = useContext(BreweryContext);
 
     const [breweryName, setBreweryName] = useState('');
     const [street, setStreet] = useState('');
     const [city, setCity] = useState('');
-    const [state, setState] = useState('');
+    const [breweryState, setState] = useState('');
     const [zipCode, setZipCode] = useState('');
     const [price, setPrice] = useState(0);
     const [email, setEmail] = useState(0);
@@ -242,14 +242,14 @@ const BreweryForm = ({isNew, navigation}) => {
 
     const formatAddress = () => {
         var address = new Object();
-        if (street == '' || city == '' || state == '' || zipCode == '') {
+        if (street == '' || city == '' || breweryState == '' || zipCode == '') {
             setAddressErrorMsg("Must provide all address information.")
         } else {
             setAddressErrorMsg();
         }
         address['street'] = street;
         address['city'] = city;
-        address['state'] = state;
+        address['state'] = breweryState;
         address['zipCode'] = zipCode;
 
         return address;
@@ -358,7 +358,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     autoCapitalize="words"
                 />
                 <TextInput style={styles.textInput}
-                    value={state}
+                    value={breweryState}
                     onChangeText={(newState) => setState(newState)}
                     placeholder="State"
                     autoCapitalize="characters"
@@ -970,12 +970,12 @@ const BreweryForm = ({isNew, navigation}) => {
                             // console.log('kidHoursSameAsNormal: ' + kidHoursSameAsNormal);
                             // console.log('alternativeKidFriendlyHours: ' , alternativeKidFriendlyHours);
                             // console.log('accommodations: ' , accommodations)
-                            // createBrewery({
-                            //     name, address, price, phoneNumber, 
-                            //     email, website, businessHours, kidHoursSameAsNormal, 
-                            //     alternativeKidFriendlyHours, accommodations
-                            //     });
-                            createBrewery({name, address, price, phoneNumber, email, website, businessHours, accommodations});
+                            createBrewery({
+                                name, address, price, phoneNumber, 
+                                email, website, businessHours, kidHoursSameAsNormal, 
+                                alternativeKidFriendlyHours, accommodations
+                            });
+                            // createBrewery({name, address, price, phoneNumber, email, website, businessHours, accommodations});
                         }
                         
                     }}

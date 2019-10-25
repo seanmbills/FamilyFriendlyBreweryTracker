@@ -7,13 +7,13 @@ import WelcomeButton from '../components/WelcomeButton';
 
 const MoreScreen = ({navigation}) => {
     const {state, getOwnedBreweries, createBrewery} = useContext(BreweryContext);
-    var breweryListResults = getOwnedBreweries()
+    // var breweryListResults = getOwnedBreweries()
     // if (breweryListResults == null || !breweryListResults.length ) {
     //     return null;
     // }
     return (
         <View style={styles.backgroundContainer}>
-            <View style={styles.contentContainer}>
+            {/* <View style={styles.contentContainer}>
                 <Text style={styles.subHeader}>My Breweries</Text>
                 <FlatList
                 data={breweryListResults}
@@ -25,7 +25,7 @@ const MoreScreen = ({navigation}) => {
                 }}
                 showsHorizontalScrollIndicator={false}
                 />
-            </View>
+            </View> */}
             <View style={styles.contentContainer}>
                 <WelcomeButton
                     title="Create Brewery"

@@ -1,11 +1,15 @@
 import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
 import {navigate} from '../navigationRef'
+import {AsyncStorage} from 'react-native'
+
 
 const breweryReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
+        case 'create':
+            return {...state, created: action.payload.response}
         case 'search':
             return {...state, count: action.payload.count, results: action.payload.response}
         case 'clear_error_message':
@@ -91,37 +95,37 @@ const getSearchResults = (dispatch) => {
     }
 }
 
-const getOwnedBreweries = (dispatch) => {
-    return async () => {
-        try {
-            const response = await ServerApi.post('/getOwnedBreweries', { headers: {
-              'Accept' : 'application/json', 'Content-type' : 'application/json',
-              'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
-            }});
-            console.log("response: ");
-            console.log(response);
-        } catch (err) {
-            console.log(err.response.data.error);
-            dispatch({type: 'add_error_message', payload: err.response.data.error});
-        }
-    }
-}
+// const getOwnedBreweries = (dispatch) => {
+//     return async () => {
+//         try {
+//             const response = await ServerApi.post('/getOwnedBreweries', { headers: {
+//               'Accept' : 'application/json', 'Content-type' : 'application/json',
+//               'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
+//             }});
+//             console.log("response: ");
+//             console.log(response);
+//         } catch (err) {
+//             console.log(err.response.data.error);
+//             dispatch({type: 'add_error_message', payload: err.response.data.error});
+//         }
+//     }
+// }
 
 const createBrewery = (dispatch) => {
     console.log("createBrewery context called");
-    // return async ({
-    //         name, address, price, phoneNumber, 
-    //         email, website, businessHours, kidHoursSameAsNormal, 
-    //         alternativeKidFriendlyHours, accommodationsSearch
-    //         }) => {
-    //     accommodationsSearch = stripAccommodationsSearch(accommodations);
+    return async ({
+            name, address, price, phoneNumber, 
+            email, website, businessHours, kidHoursSameAsNormal, 
+            alternativeKidFriendlyHours, accommodations
+            }) => {
+        accommodations = stripAccommodationsSearch(accommodations);
 
-    //     var req = {name, address, price, phoneNumber, email, website,
-    //                 businessHours, kidHoursSameAsNormal, alternativeKidFriendlyHours,
-    //                 accommodationsSearch
-    //             };
-    return async({name, address, price, phoneNumber, email, website, businessHours, accommodations}) => {
-        var req = {name, address, price, phoneNumber, email, website, businessHours, accommodations};
+        var req = {name, address, price, phoneNumber, email, website,
+                    businessHours, kidHoursSameAsNormal, alternativeKidFriendlyHours,
+                    accommodations
+                };
+    // return async({name, address, price, phoneNumber, email, website, businessHours, accommodations}) => {
+    //     var req = {name, address, price, phoneNumber, email, website, businessHours, accommodations};
         console.log(req)
         try {
             console.log('Create brewery request sent');
@@ -133,8 +137,10 @@ const createBrewery = (dispatch) => {
             );
             console.log("response: ");
             console.log(response);
+            dispatch({type: 'create', payload: response.data})
         }
         catch (err) {
+            console.log(err)
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
         }
@@ -150,8 +156,7 @@ export const {Provider, Context} = createDataContext(
     breweryReducer,
     {
         getSearchResults,
-        getOwnedBreweries,
         createBrewery
     },
-    {results: [], count: 0, errorMessage: ''}
+    {results: [], count: 0, errorMessage: '', created: ''}
 )
