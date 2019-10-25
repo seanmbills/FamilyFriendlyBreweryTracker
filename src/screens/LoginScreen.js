@@ -24,14 +24,14 @@ const LoginScreen = ({navigation}) => {
     }
     return (
         <ScrollView style={styles.background}>
-            <NavigationEvents 
+            <NavigationEvents
                 onWillBlur={clearErrorMessage}
             />
             <View style={styles.topSpan}/>
             <TitleText
                 title="Login"
             />
-            <View style={styles.formElement}> 
+            <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Email</Text>
                 <TextInput
                     style={styles.textInput}
@@ -57,7 +57,7 @@ const LoginScreen = ({navigation}) => {
                         setPassword(newPass);
                     }}
                 />
-                
+
                 {/* <TouchableOpacity
                     onPress={() => {
                         navigation.navigate('ForgotPassword')
@@ -72,17 +72,17 @@ const LoginScreen = ({navigation}) => {
                 <WelcomeButton
                     title="Login"
                     onPress={ async () => {
-                        navigation.navigate('loggedInFlow');
-                        // const validateMap = new Map();
-                        // validateMap.set('email', email);
-                        // validateMap.set('password', password);
+                        //navigation.navigate('loggedInFlow');
+                        const validateMap = new Map();
+                        validateMap.set('email', email);
+                        validateMap.set('password', password);
 
-                        // if (validateInput(validateMap)) {
-                        //     const emailOrId = email;
-                        //     signin({emailOrId, password})
-                        // } else {
-                        //     console.log("input was not valid");
-                        // }
+                        if (validateInput(validateMap)) {
+                            const emailOrId = email;
+                            signin({emailOrId, password})
+                        } else {
+                            console.log("input was not valid");
+                        }
                     }}
                 />
             </View>
