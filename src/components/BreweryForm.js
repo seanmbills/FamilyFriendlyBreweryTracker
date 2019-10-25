@@ -295,7 +295,7 @@ const BreweryForm = ({isNew, navigation}) => {
     }
 
     const buildAccommodationMap = () => {
-        const accommodationsSearch = {
+        const accommodations = {
             petFriendly: {
                 waterStations: waterStations,
                 indoorSpaces: indoorSpaces,
@@ -320,7 +320,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 strollerSpace: strollerSpace
             }
         }
-        return accommodationsSearch;
+        return accommodations;
     }
 
     const clearErrorMsgs = () => {
@@ -403,6 +403,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     placeholder="Email"
                     keyboardType='email-address'
                     autoCapitalize="none"
+                    autoCorrect={false}
                 />
                 <Text style={styles.errorMsg}>{emailErrorMsg}</Text>
             </View>
@@ -936,7 +937,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         if (!kidHoursSame) {
                             alternativeKidFriendlyHours = formatKidsHours();
                         }
-                        var accommodationsSearch = buildAccommodationMap();
+                        var accommodations = buildAccommodationMap();
                         
                         console.log("Made it through formatting");
                         if (!validateBreweryName(name)) {
@@ -958,23 +959,23 @@ const BreweryForm = ({isNew, navigation}) => {
                         var kidHoursSameAsNormal = kidHoursSame;
                         
                         if (isNew) {
-                            console.log("calling create brewery");
-                            console.log("name: " + name);
-                            console.log('address: ', address);
-                            console.log('price: ' + price);
-                            console.log('phoneNumber: ' + phoneNumber);
-                            console.log('email: ' + email);
-                            console.log('website: ' + website);
-                            console.log('businessHours: ' , businessHours);
-                            console.log('kidHoursSameAsNormal: ' + kidHoursSameAsNormal);
-                            console.log('alternativeKidFriendlyHours: ' , alternativeKidFriendlyHours);
-                            console.log('accommodationsSearch: ' , accommodationsSearch)
-                            createBrewery({
-                                name, address, price, phoneNumber, 
-                                email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodationsSearch
-                                });
-                            console.log("checking")
+                            // console.log("calling create brewery");
+                            // console.log("name: " + name);
+                            // console.log('address: ', address);
+                            // console.log('price: ' + price);
+                            // console.log('phoneNumber: ' + phoneNumber);
+                            // console.log('email: ' + email);
+                            // console.log('website: ' + website);
+                            // console.log('businessHours: ' , businessHours);
+                            // console.log('kidHoursSameAsNormal: ' + kidHoursSameAsNormal);
+                            // console.log('alternativeKidFriendlyHours: ' , alternativeKidFriendlyHours);
+                            // console.log('accommodations: ' , accommodations)
+                            // createBrewery({
+                            //     name, address, price, phoneNumber, 
+                            //     email, website, businessHours, kidHoursSameAsNormal, 
+                            //     alternativeKidFriendlyHours, accommodations
+                            //     });
+                            createBrewery({name, address, price, phoneNumber, email, website, businessHours, accommodations});
                         }
                         
                     }}

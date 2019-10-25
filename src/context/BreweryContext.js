@@ -65,8 +65,9 @@ const getSearchResults = (dispatch) => {
             maximumPrice, accommodationsSearch, openNow, 
             kidFriendlyNow, minimumRating
         }
+        console.log(req)
         if (latitude == '' || longitude == '') {
-            const req = {
+            req = {
                 name, zipCode, distance,
                 maximumPrice, accommodationsSearch, openNow, 
                 kidFriendlyNow, minimumRating
@@ -108,17 +109,20 @@ const getOwnedBreweries = (dispatch) => {
 
 const createBrewery = (dispatch) => {
     console.log("createBrewery context called");
-    return async ({
-            name, address, price, phoneNumber, 
-            email, website, businessHours, kidHoursSameAsNormal, 
-            alternativeKidFriendlyHours, accommodationsSearch
-            }) => {
-        accommodationsSearch = stripAccommodationsSearch(accommodations);
+    // return async ({
+    //         name, address, price, phoneNumber, 
+    //         email, website, businessHours, kidHoursSameAsNormal, 
+    //         alternativeKidFriendlyHours, accommodationsSearch
+    //         }) => {
+    //     accommodationsSearch = stripAccommodationsSearch(accommodations);
 
-        var req = {name, address, price, phoneNumber, email, website,
-                    businessHours, kidHoursSameAsNormal, alternativeKidFriendlyHours,
-                    accommodationsSearch
-                };
+    //     var req = {name, address, price, phoneNumber, email, website,
+    //                 businessHours, kidHoursSameAsNormal, alternativeKidFriendlyHours,
+    //                 accommodationsSearch
+    //             };
+    return async({name, address, price, phoneNumber, email, website, businessHours, accommodations}) => {
+        var req = {name, address, price, phoneNumber, email, website, businessHours, accommodations};
+        console.log(req)
         try {
             console.log('Create brewery request sent');
             const response = await ServerApi.post('/createBrewery',

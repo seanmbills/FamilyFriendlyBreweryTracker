@@ -5,9 +5,9 @@ import {Context as BreweryContext} from '../context/BreweryContext'
 import BreweryForm from '../components/BreweryForm';
 import WelcomeButton from '../components/WelcomeButton';
 
-const MoreScreen = ({breweryListResults, navigation}) => {
+const MoreScreen = ({navigation}) => {
     const {state, getOwnedBreweries, createBrewery} = useContext(BreweryContext);
-
+    var breweryListResults = getOwnedBreweries()
     // if (breweryListResults == null || !breweryListResults.length ) {
     //     return null;
     // }
