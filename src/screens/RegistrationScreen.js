@@ -1,11 +1,11 @@
 import React, {useState, useContext } from 'react';
-import { Text, StyleSheet, View, ScrollView, TextInput, KeyboardAvoidingView} from 'react-native';
+import {Text, StyleSheet, View, ScrollView, KeyboardAvoidingView} from 'react-native';
 import TitleText from '../components/TitleText';
-import PhoneInput from 'react-native-phone-input';
 import WelcomeButton from '../components/WelcomeButton';
 import DatePicker from 'react-native-datepicker';
 import {NavigationEvents} from 'react-navigation'
 import {Context as AuthContext} from '../context/AuthContext'
+import {Input} from 'react-native-elements';
 
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
@@ -119,190 +119,203 @@ const RegistrationScreen = ({navigation}) => {
     }
     
     return (
-        <ScrollView style={styles.background}>
-            <NavigationEvents 
-                onWillBlur={clearErrorMessage}
-            />
-            <View style={styles.topSpan}/>
-            <TitleText title="Registration"/>
-            <View style={styles.formElement}>
-                <Text style={styles.formLabel}>Email:</Text>
-                <TextInput
-                    style={styles.textInput}
-                    value={email}
-                    placeholder="Email"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    onChangeText={(newEmail) => {
-                        setEmail(newEmail);
-                    }}
+        <KeyboardAvoidingView behavior="padding">
+            <ScrollView keyboardDismissMode='on-drag' style={styles.background}>
+                <NavigationEvents 
+                    onWillBlur={clearErrorMessage}
                 />
-                <View>
-                    <Text style={styles.errorMsg}>{emailErrMsg}</Text>
+                <View style={styles.topSpan}/>
+                <TitleText title="Registration"/>
+                <View style={styles.formElement}>
+                    <Input
+                        value={email}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Email'
+                        placeholder='Email'
+                        leftIcon={{type: 'font-awesome', name: 'envelope'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        autoCapitalize="none"
+                        onChangeText={(newEmail) => {
+                            setEmail(newEmail);
+                        }}
+                        errorStyle={{color: 'red'}}
+                        errorMessage={emailErrMsg}
+                    />
                 </View>
-            </View>
-            <View style={styles.formElement}>
-                <Text style={styles.formLabel}>Username:</Text>
-                <TextInput
-                    style={styles.textInput}
-                    value={username}
-                    placeholder="Username"
-                    autoCapitalize="none"
-                    onChangeText={(newUsername) => {
-                        setUsername(newUsername);
-                    }}
-                />
-                <View>
-                    <Text style={styles.errorMsg}>{inputErrMsg}</Text>
+                <View style={styles.formElement}>
+                    <Input
+                        value={username}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Username'
+                        placeholder='Username'
+                        leftIcon={{type: 'font-awesome', name: 'user'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        autoCapitalize="none"
+                        onChangeText={(newUsername) => {
+                            setUsername(newUsername);
+                        }}
+                        errorStyle={{color: 'red'}}
+                        errorMessage={inputErrMsg}
+                    />
                 </View>
-            </View>
-            <View style={styles.formElement}>
-                <Text style={styles.formLabel}>Password:</Text>
-                <TextInput
-                    style={styles.textPassword}
-                    value={password}
-                    secureTextEntry={true}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    placeholder="Password"
-                    onChangeText={(newPass) => {
-                        setPassword(newPass);
-                    }}
-                />
-                <View>
-                    <Text style={styles.errorMsg}></Text>
+                <View style={styles.formElement}>
+                    <Input
+                        value={password}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Password'
+                        placeholder='Password'
+                        leftIcon={{type: 'font-awesome', name: 'lock'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        secureTextEntry={true}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        onChangeText={(newPass) => {
+                            setPassword(newPass);
+                        }}
+                    />
                 </View>
-            </View>
-            <View style={styles.formElement}>
-                <Text style={styles.formLabel}>Confirm Password:</Text>
-                <TextInput
-                    style={styles.textPassword}
-                    value={confirmPass}
-                    secureTextEntry={true}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    placeholder="Password"
-                    onChangeText={(newPass) => {
-                        setConfirmPass(newPass);
-                    }}
-                />
-                <View>
-                    <Text style={styles.errorMsg}>{passErrMsg}</Text>
+                <View style={styles.formElement}>
+                    <Input
+                        value={confirmPass}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Confirm Password'
+                        placeholder='Password'
+                        leftIcon={{type: 'font-awesome', name: 'lock'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        secureTextEntry={true}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        onChangeText={(newPass) => {
+                            setConfirmPass(newPass);
+                        }}
+                        errorStyle={{color: 'red'}}
+                        errorMessage={passErrMsg}
+                    />
                 </View>
-            </View>
-            <View style={styles.formElement}>
-                <Text style={styles.formLabel}>First Name:</Text>
-                <TextInput
-                    style={styles.textInput}
-                    value={firstName}
-                    placeholder="First Name"
-                    onChangeText={(newName) => {
-                        setFirstName(newName);
-                    }}
-                />
-                <View>
-                    <Text style={styles.errorMsg}></Text>
+                <View style={styles.formElement}>
+                    <Input
+                        value={firstName}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='First Name'
+                        placeholder='First Name'
+                        leftIcon={{type: 'font-awesome', name: 'id-badge'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        onChangeText={(newName) => {
+                            setFirstName(newName);
+                        }}
+                    />
                 </View>
-            </View>
-            <View style={styles.formElement}>
-                <Text style={styles.formLabel}>Last Name:</Text>
-                <TextInput
-                    style={styles.textInput}
-                    value={lastName}
-                    placeholder="Last Name"
-                    onChangeText={(newName) => {
-                        setLastName(newName)
-                    }}
-                />
-                <View>
-                    <Text style={styles.errorMsg}></Text>
+                <View style={styles.formElement}>
+                    <Input
+                        value={lastName}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Last Name'
+                        placeholder='Last Name'
+                        leftIcon={{type: 'font-awesome', name: 'id-badge'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        onChangeText={(newName) => {
+                            setLastName(newName);
+                        }}
+                    />
                 </View>
-            </View>
-            <View style={styles.formElement}>
-                <Text style={styles.formLabel}>Zip Code:</Text>
-                <TextInput
-                    keyboardType="number-pad"
-                    style={styles.textInput}
-                    value={zip}
-                    placeholder="Zip Code"
-                    onChangeText={(newZip) => {
-                        setZip(newZip);
-                    }}
-                />
-                <View>
-                    <Text style={styles.errorMsg}>{zipErrMsg}</Text>
+                <View style={styles.formElement}>
+                    <Input
+                        value={zip}
+                        keyboardType="number-pad"
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Zip Code'
+                        placeholder='Zip Code'
+                        leftIcon={{type: 'font-awesome', name: 'map-marker'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        onChangeText={(newZip) => {
+                            setZip(newZip);
+                        }}
+                        errorStyle={{color: 'red'}}
+                        errorMessage={zipErrMsg}
+                    />
                 </View>
-            </View>
-            <View style={styles.formElement}>
-                <Text style={styles.formLabel}>Phone Number:</Text>
-                <PhoneInput
-                    value={phone}
-                    onChangePhoneNumber={ (newPhone)=> {
-                        setPhone(newPhone);
-                    }}
-                    style={styles.textInput}   
-                />
-                <View>
-                    <Text style={styles.errorMsg}>{phoneErrMsg}</Text>
+                <View style={styles.formElement}>
+                    <Input
+                        value={phone}
+                        keyboardType="number-pad"
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Phone Number'
+                        placeholder='XXX-XXX-XXXX'
+                        leftIcon={{type: 'font-awesome', name: 'phone'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        onChangeText={ (newPhone)=> {
+                            setPhone(newPhone);
+                        }} 
+                        errorStyle={{color: 'red'}}
+                        errorMessage={phoneErrMsg}
+                    />
                 </View>
-            </View>
-            <View style={styles.datePicker}>
-                <Text style={styles.formLabel}>Birth Date:</Text>
-                <DatePicker
-                    style={{backgroundColor: "#ffffff"}}
-                    mode="date"
-                    format="YYYY-MM-DD"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    minDate="1900-01-01"
-                    maximumDate="2019-01-01"
-                    date={birthDate}
-                    onDateChange={(newDate) => {
-                        setBirthDate(newDate)
-                    }}
-                />
+                <View style={styles.formElement}>
+                    <Text style={styles.formLabel}>Birth Date</Text>
+                    <DatePicker
+                        style={styles.datePicker}
+                        mode="date"
+                        format="YYYY-MM-DD"
+                        confirmBtnText="Confirm"
+                        cancelBtnText="Cancel"
+                        minDate="1900-01-01"
+                        maximumDate="2019-01-01"
+                        date={birthDate}
+                        onDateChange={(newDate) => {
+                            setBirthDate(newDate)
+                        }}
+                    />
+                </View>
                 <View>
                     <Text style={styles.errorMsg}>{birthDateErrMsg}</Text>
                 </View>
-            </View>
-            {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
-            <View style={styles.buttonContainer}>
-                <WelcomeButton
-                    title="Register"
-                    onPress={() => {
-                        //Create map object to pass to input validation function
-                        const inputMap = new Map();
-                        inputMap.set('email', email);
-                        inputMap.set('password', password);
-                        inputMap.set('username', username);
-                        inputMap.set('phone', phone);
-                        inputMap.set('zip', zip);
-                        inputMap.set('birthDate', birthDate);
-                        inputMap.set('confirmPass', confirmPass);
+                {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
+                <View style={styles.buttonContainer}>
+                    <WelcomeButton
+                        title="Register"
+                        onPress={() => {
+                            //Create map object to pass to input validation function
+                            const inputMap = new Map();
+                            inputMap.set('email', email);
+                            inputMap.set('password', password);
+                            inputMap.set('username', username);
+                            inputMap.set('phone', phone);
+                            inputMap.set('zip', zip);
+                            inputMap.set('birthDate', birthDate);
+                            inputMap.set('confirmPass', confirmPass);
 
-                        //Check the input & set error messages if somthing is wrong
-                        if(validateInput(inputMap)) {
-                            const userId = username;
-                            const phoneNumber = phone;
-                            const zipCode = zip;
-                            register({email, userId, 
-                                password, birthDate, firstName, lastName,
-                                phoneNumber, zipCode });
-                        } else {
-                            console.log("Input was not valid");
-                        }
-                    }}
-                />
-            </View>
-            <View style={styles.bottomButtonContainer}>
-                <WelcomeButton
-                    title="Back"
-                    onPress={ () => {
-                        navigation.navigate("Welcome");
-                    }}
-                />
-            </View>
-        </ScrollView>
+                            //Check the input & set error messages if somthing is wrong
+                            if(validateInput(inputMap)) {
+                                const userId = username;
+                                const phoneNumber = phone;
+                                const zipCode = zip;
+                                register({email, userId, 
+                                    password, birthDate, firstName, lastName,
+                                    phoneNumber, zipCode});
+                            } else {
+                                console.log("Input was not valid");
+                            }
+                        }}
+                    />
+                </View>
+                <View style={styles.bottomButtonContainer}>
+                    <WelcomeButton
+                        title="Back"
+                        onPress={ () => {
+                            navigation.navigate("Welcome");
+                        }}
+                    />
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 /*
@@ -326,27 +339,12 @@ const styles = StyleSheet.create({
     },
     formLabel: {
         fontSize: 20,
+        fontWeight: 'bold',
         textAlign: 'left',
         flexDirection: 'column',
         alignSelf: 'flex-start',
         marginBottom: 5,
         marginLeft: 10
-    },
-    textInput: {
-        backgroundColor: '#ffffff',
-        opacity: 95,
-        borderRadius: 10,
-        height: 35,
-        width: "80%",
-        paddingLeft: 8
-    },
-    textPassword: {
-        backgroundColor: '#ffffff',
-        opacity: 95,
-        borderRadius: 10,
-        height: 35,
-        width: "80%",
-        paddingLeft: 8
     },
     buttonContainer: {
         alignItems: "center",
@@ -358,15 +356,12 @@ const styles = StyleSheet.create({
         marginBottom: 60
     },
     datePicker: {
-        alignItems: "center",
-        marginTop: 20
+        backgroundColor: "#ffffff"
     },
     errorMsg: {
-        color: "#eb1809",
-        fontSize: 20,
-        textAlign: "center",
-        marginLeft: 5,
-        marginRight: 5
+        color: "red",
+        fontSize: 12,
+        marginLeft: 15
     }
     
 });
