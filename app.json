@@ -24,12 +24,14 @@
       "**/*"
     ],
     "android": {
+      "package": "com.FamBrews.FamBrews",
       "config": {
         "googleMobileAdsAppId": ""
       }
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.FamBrews.FamBrews",
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-7955003929822517~1961094954"
       }

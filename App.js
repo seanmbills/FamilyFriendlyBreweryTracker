@@ -1,12 +1,4 @@
 import React from 'react'
-import {View} from 'react-native'
-
-import {
-    AdMobBanner,
-    AdMobInterstitial,
-    AdMobRewarded,
-    PublisherBanner
-} from 'react-native-admob'
 
 import {
     createAppContainer, 
@@ -55,23 +47,13 @@ const switchNavigator = createSwitchNavigator({
 
 const App = createAppContainer(switchNavigator)
 
-async function initializeInterstitial() {
-    AdMobInterstitial.setAdUnitID('ca-app-pub-7955003929822517/6638706562'); // Test ID, Replace with your-admob-unit-id
-    AdMobInterstitial.setTestDeviceID('EMULATOR');
-    await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
-    await AdMobInterstitial.showAdAsync();
-}
-
 export default () => {
     return (
-        <View>
-            {initializeInterstitial()}
-            <BreweryProvider>
-                <AuthProvider>
-                    <App ref={(navigator) => {setNavigator(navigator)}}/>
-                </AuthProvider>
-            </BreweryProvider>
-        </View>
+        <BreweryProvider>
+            <AuthProvider>
+                <App ref={(navigator) => {setNavigator(navigator)}}/>
+            </AuthProvider>
+        </BreweryProvider>
     )
 }
 
