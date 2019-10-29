@@ -81,7 +81,7 @@ const RegistrationScreen = ({navigation}) => {
         }
         if (!validatePassword(inputMap.get('password'))) {
             setPassErrMsg("Password must be longer than 8 characters, contain "
-                + "one special character, capital letter, and number");
+                + "one special character, capital letter, and number.");
             isValid = false;
         } else if (inputMap.get('confirmPass') != inputMap.get('password')) {
             setPassErrMsg("Passwords must match.");
@@ -91,26 +91,26 @@ const RegistrationScreen = ({navigation}) => {
         }
 
         if (!validateEmail(inputMap.get('email'))) {
-            setEmailErrMsg("Email address provided was not valid");
+            setEmailErrMsg("Email address provided was not valid.");
             isValid = false;
         } else {
             setEmailErrMsg('');
         }
         if (!validatePhone(inputMap.get('phone'))) {
-            setPhoneErrMsg("Phone number provided was not valid");
+            setPhoneErrMsg("Phone number provided was not valid.");
             isValid = false;
         } else {
             setPhoneErrMsg('');
         }
         if (!validateZip(inputMap.get('zip'))) {
-            setZipErrMsg("Zip code provided was not valid");
+            setZipErrMsg("Zip code provided was not valid.");
             isValid = false;
         } else {
             setZipErrMsg('');
         }
         if (!validateBirthDate(inputMap.get('birthDate'))) {
             setBirthDateErrMsg("You must be at least 21 years old "
-                + "to use this application");
+                + "to use this application.");
             isValid = false;
         } else {
             setBirthDateErrMsg('');
