@@ -330,7 +330,7 @@ const RegistrationScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     background: {
         backgroundColor: "#fcc203",
-        paddingTop: 30
+        paddingTop: 40
     },
     formElement: {
         marginTop: 20,
