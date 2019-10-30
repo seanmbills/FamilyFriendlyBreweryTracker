@@ -19,6 +19,7 @@ import PasswordResetSuccessScreen from './src/screens/PasswordResetSuccessScreen
 import UpdateAccountScreen from './src/screens/UpdateAccountScreen';
 import MoreScreen from './src/screens/MoreScreen';
 import CreateBreweryScreen from './src/screens/CreateBreweryScreen';
+import EditBreweryScreen from './src/screens/EditBreweryScreen.js';
 
 const switchNavigator = createSwitchNavigator({
     loginFlow: createStackNavigator({
@@ -27,8 +28,6 @@ const switchNavigator = createSwitchNavigator({
         Login: LoginScreen,
         ForgotPassword: ForgotPasswordScreen,
         PasswordResetSuccess: PasswordResetSuccessScreen,
-        // More: MoreScreen, //Comment me out
-        // CreateBrewery: CreateBreweryScreen //comment me out
     },
     {
         initialRouteName: 'Welcome',
@@ -46,7 +45,8 @@ const switchNavigator = createSwitchNavigator({
             BreweryList: BreweryListScreen,
             UpdateAccount: UpdateAccountScreen,
             More: MoreScreen,
-            CreateBrewery: CreateBreweryScreen
+            CreateBrewery: CreateBreweryScreen,
+            EditBrewery: EditBreweryScreen
         })
     })
 })
@@ -62,18 +62,5 @@ export default () => {
         </BreweryProvider>
     )
 }
-
-// const navigator = createStackNavigator(
-//   { //Route Object                                                                       
-//     Welcome: WelcomeScreen,
-//     Registration: RegistrationScreen,
-//     Login: LoginScreen,
-//     BreweryList: BreweryListScreen,
-//     // ForgotPassword: ForgotPasswordScreen
-//   },
-  
-// );
-
-// export default createAppContainer(navigator);
 
 

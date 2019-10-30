@@ -12,6 +12,12 @@ const breweryReducer = (state, action) => {
             return {...state, created: action.payload.response}
         case 'search':
             return {...state, count: action.payload.count, results: action.payload.response}
+        case 'brewery': 
+            return {...state, individualResult: action.payload.response}
+        case 'owned_breweries':
+            return {...state, ownedBreweries: action.payload.names}
+        case 'clear_individual_brewery_result':
+            return {...state, individualResult: null};
         case 'clear_error_message':
             return {...state, errorMessage: ''}
         default: 
@@ -95,21 +101,21 @@ const getSearchResults = (dispatch) => {
     }
 }
 
-// const getOwnedBreweries = (dispatch) => {
-//     return async () => {
-//         try {
-//             const response = await ServerApi.post('/getOwnedBreweries', { headers: {
-//               'Accept' : 'application/json', 'Content-type' : 'application/json',
-//               'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
-//             }});
-//             console.log("response: ");
-//             console.log(response);
-//         } catch (err) {
-//             console.log(err.response.data.error);
-//             dispatch({type: 'add_error_message', payload: err.response.data.error});
-//         }
-//     }
-// }
+const getOwnedBreweries = (dispatch) => {
+    return async () => {
+        try {
+            const response = await ServerApi.get('/getOwnedBreweries', { headers: {
+              'Accept' : 'application/json', 'Content-type' : 'application/json',
+              'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
+            }});
+            console.log("response: ", response['request']['_response']);
+            dispatch({type: 'owned_breweries', payload: response.data})
+        } catch (err) {
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
 
 const createBrewery = (dispatch) => {
     console.log("createBrewery context called");
@@ -147,16 +153,80 @@ const createBrewery = (dispatch) => {
     }
 }
 
-const clearErrorMessage = dispatch => () => {
-    dispatch({type: 'clear_error_message'})
+const getBrewery = (dispatch) => {
+    return async ({
+        breweryId
+    }) => {
+        // make api request to get a single brewery with this id
+        const req = {
+            breweryId
+        }
+        try {
+            const response = await ServerApi.get('/brewery',
+                {params: req},
+                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
+            );
+            dispatch({type: 'brewery', payload: response.data})
+
+        } catch (err) {
+            console.log(err.response.data.error)
+            dispatch({ type: 'add_error_message', payload: err.response.data})
+        }
+    }
 }
+
+
+const updateBrewery = (dispatch) => {
+    return async ({
+            name, address, price, phoneNumber, 
+            email, website, businessHours, kidHoursSameAsNormal, 
+            alternativeKidFriendlyHours, accommodations
+            }) => {
+        accommodations = stripAccommodationsSearch(accommodations);
+
+        var req = {name, address, price, phoneNumber, email, website,
+                    businessHours, kidHoursSameAsNormal, alternativeKidFriendlyHours,
+                    accommodations
+                };
+
+        try {
+            console.log('Create brewery request sent');
+            const response = await ServerApi.post('/updateBrewery',
+                req, 
+                {headers: {
+                    'Accept' : 'application/json', 'Content-type' : 'application/json',
+                    'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))}}
+            );
+            dispatch({type: 'create', payload: response.data})
+        }
+        catch (err) {
+            console.log(err)
+            console.log(err.response.data.error);
+            dispatch({type: 'add_error_message', payload: err.response.data.error});
+        }
+    }
+}
+
+const clearIndividualBreweryResult = (dispatch) => {
+    return async () => {
+        dispatch({type: 'clear_individual_brewery_result', payload: null});
+    }
+}
+
+// const clearErrorMessage = dispatch => () => {
+//     dispatch({type: 'clear_error_message'})
+// }
 
 
 export const {Provider, Context} = createDataContext(
     breweryReducer,
     {
+        getOwnedBreweries,
         getSearchResults,
-        createBrewery
+        createBrewery,
+        updateBrewery,
+        getBrewery,
+        clearIndividualBreweryResult
     },
-    {results: [], count: 0, errorMessage: '', created: ''}
+    {results: [], count: 0, individualResult: null, ownedBreweries: [], errorMessage: '', created: ''}
 )

@@ -22,8 +22,9 @@ const BreweryListScreen = ({navigation}) => {
             />
             <WelcomeButton
                 title="More"
-                onPress={()=> {
-                    //getOwnedBreweries();
+                onPress={ async ()=> {
+
+                    await getOwnedBreweries();
                     navigation.navigate('More')
                 }}
             />

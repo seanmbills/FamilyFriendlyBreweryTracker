@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import WelcomeButton from '../components/WelcomeButton';
 import BreweryForm from '../components/BreweryForm';
@@ -6,7 +6,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import {Context as BreweryContext} from '../context/BreweryContext';
 
 const CreateBreweryScreen = ({navigation}) => {
-    const {state, createBrewery} = useContext(BreweryContext);
     return (
         <ScrollView style={styles.backgroundContainer}>
             <View style={styles.contentContainer}>

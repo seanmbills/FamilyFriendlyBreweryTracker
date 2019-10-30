@@ -9,20 +9,118 @@ import WelcomeButton from '../components/WelcomeButton'
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
 
 const BreweryForm = ({isNew, navigation}) => {
-    const {state, createBrewery} = useContext(BreweryContext);
+    const getOpenHrsFromStr = (hoursString) => {
+        var openHours = hoursString.substring(0,hoursString.indexOf(' '));
+        return openHours;
+    }
+    const getCloseHrsFromStr = (hoursString) => {
+        var closeHours = hoursString.substring(hoursString.indexOf('- ') + 2);
+        return closeHours
+    }
+    
+    /*
+     * Splits hours received from backend into a usable form so we can plug them
+     * into the time items.
+     * 
+     * @param hoursMap -> the hours received from the backend
+     * @return a new map object containing the split open and close hours
+    */
+    const convertHoursFromString = (hoursMap) => {
+        var hoursObj = new Object();
+        hoursObj['monOpen'] = getOpenHrsFromStr(hoursMap.mon);
+        hoursObj['monClose'] = getCloseHrsFromStr(hoursMap.mon);
 
-    const [breweryName, setBreweryName] = useState('');
-    const [street, setStreet] = useState('');
-    const [city, setCity] = useState('');
-    const [breweryState, setState] = useState('');
-    const [zipCode, setZipCode] = useState('');
-    const [price, setPrice] = useState(0);
-    const [email, setEmail] = useState(0);
-    const [website, setWebsite] = useState('');
+        hoursObj['tueOpen'] = getOpenHrsFromStr(hoursMap.tue);
+        hoursObj['tueClose'] = getCloseHrsFromStr(hoursMap.tue);
+
+        hoursObj['wedOpen'] = getOpenHrsFromStr(hoursMap.wed);
+        hoursObj['wedClose'] = getCloseHrsFromStr(hoursMap.wed);
+
+        hoursObj['thuOpen'] = getOpenHrsFromStr(hoursMap.thu);
+        hoursObj['thuClose'] = getCloseHrsFromStr(hoursMap.thu);
+
+        hoursObj['friOpen'] = getOpenHrsFromStr(hoursMap.fri);
+        hoursObj['friClose'] = getCloseHrsFromStr(hoursMap.fri);
+
+        hoursObj['satOpen'] = getOpenHrsFromStr(hoursMap.sat);
+        hoursObj['satClose'] = getCloseHrsFromStr(hoursMap.sat);
+
+        hoursObj['sunOpen'] = getOpenHrsFromStr(hoursMap.sun);
+        hoursObj['sunClose'] = getCloseHrsFromStr(hoursMap.sun);
+
+        return hoursObj;
+    }
+
+    const fillAccommodationsFromBackend = (map) => {
+        console.log("backend map " , map);
+        var accommodationsMap = new Object();
+        
+        accommodationsMap['petFriendly'] = new Object();
+        accommodationsMap['petFriendly']['indoorSpaces'] = (map.petFriendly) ? 
+                                                           (map.petFriendly.indoorSpaces) ? true : false : false;
+        accommodationsMap['petFriendly']['outdoorSpaces'] = (map.petFriendly) ? 
+                                                            (map.petFriendly.outdoorSpaces) ? true : false : false;
+        accommodationsMap['petFriendly']['waterStations'] = (map.petFriendly) ?
+                                                            (map.petFriendly.waterStations) ? true : false : false;
+
+        accommodationsMap['friendlyKidAges'] = new Object();
+        accommodationsMap['friendlyKidAges']['toddlers'] = (map.friendlyKidAges) ? 
+                                                           (map.friendlyKidAges.toddlers) ? true : false : false;
+        accommodationsMap['friendlyKidAges']['youngKids'] = (map.friendlyKidAges) ? 
+                                                            (map.friendlyKidAges.youngKids) ? true : false : false;
+        accommodationsMap['friendlyKidAges']['teens'] = (map.friendlyKidAges) ? 
+                                                        (map.friendlyKidAges.teens) ? true : false : false;
+        
+        accommodationsMap['kidFoodDrinks'] = new Object();
+        accommodationsMap['kidFoodDrinks']['kidFriendlyFood'] = (map.kidFoodDrinks) ?
+                                                                (map.kidFoodDrinks.kidFriendlyDrinks) ? true : false : false;
+        accommodationsMap['kidFoodDrinks']['kidFriendlyDrinks'] = (map.kidFoodDrinks) ? 
+                                                                  (map.kidFoodDrinks.kidFriendlyDrinks) ? true : false : false;
+        accommodationsMap['changingStations'] = (map.changingStations) ? true : false;
+        
+        accommodationsMap['childAccommodations'] = new Object();
+        accommodationsMap['childAccommodations']['games'] = new Object();
+        accommodationsMap['childAccommodations']['games']['indoor'] = (map.childAccommodations) ?
+                                                                      (map.childAccommodations.games) ?
+                                                                      (map.childAccommodations.games.indoor) ? true : false : false : false;
+
+        accommodationsMap['childAccommodations']['games']['outdoor'] = (map.childAccommodations) ?
+                                                                      (map.childAccommodations.games) ?
+                                                                      (map.childAccommodations.games.outdoor) ? true : false : false : false;
+
+        accommodationsMap['childAccommodations']['seating'] = (map.childAccommodations) ?
+                                                              (map.childAccommodations.seating) ? true : false : false;
+        accommodationsMap['childAccommodations']['strollerSpace']  = (map.childAccommodations) ? 
+                                                                     (map.childAccommodations.strollerSpace) ? true : false : false;
+
+        return accommodationsMap;
+    }
+
+    const {state, createBrewery, updateBrewery} = useContext(BreweryContext);
+    
+    const brewery = (state['individualResult'] != null) ? state['individualResult'][0].brewery : null;
+
+    var initHours;
+    var initKidHours;
+    var accommodations;
+    if (brewery) {
+        initHours = convertHoursFromString(brewery.businessHours);
+        initKidHours = convertHoursFromString(brewery.alternativeKidFriendlyHours);
+        accommodations = fillAccommodationsFromBackend(brewery.accommodations);
+    }
+
+    const [breweryName, setBreweryName] = (brewery) ? useState(brewery.name) : useState('');
+    const [street, setStreet] = (brewery) ? useState(brewery.address.street) : useState('');
+    const [city, setCity] = (brewery) ? useState(brewery.address.city) : useState('');
+    const [breweryState, setState] = (brewery) ? useState(brewery.address.state) : useState('');
+    const [zipCode, setZipCode] = (brewery) ? useState(brewery.address.zipCode) : useState('');
+    const [price, setPrice] = (brewery) ? useState(brewery.price) : useState(0);
+    const [email, setEmail] = (brewery) ? useState(brewery.email) : useState(0);
+    const [website, setWebsite] = (brewery) ? useState(brewery.website) : useState('');
     const priceButtons = [ '$', '$$', '$$$' , '$$$$']
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const [phoneNumber, setPhoneNumber] = (brewery) ? useState(brewery.phoneNumber) : useState('');
     const [dayPicked, setDayPicked] = useState('');
-    const [kidHoursSame, setKidHoursSame] = useState(false);
+    const [kidHoursSame, setKidHoursSame] = (brewery) ? useState(brewery.kidHoursSameAsNormal) : useState(false);
 
     const [nameErrorMsg, setNameErrorMsg] = useState('');
     const [addressErrorMsg, setAddressErrorMsg] = useState('');
@@ -32,54 +130,61 @@ const BreweryForm = ({isNew, navigation}) => {
 
 
     const [timePickerVisible, setTimePickerVisible] = useState(false);
-    const [mondayOpenTime, setMondayOpenTime] = useState('8:00AM');
-    const [mondayCloseTime, setMondayCloseTime] = useState('8:00PM');
-    const [tuesdayOpenTime, setTuesdayOpenTime] = useState('8:00AM');
-    const [tuesdayCloseTime, setTuesdayCloseTime] = useState('8:00PM');
-    const [wednesdayOpenTime, setWednesdayOpenTime] = useState('8:00AM');
-    const [wednesdayCloseTime, setWednesdayCloseTime] = useState('8:00PM');
-    const [thursdayOpenTime, setThursdayOpenTime] = useState('8:00AM');
-    const [thursdayCloseTime, setThursdayCloseTime] = useState('8:00PM');
-    const [fridayOpenTime, setFridayOpenTime] = useState('8:00AM');
-    const [fridayCloseTime, setFridayCloseTime] = useState('8:00PM');
-    const [saturdayOpenTime, setSaturdayOpenTime] = useState('8:00AM');
-    const [saturdayCloseTime, setSaturdayCloseTime] = useState('8:00PM');
-    const [sundayOpenTime, setSundayOpenTime] = useState('8:00AM');
-    const [sundayCloseTime, setSundayCloseTime] = useState('8:00PM');
 
-    const [mondayKidOpenTime, setMondayKidOpenTime] = useState('8:00AM');
-    const [mondayKidCloseTime, setMondayKidCloseTime] = useState('8:00PM');
-    const [tuesdayKidOpenTime, setTuesdayKidOpenTime] = useState('8:00AM');
-    const [tuesdayKidCloseTime, setTuesdayKidCloseTime] = useState('8:00PM');
-    const [wednesdayKidOpenTime, setWednesdayKidOpenTime] = useState('8:00AM');
-    const [wednesdayKidCloseTime, setWednesdayKidCloseTime] = useState('8:00PM');
-    const [thursdayKidOpenTime, setThursdayKidOpenTime] = useState('8:00AM');
-    const [thursdayKidCloseTime, setThursdayKidCloseTime] = useState('8:00PM');
-    const [fridayKidOpenTime, setFridayKidOpenTime] = useState('8:00AM');
-    const [fridayKidCloseTime, setFridayKidCloseTime] = useState('8:00PM');
-    const [saturdayKidOpenTime, setSaturdayKidOpenTime] = useState('8:00AM');
-    const [saturdayKidCloseTime, setSaturdayKidCloseTime] = useState('8:00PM');
-    const [sundayKidOpenTime, setSundayKidOpenTime] = useState('8:00AM');
-    const [sundayKidCloseTime, setSundayKidCloseTime] = useState('8:00PM');
+    const [mondayOpenTime, setMondayOpenTime] = (brewery) ? useState(initHours['monOpen']) : useState('8AM');
+    const [mondayCloseTime, setMondayCloseTime] = (brewery) ? useState(initHours['monClose']) : useState('8PM');
+    const [tuesdayOpenTime, setTuesdayOpenTime] = (brewery) ? useState(initHours['tueOpen']) : useState('8AM');
+    const [tuesdayCloseTime, setTuesdayCloseTime] = (brewery) ? useState(initHours['tueClose']) : useState('8PM');
+    const [wednesdayOpenTime, setWednesdayOpenTime] = (brewery) ? useState(initHours['wedOpen']) : useState('8AM');
+    const [wednesdayCloseTime, setWednesdayCloseTime] = (brewery) ? useState(initHours['wedClose']) : useState('8PM');
+    const [thursdayOpenTime, setThursdayOpenTime] = (brewery) ? useState(initHours['thuOpen']) : useState('8AM');
+    const [thursdayCloseTime, setThursdayCloseTime] = (brewery) ? useState(initHours['thuClose']) : useState('8PM');
+    const [fridayOpenTime, setFridayOpenTime] = (brewery) ? useState(initHours['friOpen']) : useState('8AM');
+    const [fridayCloseTime, setFridayCloseTime] = (brewery) ? useState(initHours['friClose']) : useState('8PM');
+    const [saturdayOpenTime, setSaturdayOpenTime] = (brewery) ? useState(initHours['satOpen']) : useState('8AM');
+    const [saturdayCloseTime, setSaturdayCloseTime] = (brewery) ? useState(initHours['satClose']) : useState('8PM');
+    const [sundayOpenTime, setSundayOpenTime] = (brewery) ? useState(initHours['sunOpen']) : useState('8AM');
+    const [sundayCloseTime, setSundayCloseTime] = (brewery) ? useState(initHours['sunClose']) : useState('8PM');
 
-    const [waterStations, setWaterStations] = useState(false);
-    const [indoorSpaces, setIndoorSpaces] = useState(false);
-    const [outdoorSpaces, setOutdoorSpaces] = useState(false);
-    const [toddlers, setToddlers] = useState(false);
-    const [youngKids, setYoungKids] = useState(false);
-    const [teens, setTeens] = useState(false);
-    const [kidFriendlyFood, setKidFriendlyFood] = useState(false);
-    const [kidFriendlyDrinks, setKidFriendlyDrinks] = useState(false);
-    const [changingStations, setChangingStations] = useState(false);
-    const [indoorGames, setIndoorGames] = useState(false);
-    const [outdoorGames, setOutdoorGames] = useState(false);
-    const [childSeating, setChildSeating] = useState(false);
-    const [strollerSpace, setStrollerSpace] = useState(false);
+    const [mondayKidOpenTime, setMondayKidOpenTime] = (brewery) ? useState(initHours['monOpen']) : useState('8AM');
+    const [mondayKidCloseTime, setMondayKidCloseTime] = (brewery) ? useState(initHours['monClose']) : useState('8PM');
+    const [tuesdayKidOpenTime, setTuesdayKidOpenTime] = (brewery) ? useState(initHours['tueOpen']) : useState('8AM');
+    const [tuesdayKidCloseTime, setTuesdayKidCloseTime] = (brewery) ? useState(initHours['tueClose']) : useState('8PM');
+    const [wednesdayKidOpenTime, setWednesdayKidOpenTime] = (brewery) ? useState(initHours['wedOpen']) : useState('8AM');
+    const [wednesdayKidCloseTime, setWednesdayKidCloseTime] = (brewery) ? useState(initHours['wedClose']) : useState('8PM');
+    const [thursdayKidOpenTime, setThursdayKidOpenTime] = (brewery) ? useState(initHours['thuOpen']) : useState('8AM');
+    const [thursdayKidCloseTime, setThursdayKidCloseTime] = (brewery) ? useState(initHours['thuClose']) : useState('8PM');
+    const [fridayKidOpenTime, setFridayKidOpenTime] = (brewery) ? useState(initHours['friOpen']) : useState('8AM');
+    const [fridayKidCloseTime, setFridayKidCloseTime] = (brewery) ? useState(initHours['friClose']) : useState('8PM');
+    const [saturdayKidOpenTime, setSaturdayKidOpenTime] = (brewery) ? useState(initHours['satOpen']) : useState('8AM');
+    const [saturdayKidCloseTime, setSaturdayKidCloseTime] = (brewery) ? useState(initHours['satClose']) : useState('8PM');
+    const [sundayKidOpenTime, setSundayKidOpenTime] = (brewery) ? useState(initHours['sunOpen']) : useState('8AM');
+    const [sundayKidCloseTime, setSundayKidCloseTime] = (brewery) ? useState(initHours['sunClose']) : useState('8PM');
+
+    const [waterStations, setWaterStations] = (brewery) ? useState(accommodations['petFriendly']['waterStations']) : useState(false);
+    const [indoorSpaces, setIndoorSpaces] = (brewery) ? useState(accommodations['petFriendly']['indoorSpaces']) : useState(false);
+    const [outdoorSpaces, setOutdoorSpaces] = (brewery) ? useState(accommodations['petFriendly']['outdoorSpaces']) : useState(false);
+    const [toddlers, setToddlers] = (brewery) ? useState(accommodations['friendlyKidAges']['toddlers']) : useState(false);
+    const [youngKids, setYoungKids] = (brewery) ? useState(accommodations['friendlyKidAges']['youngKids']) : useState(false);
+    const [teens, setTeens] = (brewery) ? useState(accommodations['friendlyKidAges']['teens']) : useState(false);
+    const [kidFriendlyFood, setKidFriendlyFood] = (brewery) ? useState(accommodations['kidFoodDrinks']['kidFriendlyFood']) : useState(false);
+    const [kidFriendlyDrinks, setKidFriendlyDrinks] = (brewery) ? useState(accommodations['kidFoodDrinks']['kidFriendlyDrinks']) : useState(false);
+    const [changingStations, setChangingStations] = (brewery) ? useState(accommodations['changingStations']) : useState(false);
+    const [indoorGames, setIndoorGames] = (brewery) ? useState(accommodations['childAccommodations']['games']['indoor']) : useState(false);
+    const [outdoorGames, setOutdoorGames] = (brewery) ? useState(accommodations['childAccommodations']['games']['outdoor']) : useState(false);
+    const [childSeating, setChildSeating] = (brewery) ? useState(accommodations['childAccommodations']['seating']) : useState(false);
+    const [strollerSpace, setStrollerSpace] = (brewery) ? useState(accommodations['childAccommodations']['strollerSpace']) : useState(false);
     const [showFilters, setShowFilters] = useState(false);
 
     const [showTimes, setShowTimes] = useState(false);
     const [showKidTimes, setShowKidTimes] = useState(false);
 
+    /*
+     * Takes time given and formats it to conform to backend string restrictions
+     * 
+     * @param time -> time string given from time picker component
+     * @return a formatted time string
+    */
     const formatTime = (time) => {
         time = time.toString();
         var colonIndex = time.indexOf(':');
@@ -104,6 +209,7 @@ const BreweryForm = ({isNew, navigation}) => {
         }
         return formatTime;
     }
+
     const handleTimePicked = (time)=> {
         time = formatTime(time);
         switch(dayPicked) {
@@ -293,6 +399,8 @@ const BreweryForm = ({isNew, navigation}) => {
         businessHours['sun'] = sun;
         return businessHours;
     }
+
+    
 
     const buildAccommodationMap = () => {
         const accommodations = {
@@ -959,23 +1067,19 @@ const BreweryForm = ({isNew, navigation}) => {
                         var kidHoursSameAsNormal = kidHoursSame;
                         
                         if (isNew) {
-                            // console.log("calling create brewery");
-                            // console.log("name: " + name);
-                            // console.log('address: ', address);
-                            // console.log('price: ' + price);
-                            // console.log('phoneNumber: ' + phoneNumber);
-                            // console.log('email: ' + email);
-                            // console.log('website: ' + website);
-                            // console.log('businessHours: ' , businessHours);
-                            // console.log('kidHoursSameAsNormal: ' + kidHoursSameAsNormal);
-                            // console.log('alternativeKidFriendlyHours: ' , alternativeKidFriendlyHours);
-                            // console.log('accommodations: ' , accommodations)
+                
                             createBrewery({
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
                                 alternativeKidFriendlyHours, accommodations
                             });
                             // createBrewery({name, address, price, phoneNumber, email, website, businessHours, accommodations});
+                        } else {
+                            updateBrewery({
+                                name, address, price, phoneNumber, 
+                                email, website, businessHours, kidHoursSameAsNormal, 
+                                alternativeKidFriendlyHours, accommodations
+                            });
                         }
                         
                     }}

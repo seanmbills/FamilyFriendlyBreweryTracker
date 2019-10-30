@@ -1,35 +1,47 @@
 import React, {useState, useContext} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import {Context as BreweryContext} from '../context/BreweryContext'
 import BreweryForm from '../components/BreweryForm';
 import WelcomeButton from '../components/WelcomeButton';
 
 const MoreScreen = ({navigation}) => {
-    const {state, getOwnedBreweries, createBrewery} = useContext(BreweryContext);
-    // var breweryListResults = getOwnedBreweries()
-    // if (breweryListResults == null || !breweryListResults.length ) {
-    //     return null;
-    // }
+    const {state, getBrewery, clearIndividualBreweryResult} = useContext(BreweryContext);
+    console.log(state.ownedBreweries);
     return (
         <View style={styles.backgroundContainer}>
-            {/* <View style={styles.contentContainer}>
+            { state.ownedBreweries.length > 0 &&
+             <View>
+                <View style={styles.contentContainer}>
                 <Text style={styles.subHeader}>My Breweries</Text>
                 <FlatList
-                data={breweryListResults}
-                keyExtractor={(result) => result.breweryId}
-                renderItem={({item}) => {
+                    data={state.ownedBreweries}
+                    keyExtractor={(result) => result.breweryId}
+                    renderItem={({item}) => {
                     return (
-                        <Text>brewery here</Text>
+                        <TouchableOpacity
+                            onPress={ async ()=>
+                            {
+                                await getBrewery({breweryId: item.id});
+                                navigation.navigate('EditBrewery')
+                            }}
+                        >
+                            <Text>{item.name}</Text>
+                        </TouchableOpacity>
                     )
                 }}
                 showsHorizontalScrollIndicator={false}
                 />
-            </View> */}
+            </View>
+            </View>
+            }
             <View style={styles.contentContainer}>
                 <WelcomeButton
                     title="Create Brewery"
-                    onPress={() => navigation.navigate('CreateBrewery')}
+                    onPress={() => {
+                        clearIndividualBreweryResult();
+                        navigation.navigate('CreateBrewery')
+                    }}
                 />
             </View>
         </View>

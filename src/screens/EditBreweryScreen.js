@@ -1,12 +1,12 @@
 import React, {useState, useContext} from 'react';
 import {Context as BreweryContext} from '../context/BreweryContext';
 
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, ScrollView} from 'react-native';
 import WelcomeButton from '../components/WelcomeButton';
 import BreweryForm from '../components/BreweryForm';
 
-const EditScreen = ({navigation}) => {
-    const {editBrewery} = useContext(BreweryContext);
+const EditBreweryScreen = ({navigation}) => {
+    const {state} = useContext(BreweryContext);
 
     return (
         <ScrollView style={styles.backgroundContainer}>
@@ -15,8 +15,9 @@ const EditScreen = ({navigation}) => {
             </View>
             <View style={styles.contentContainer}>
                 <BreweryForm
-                    isNew={true}
+                    isNew={false}
                     navigation={navigation}
+                    breweryData={state}
                 />
             </View>
         </ScrollView>
@@ -37,4 +38,4 @@ const styles = StyleSheet.create({
         fontSize:25
     }
 });
-export default EditScreen;
+export default EditBreweryScreen;
