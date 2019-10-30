@@ -6,6 +6,7 @@ import DatePicker from 'react-native-datepicker';
 import {NavigationEvents} from 'react-navigation'
 import {Context as AuthContext} from '../context/AuthContext'
 import {Input} from 'react-native-elements';
+import {validatePassword, validateEmail} from '../api/InputValidation'
 
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
@@ -15,19 +16,6 @@ function validateUsername(name) {
         return false;
     }
     return true
-}
-
-function validatePassword(pass) {
-    return pass.length >= 8 
-        && (/[a-z]/.test(pass)) // check to ensure pass contains lowercase
-        && pass.match(/[A-Z]/)  // check to ensure pass contains uppercase
-        && pass.match(/\d/)     // check to ensure pass contains a digit
-        && pass.match(/[$|*=(!)[\]_+@.-]/) // check to ensure pass contains special character
-        && (!pass.match(/[^a-zA-Z0-9$|*=(!)[\]_+@.-]/)); // check to ensure pass doesn't contain character that is not a special one
-}
-
-function validateEmail(mail) {
-    return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail));
 }
 
 function validatePhone(num) {
@@ -348,11 +336,9 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         alignItems: "center",
-        marginTop: 20
     },
     bottomButtonContainer: {
         alignItems: "center",
-        marginTop: 20,
         marginBottom: 60
     },
     datePicker: {

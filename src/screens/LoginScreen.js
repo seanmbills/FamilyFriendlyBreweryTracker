@@ -13,17 +13,7 @@ const LoginScreen = ({navigation}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    function validateInput(inputMap) {
-        const email = inputMap.get('email');
-        const password = inputMap.get('password');
-        if (email.length > 0 && password.length >= 8) {
-            console.log('not valid input')
-            return true;
-        }
-        console.log('valid input')
-        return false;
-    }
-    return (
+       return (
         <ScrollView keyboardDismissMode='on-drag' style={styles.background}>
             <NavigationEvents 
                 onWillBlur={clearErrorMessage}
@@ -36,8 +26,8 @@ const LoginScreen = ({navigation}) => {
                 <Input
                     value={email}
                     labelStyle={{color: 'black', fontSize: 20}}
-                    label='Email'
-                    placeholder='Email'
+                    label='Email/Username'
+                    placeholder='Email or Username'
                     leftIcon={{type: 'font-awesome', name: 'envelope'}}
                     leftIconContainerStyle={{paddingRight: 8}}
                     inputContainerStyle={{borderBottomColor: 'black'}}
@@ -69,16 +59,8 @@ const LoginScreen = ({navigation}) => {
                 <WelcomeButton
                     title="Login"
                     onPress={ async () => {
-                        const validateMap = new Map();
-                        validateMap.set('email', email);
-                        validateMap.set('password', password);
-
-                        if (validateInput(validateMap)) {
-                            const emailOrId = email;
-                            signin({emailOrId, password})
-                        } else {
-                            console.log("input was not valid");
-                        }
+                        const emailOrId = email;
+                        signin({emailOrId, password})
                     }}
                 />
             </View>
