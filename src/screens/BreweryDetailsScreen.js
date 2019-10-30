@@ -32,6 +32,12 @@ const BreweryDetailsScreen = ({navigation}) => {
         waterBowl = ' not '
     }
 
+    if (typeof(breweryResult.email) !== 'undefined') {
+         console.log('Not Undefined')
+  } else {
+         console.log('Undefined')
+}
+
     dialCall = () => {
       var phoneNumber = breweryResult.phoneNumber;
       if (Platform.OS === 'android') {
@@ -115,6 +121,10 @@ const BreweryDetailsScreen = ({navigation}) => {
 
             {/*Displays the phone number (clickable)*/}
             <Text style={styles.textClickables} onPress={this.dialCall}><Emoji name="telephone_receiver" style={{fontSize: 18}} /> {breweryResult.phoneNumber}</Text>
+
+            {/*Displays the email address of the brewery (clickable)*/}
+            {(typeof(breweryResult.email) !== 'undefined') && <Text style={Linking.openURL('mailto:support@domain.com?subject=mailsubject&body=mailbody')}><Emoji name="telephone_receiver" style={{fontSize: 18}} /> {breweryResult.phoneNumber}</Text>}
+
         </View>
 
         {/*The second box*/}
