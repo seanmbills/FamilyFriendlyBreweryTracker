@@ -6,6 +6,7 @@ import WelcomeButton from '../components/WelcomeButton';
 import DatePicker from 'react-native-datepicker';
 import {NavigationEvents} from 'react-navigation'
 import {Context as AuthContext} from '../context/AuthContext'
+import ImagePicker from 'react-native-image-picker'
 
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
