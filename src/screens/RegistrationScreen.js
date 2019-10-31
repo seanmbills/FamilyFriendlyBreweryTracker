@@ -1,12 +1,23 @@
-import React, {useState, useContext } from 'react';
-import { Text, StyleSheet, View, ScrollView, TextInput, KeyboardAvoidingView} from 'react-native';
+import React, {useState, useContext, useEffect } from 'react';
+import {
+    Text,
+    StyleSheet,
+    View,
+    ScrollView,
+    TextInput,
+    KeyboardAvoidingView,
+    Button,
+    Image
+} from 'react-native';
 import TitleText from '../components/TitleText';
 import PhoneInput from 'react-native-phone-input';
 import WelcomeButton from '../components/WelcomeButton';
 import DatePicker from 'react-native-datepicker';
 import {NavigationEvents} from 'react-navigation'
 import {Context as AuthContext} from '../context/AuthContext'
-import ImagePicker from 'react-native-image-picker'
+import * as ImagePicker from 'expo-image-picker'
+import Constants from 'expo-constants'
+import * as Permissions from 'expo-permissions'
 
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
@@ -69,6 +80,7 @@ const RegistrationScreen = ({navigation}) => {
     const [ zipErrMsg, setZipErrMsg ] = useState('');
     const [ birthDateErrMsg, setBirthDateErrMsg ] = useState('');
     const [ confirmPass, setConfirmPass ] = useState('');
+    const [ profilePic, setProfilePic ] = useState(null)
     
     function validateInput(inputMap) {
         var isValid = true
@@ -118,6 +130,35 @@ const RegistrationScreen = ({navigation}) => {
         }
         return isValid;
     }
+
+
+    useEffect(() => {
+        getPermissionAsync()
+    }, [])
+    
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    _pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+        });
+
+        console.log(result);
+
+        if (!result.cancelled) {
+            setProfilePic(result.uri)
+        }
+    };
+
     
     return (
         <ScrollView style={styles.background}>
@@ -126,6 +167,16 @@ const RegistrationScreen = ({navigation}) => {
             />
             <View style={styles.topSpan}/>
             <TitleText title="Registration"/>
+
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Button
+                title="Pick an image from camera roll"
+                onPress={this._pickImage}
+                />
+                {profilePic &&
+                <Image source={{ uri: profilePic }} style={{ width: 200, height: 200 }} />}
+            </View>
+
             <View style={styles.formElement}>
                 <Text style={styles.formLabel}>Email:</Text>
                 <View style= {styles.textContainer}>
