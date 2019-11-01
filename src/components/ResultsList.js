@@ -14,7 +14,8 @@ const ResultsList = ({listName, results, navigation}) => {
     return (
         <View style={styles.container}>
             <Text style={styles.listHeader}> {listName} </Text>
-            <FlatList 
+            <FlatList
+                horizontal
                 data={results}
                 keyExtractor={(result) => result.breweryId}
                 renderItem={({item}) => {
