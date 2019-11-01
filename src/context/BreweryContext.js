@@ -7,20 +7,20 @@ import {AsyncStorage} from 'react-native'
 const breweryReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
-            return {...state, errorMessage: action.payload}
+            return {...state, errorMessage: action.payload, results: null}
         case 'create':
             return {...state, created: action.payload.response}
+        case 'brewery':
+            return {...state, errorMessage: '', individualResult: action.payload.response}
         case 'search':
             return {...state, count: action.payload.count, results: action.payload.response}
-        case 'brewery': 
-            return {...state, individualResult: action.payload.response}
         case 'owned_breweries':
             return {...state, ownedBreweries: action.payload.names}
         case 'clear_individual_brewery_result':
             return {...state, individualResult: null};
         case 'clear_error_message':
             return {...state, errorMessage: ''}
-        default: 
+        default:
             return state;
     }
 }
@@ -63,7 +63,7 @@ function stripAccommodationsSearch(accommodationsSearch) {
 const getSearchResults = (dispatch) => {
     return async ({
         name, latitude, longitude, zipCode, distance,
-        maximumPrice, accommodationsSearch, openNow, 
+        maximumPrice, accommodationsSearch, openNow,
         kidFriendlyNow, minimumRating
     }) => {
 
@@ -72,7 +72,7 @@ const getSearchResults = (dispatch) => {
        
         var req = {
             name, latitude, longitude, zipCode, distance,
-            maximumPrice, accommodationsSearch, openNow, 
+            maximumPrice, accommodationsSearch, openNow,
             kidFriendlyNow, minimumRating
         }
         
@@ -86,7 +86,7 @@ const getSearchResults = (dispatch) => {
         
         try { 
             const response = await ServerApi.get('/search',
-                {params: req}, 
+                {params: req},
                 {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
             );
             console.log(response.data);
@@ -232,3 +232,4 @@ export const {Provider, Context} = createDataContext(
     },
     {results: [], count: 0, individualResult: null, ownedBreweries: [], errorMessage: '', created: ''}
 )
+
