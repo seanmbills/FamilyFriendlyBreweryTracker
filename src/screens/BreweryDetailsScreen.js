@@ -12,7 +12,7 @@ const BreweryDetailsScreen = ({navigation}) => {
     const breweryResult = state.individualResult[0].brewery
     const openNow = state.individualResult[0].openNow
     const kidFriendlyNow = state.individualResult[0].kidFriendlyNow
-
+    const breweryIdAndName = [breweryResult.id, breweryResult.name]
 
     var priceStr = ""
     var priceStr2 = ""
@@ -73,6 +73,7 @@ const BreweryDetailsScreen = ({navigation}) => {
     var kidSeating = breweryResult.accommodations.childAccommodations.seating
     var strollerSpace = breweryResult.accommodations.childAccommodations.strollerSpace
     var changingStations = breweryResult.accommodations.changingStations
+
 
     return (
     <ScrollView style={styles.scrollView}>
@@ -213,7 +214,7 @@ const BreweryDetailsScreen = ({navigation}) => {
               <Text style={styles.accommodations}>outside : <Emoji name="x" style={{fontSize: 18}} /></Text>}
           </View>
 
-          <TouchableOpacity onPress={()=> navigation.navigate("WriteReview")} style={styles.burgerButton}>
+          <TouchableOpacity onPress={()=> navigation.navigate("WriteReview")}>
             <Text> Click to write a review </Text>
           </TouchableOpacity>
 
