@@ -11,7 +11,7 @@ const BreweryListScreen = ({navigation}) => {
     const {state, getSearchResults, getOwnedBreweries} = useContext(BreweryContext)
     const [searchTerm, setSearchTerm] = useState("")
 
-    return ( 
+    return (
         <View>
             <SearchBar/>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -30,10 +30,10 @@ const BreweryListScreen = ({navigation}) => {
                 }}
             />
         </View>
-        
+
     );
 }
 
 const styles = StyleSheet.create({})
 
-export default BreweryListScreen;
+export default BreweryListScreen
