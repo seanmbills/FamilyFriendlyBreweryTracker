@@ -74,6 +74,8 @@ const BreweryDetailsScreen = ({navigation}) => {
     var strollerSpace = breweryResult.accommodations.childAccommodations.strollerSpace
     var changingStations = breweryResult.accommodations.changingStations
 
+    console.log(breweryResult);
+
 
     return (
     <ScrollView style={styles.scrollView}>
@@ -214,7 +216,7 @@ const BreweryDetailsScreen = ({navigation}) => {
               <Text style={styles.accommodations}>outside : <Emoji name="x" style={{fontSize: 18}} /></Text>}
           </View>
 
-          <TouchableOpacity onPress={()=> navigation.navigate("WriteReview")}>
+          <TouchableOpacity onPress={()=> navigation.navigate("WriteReview", {breweryId: breweryResult._id, name:breweryResult.name})}>
             <Text> Click to write a review </Text>
           </TouchableOpacity>
 

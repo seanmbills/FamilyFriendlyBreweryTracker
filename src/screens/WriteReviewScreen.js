@@ -2,16 +2,21 @@ import React, { useState } from 'react';
 import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpacity, Linking, Platform} from 'react-native'
 import {Rating, AirbnbRating} from 'react-native-ratings'
 
-const WriteReviewScreen = () => {
+const WriteReviewScreen = ({navigation}) => {
   const [ratingNum, setRatingNum] = useState(3);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+
+  const breweryId = navigation.getParam('breweryId')
+  const breweryName = navigation.getParam('name')
 
   var star1, star2, star3, star4, star5 = false;
 
   logMethod = () => {
     console.log(title);
     console.log(ratingNum);
+    console.log(breweryId);
+    console.log(breweryName);
   }
 
   // ratingCompleted(rating) {
