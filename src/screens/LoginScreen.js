@@ -28,6 +28,7 @@ const LoginScreen = ({navigation}) => {
                     labelStyle={{color: 'black', fontSize: 20}}
                     label='Email/Username'
                     placeholder='Email or Username'
+                    placeholderTextColor="#262626"
                     leftIcon={{type: 'font-awesome', name: 'envelope'}}
                     leftIconContainerStyle={{paddingRight: 8}}
                     inputContainerStyle={{borderBottomColor: 'black'}}
@@ -43,6 +44,7 @@ const LoginScreen = ({navigation}) => {
                     labelStyle={{color: 'black', fontSize: 20}}
                     label='Password'
                     placeholder='Password'
+                    placeholderTextColor="#262626"
                     leftIcon={{type: 'font-awesome', name: 'lock'}}
                     leftIconContainerStyle={{paddingRight: 8}}
                     inputContainerStyle={{borderBottomColor: 'black'}}
