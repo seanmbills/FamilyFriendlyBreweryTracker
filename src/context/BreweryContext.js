@@ -75,7 +75,7 @@ const getSearchResults = (dispatch) => {
             maximumPrice, accommodationsSearch, openNow, 
             kidFriendlyNow, minimumRating
         }
-        console.log(req)
+        
         if (latitude == '' || longitude == '') {
             req = {
                 name, zipCode, distance,
@@ -83,7 +83,7 @@ const getSearchResults = (dispatch) => {
                 kidFriendlyNow, minimumRating
             }
         }
-        console.log(req);
+        
         try { 
             const response = await ServerApi.get('/search',
                 {params: req}, 
@@ -108,7 +108,7 @@ const getOwnedBreweries = (dispatch) => {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
               'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
             }});
-            console.log("response: ", response['request']['_response']);
+            
             dispatch({type: 'owned_breweries', payload: response.data})
         } catch (err) {
             console.log(err.response.data.error);
@@ -118,7 +118,7 @@ const getOwnedBreweries = (dispatch) => {
 }
 
 const createBrewery = (dispatch) => {
-    console.log("createBrewery context called");
+    
     return async ({
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
@@ -130,20 +130,17 @@ const createBrewery = (dispatch) => {
                     businessHours, kidHoursSameAsNormal, alternativeKidFriendlyHours,
                     accommodations
                 };
-    // return async({name, address, price, phoneNumber, email, website, businessHours, accommodations}) => {
-    //     var req = {name, address, price, phoneNumber, email, website, businessHours, accommodations};
-        console.log(req)
         try {
-            console.log('Create brewery request sent');
+            console.log("create Brewery parameters: " , req);
             const response = await ServerApi.post('/createBrewery',
                 req, 
                 {headers: {
                     'Accept' : 'application/json', 'Content-type' : 'application/json',
                     'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))}}
             );
-            console.log("response: ");
-            console.log(response);
+
             dispatch({type: 'create', payload: response.data})
+            //return response;
         }
         catch (err) {
             console.log(err)
@@ -178,19 +175,23 @@ const getBrewery = (dispatch) => {
 
 const updateBrewery = (dispatch) => {
     return async ({
+            breweryId,
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
             alternativeKidFriendlyHours, accommodations
             }) => {
         accommodations = stripAccommodationsSearch(accommodations);
 
-        var req = {name, address, price, phoneNumber, email, website,
-                    businessHours, kidHoursSameAsNormal, alternativeKidFriendlyHours,
-                    accommodations
+        var req = { breweryId, newName: name, newAddress: address,
+                    newPrice: price, newPhoneNumber: phoneNumber, newEmail: email,
+                    newWebsite: website, newBusinessHours: businessHours,
+                    newKidFriendlyHours: alternativeKidFriendlyHours,
+                    newAccommodations: accommodations
                 };
+        console.log(JSON.stringify(req))
 
         try {
-            console.log('Create brewery request sent');
+           
             const response = await ServerApi.post('/updateBrewery',
                 req, 
                 {headers: {
@@ -198,6 +199,7 @@ const updateBrewery = (dispatch) => {
                     'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))}}
             );
             dispatch({type: 'create', payload: response.data})
+            return response;
         }
         catch (err) {
             console.log(err)

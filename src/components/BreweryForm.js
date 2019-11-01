@@ -7,14 +7,31 @@ import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
 import WelcomeButton from '../components/WelcomeButton'
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
+import Modal from 'react-native-modal'
+import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 const BreweryForm = ({isNew, navigation}) => {
     const getOpenHrsFromStr = (hoursString) => {
         var openHours = hoursString.substring(0,hoursString.indexOf(' '));
+        var numIndex = 0;
+        if (openHours.length <= 3) {
+            while (numIndex < openHours.length && (openHours.charAt(numIndex) == ':' || (openHours.charAt(numIndex) >= '0' && openHours.charAt(numIndex) <= '9'))) {
+                numIndex += 1;
+            }
+            openHours = openHours.substring(0, numIndex) + ':00' + openHours.substring(numIndex);
+        }
+        
         return openHours;
     }
     const getCloseHrsFromStr = (hoursString) => {
         var closeHours = hoursString.substring(hoursString.indexOf('- ') + 2);
+        var numIndex = 0;
+        if (closeHours.length <= 3) {
+            while (numIndex < closeHours.length && (closeHours.charAt(numIndex) == ':' || (closeHours.charAt(numIndex) >= '0' && closeHours.charAt(numIndex) <= '9'))) {
+                numIndex += 1;
+            }
+            closeHours = closeHours.substring(0, numIndex) + ':00' + closeHours.substring(numIndex);
+        }
         return closeHours
     }
     
@@ -52,7 +69,7 @@ const BreweryForm = ({isNew, navigation}) => {
     }
 
     const fillAccommodationsFromBackend = (map) => {
-        console.log("backend map " , map);
+       
         var accommodationsMap = new Object();
         
         accommodationsMap['petFriendly'] = new Object();
@@ -96,7 +113,7 @@ const BreweryForm = ({isNew, navigation}) => {
         return accommodationsMap;
     }
 
-    const {state, createBrewery, updateBrewery} = useContext(BreweryContext);
+    const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
     
     const brewery = (state['individualResult'] != null) ? state['individualResult'][0].brewery : null;
 
@@ -109,6 +126,7 @@ const BreweryForm = ({isNew, navigation}) => {
         accommodations = fillAccommodationsFromBackend(brewery.accommodations);
     }
 
+    const [dialogOpen, setDialogOpen] = useState(false);
     const [breweryName, setBreweryName] = (brewery) ? useState(brewery.name) : useState('');
     const [street, setStreet] = (brewery) ? useState(brewery.address.street) : useState('');
     const [city, setCity] = (brewery) ? useState(brewery.address.city) : useState('');
@@ -382,6 +400,7 @@ const BreweryForm = ({isNew, navigation}) => {
     }
 
     const formatKidsHours = () => {
+
         var mon = mondayKidOpenTime + " - " + mondayKidCloseTime;
         var tue = tuesdayKidOpenTime + ' - ' + tuesdayKidCloseTime;
         var wed = wednesdayKidOpenTime + ' - ' + wednesdayKidCloseTime;
@@ -437,6 +456,15 @@ const BreweryForm = ({isNew, navigation}) => {
         setPhoneErrorMsg('');
         setNameErrorMsg('');
         setWebsiteErrorMsg('');
+    }
+
+    renderModalContent = () => {
+        return (
+        <View>
+            <Text>Brewery Updated Successfully!</Text>
+        </View>
+        );
+
     }
 
     return (
@@ -1035,9 +1063,9 @@ const BreweryForm = ({isNew, navigation}) => {
             <View style={styles.fieldView}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> {
+                    onPress={ async ()=> {
                         clearErrorMsgs();
-                        console.log("submit pressed")
+                      
                         var name = breweryName;
                         var address = formatAddress();
                         var businessHours = formatBusinessHours();
@@ -1047,7 +1075,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         }
                         var accommodations = buildAccommodationMap();
                         
-                        console.log("Made it through formatting");
+                        
                         if (!validateBreweryName(name)) {
                             setNameErrorMsg("Brewery Name cannot be empty.");
                             return;
@@ -1064,27 +1092,64 @@ const BreweryForm = ({isNew, navigation}) => {
                             setWebsiteErrorMsg("Must provide a valid website URL");
                             return;
                         } 
+                        var breweryId = brewery._id;
                         var kidHoursSameAsNormal = kidHoursSame;
                         
+                        var response;
                         if (isNew) {
-                
-                            createBrewery({
+                            console.log("isNew is true")
+                            response =  await createBrewery({
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
                                 alternativeKidFriendlyHours, accommodations
                             });
-                            // createBrewery({name, address, price, phoneNumber, email, website, businessHours, accommodations});
+                           
                         } else {
-                            updateBrewery({
+                            response = await updateBrewery({
+                                breweryId,
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
                                 alternativeKidFriendlyHours, accommodations
                             });
+                            getOwnedBreweries();
                         }
-                        
+                        if (response.status == 200) {
+                            setDialogOpen(true);
+                        }
+   
                     }}
                 />
             </View>
+
+            <Dialog
+                visible={dialogOpen}
+            >
+                <DialogContent>
+                    <View>
+                        { isNew && 
+                        <View style={styles.dialogTitle}>
+                            <Text>Brewery Created Successfully</Text> 
+                        </View>
+                        }
+                        { !isNew &&
+                        <View style={styles.dialogTitle}>
+                            <Text>Brewery Updated Successfully</Text>
+                        </View>
+                        }
+                    </View>
+                    <View>
+                        <WelcomeButton
+                            title="Back"
+                            onPress={() => {
+                                setDialogOpen(false);
+                                navigation.navigate('More');
+                            }}
+                        />
+                    </View>
+                </DialogContent>
+                
+            </Dialog>
+
             <View style={styles.fieldView}>
                 <WelcomeButton
                     title="Cancel"
@@ -1149,6 +1214,11 @@ const styles = StyleSheet.create({
     errorMsg: {
         color:'red',
         fontSize:15
+    },
+    dialogTitle: {
+        color: 'black',
+        backgroundColor: 'white',
+        fontSize: '25'
     }
 });
 
