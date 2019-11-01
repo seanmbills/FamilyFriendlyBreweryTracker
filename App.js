@@ -4,6 +4,8 @@ import {
     createAppContainer, 
     createSwitchNavigator,
 } from 'react-navigation'
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import {createStackNavigator} from 'react-navigation-stack';
 import WelcomeScreen from './src/screens/WelcomeScreen';
@@ -21,6 +23,8 @@ import UpdateAccountScreen from './src/screens/UpdateAccountScreen';
 import MoreScreen from './src/screens/MoreScreen';
 import CreateBreweryScreen from './src/screens/CreateBreweryScreen';
 import EditBreweryScreen from './src/screens/EditBreweryScreen.js';
+
+import NavigationButton from './src/components/NavigationButton'
 
 const switchNavigator = createSwitchNavigator({
     loginFlow: createStackNavigator({
@@ -43,14 +47,44 @@ const switchNavigator = createSwitchNavigator({
         }
     }),
     loggedInFlow: createBottomTabNavigator({
-        breweryListFlow: createStackNavigator({
-            BreweryList: BreweryListScreen,
-            UpdateAccount: UpdateAccountScreen,
+        
+        UpdateAccount: UpdateAccountScreen,
+
+        BreweryList: BreweryListScreen,
+
+        optionsFlow: createStackNavigator({
             More: MoreScreen,
             CreateBrewery: CreateBreweryScreen,
             EditBrewery: EditBreweryScreen
         })
-    })
+    },
+    {
+        defaultNavigationOptions: ({ navigation }) => ({
+            tabBarIcon: ({ focused, horizontal, tintColor }) => {
+                const { routeName } = navigation.state;
+                let screenName;
+                if (routeName === 'optionsFlow') {
+                    screenName = "More"
+                    onPress= () => {navigation.navigate({routeName})}
+                } else if (routeName === 'BreweryList') {
+                    screenName = "Search"
+                    onPress= () => {navigation.navigate({BreweryList})}
+                } else if (routeName === 'UpdateAccount') {
+                    screenName = 'Account'
+                    onPress=()=>{navigation.navigate({routeName})}
+                }
+                return <NavigationButton title={screenName} onPress={()=>navigation.navigate({routeName})} color={tintColor} />;
+            },
+        }),
+        tabBarOptions: {
+            initialRouteName: 'BreweryList',
+            activeTintColor: 'white',
+            inactiveTintColor: 'black',
+            showLabel: false,
+        }
+    }
+    
+    )
 })
 
 const App = createAppContainer(switchNavigator)
