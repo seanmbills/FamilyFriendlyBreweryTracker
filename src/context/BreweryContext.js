@@ -5,12 +5,14 @@ import {navigate} from '../navigationRef'
 const breweryReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
-            return {...state, errorMessage: action.payload}
+            return {...state, errorMessage: action.payload, results: null}
+        case 'brewery':
+            return {...state, errorMessage: '', individualResult: action.payload.response}
         case 'search':
             return {...state, count: action.payload.count, results: action.payload.response}
         case 'clear_error_message':
             return {...state, errorMessage: ''}
-        default: 
+        default:
             return state;
     }
 }
@@ -53,7 +55,7 @@ function stripAccommodationsSearch(accommodationsSearch) {
 const getSearchResults = (dispatch) => {
     return async ({
         name, latitude, longitude, zipCode, distance,
-        maximumPrice, accommodationsSearch, openNow, 
+        maximumPrice, accommodationsSearch, openNow,
         kidFriendlyNow, minimumRating
     }) => {
 
@@ -62,7 +64,7 @@ const getSearchResults = (dispatch) => {
        
         var req = {
             name, latitude, longitude, zipCode, distance,
-            maximumPrice, accommodationsSearch, openNow, 
+            maximumPrice, accommodationsSearch, openNow,
             kidFriendlyNow, minimumRating
         }
         if (latitude == '' || longitude == '') {
@@ -75,7 +77,7 @@ const getSearchResults = (dispatch) => {
         console.log(req);
         try { 
             const response = await ServerApi.get('/search',
-                {params: req}, 
+                {params: req},
                 {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
             );
             console.log(response.data);
@@ -90,6 +92,29 @@ const getSearchResults = (dispatch) => {
     }
 }
 
+const getBrewery = (dispatch) => {
+    return async ({
+        breweryId
+    }) => {
+        // make api request to get a single brewery with this id
+        const req = {
+            breweryId
+        }
+        try {
+            const response = await ServerApi.get('/brewery',
+                {params: req},
+                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json'}}
+            );
+
+            dispatch({type: 'brewery', payload: response.data})
+
+        } catch (err) {
+            console.log(err.response.data.error)
+            dispatch({ type: 'add_error_message', payload: err.response.data})
+        }
+    }
+}
+
 const clearErrorMessage = dispatch => () => {
     dispatch({type: 'clear_error_message'})
 }
@@ -98,7 +123,8 @@ const clearErrorMessage = dispatch => () => {
 export const {Provider, Context} = createDataContext(
     breweryReducer,
     {
-        getSearchResults
+        getSearchResults,
+        getBrewery
     },
-    {results: [], count: 0, errorMessage: ''}
+    {results: [], individualResult: null, count: 0, errorMessage: ''}
 )
