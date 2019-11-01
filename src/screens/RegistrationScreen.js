@@ -150,12 +150,22 @@ const RegistrationScreen = ({navigation}) => {
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
             aspect: [4, 3],
+            base64: true,
+            quality: 1.0
         });
+        
 
-        console.log(result);
+        // const file ={
+        //     ...result,
+        //     // name: '',
+        //     // type: 'image/jpeg',
+        // }
+        console.log(result)
+        console.log(typeof(result))
+
 
         if (!result.cancelled) {
-            setProfilePic(result.uri)
+            setProfilePic(result)
         }
     };
 
@@ -174,7 +184,7 @@ const RegistrationScreen = ({navigation}) => {
                 onPress={this._pickImage}
                 />
                 {profilePic &&
-                <Image source={{ uri: profilePic }} style={{ width: 200, height: 200 }} />}
+                <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />}
             </View>
 
             <View style={styles.formElement}>
@@ -347,7 +357,7 @@ const RegistrationScreen = ({navigation}) => {
                             const zipCode = zip;
                             register({email, userId, 
                                 password, birthDate, firstName, lastName,
-                                phoneNumber, zipCode });
+                                phoneNumber, zipCode, profilePic });
                         } else {
                             console.log("Input was not valid");
                         }
