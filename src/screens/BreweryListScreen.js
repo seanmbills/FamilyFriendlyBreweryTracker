@@ -6,8 +6,9 @@ import WelcomeButton from '../components/WelcomeButton'
 import SearchBar from '../components/SearchBar'
 import ResultsList from '../components/ResultsList'
 
+
 const BreweryListScreen = ({navigation}) => {
-    const {state, getSearchResults} = useContext(BreweryContext)
+    const {state, getSearchResults, getOwnedBreweries} = useContext(BreweryContext)
     const [searchTerm, setSearchTerm] = useState("")
 
     return ( 
@@ -20,6 +21,14 @@ const BreweryListScreen = ({navigation}) => {
                 title="Update Account"
                 onPress={()=> navigation.navigate("UpdateAccount")}
             />
+            <WelcomeButton
+                title="More"
+                onPress={ async ()=> {
+
+                    await getOwnedBreweries();
+                    navigation.navigate('More');
+                }}
+            />
         </View>
         
     );
@@ -27,4 +36,4 @@ const BreweryListScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({})
 
-export default BreweryListScreen
+export default BreweryListScreen;
