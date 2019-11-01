@@ -11,6 +11,7 @@ import Modal from 'react-native-modal'
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 const BreweryForm = ({isNew, navigation}) => {
+    console.log("isNew ", isNew)
     const getOpenHrsFromStr = (hoursString) => {
         var openHours = hoursString.substring(0,hoursString.indexOf(' '));
         var numIndex = 0;
@@ -1218,7 +1219,7 @@ const styles = StyleSheet.create({
     dialogTitle: {
         color: 'black',
         backgroundColor: 'white',
-        fontSize: '25'
+        fontSize: 25
     }
 });
 
