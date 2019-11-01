@@ -1,7 +1,7 @@
 import React from 'react'
 
 import {
-    createAppContainer, 
+    createAppContainer,
     createSwitchNavigator,
 } from 'react-navigation'
 import { createBottomTabNavigator } from 'react-navigation-tabs';
@@ -12,6 +12,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import BreweryListScreen from './src/screens/BreweryListScreen'
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import BreweryDetailsScreen from './src/screens/BreweryDetailsScreen';
+import WriteReviewScreen from './src/screens/WriteReviewScreen';
 
 import {Provider as AuthProvider} from './src/context/AuthContext'
 import {Provider as BreweryProvider} from './src/context/BreweryContext'
@@ -30,6 +31,7 @@ const switchNavigator = createSwitchNavigator({
         ForgotPassword: ForgotPasswordScreen,
         PasswordResetSuccess: PasswordResetSuccessScreen,
         BreweryDetails: BreweryDetailsScreen,
+        WriteReview: WriteReviewScreen
     },
     {
         initialRouteName: 'Welcome',
@@ -64,5 +66,3 @@ export default () => {
         </BreweryProvider>
     )
 }
-
-
