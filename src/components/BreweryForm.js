@@ -7,11 +7,11 @@ import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
 import WelcomeButton from '../components/WelcomeButton'
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
-import Modal from 'react-native-modal'
+
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 const BreweryForm = ({isNew, navigation}) => {
-    console.log("isNew ", isNew)
+    
     const getOpenHrsFromStr = (hoursString) => {
         var openHours = hoursString.substring(0,hoursString.indexOf(' '));
         var numIndex = 0;
@@ -150,35 +150,35 @@ const BreweryForm = ({isNew, navigation}) => {
 
     const [timePickerVisible, setTimePickerVisible] = useState(false);
 
-    const [mondayOpenTime, setMondayOpenTime] = (brewery) ? useState(initHours['monOpen']) : useState('8AM');
-    const [mondayCloseTime, setMondayCloseTime] = (brewery) ? useState(initHours['monClose']) : useState('8PM');
-    const [tuesdayOpenTime, setTuesdayOpenTime] = (brewery) ? useState(initHours['tueOpen']) : useState('8AM');
-    const [tuesdayCloseTime, setTuesdayCloseTime] = (brewery) ? useState(initHours['tueClose']) : useState('8PM');
-    const [wednesdayOpenTime, setWednesdayOpenTime] = (brewery) ? useState(initHours['wedOpen']) : useState('8AM');
-    const [wednesdayCloseTime, setWednesdayCloseTime] = (brewery) ? useState(initHours['wedClose']) : useState('8PM');
-    const [thursdayOpenTime, setThursdayOpenTime] = (brewery) ? useState(initHours['thuOpen']) : useState('8AM');
-    const [thursdayCloseTime, setThursdayCloseTime] = (brewery) ? useState(initHours['thuClose']) : useState('8PM');
-    const [fridayOpenTime, setFridayOpenTime] = (brewery) ? useState(initHours['friOpen']) : useState('8AM');
-    const [fridayCloseTime, setFridayCloseTime] = (brewery) ? useState(initHours['friClose']) : useState('8PM');
-    const [saturdayOpenTime, setSaturdayOpenTime] = (brewery) ? useState(initHours['satOpen']) : useState('8AM');
-    const [saturdayCloseTime, setSaturdayCloseTime] = (brewery) ? useState(initHours['satClose']) : useState('8PM');
-    const [sundayOpenTime, setSundayOpenTime] = (brewery) ? useState(initHours['sunOpen']) : useState('8AM');
-    const [sundayCloseTime, setSundayCloseTime] = (brewery) ? useState(initHours['sunClose']) : useState('8PM');
+    const [mondayOpenTime, setMondayOpenTime] = (brewery) ? useState(initHours['monOpen']) : useState('8:00AM');
+    const [mondayCloseTime, setMondayCloseTime] = (brewery) ? useState(initHours['monClose']) : useState('8:00PM');
+    const [tuesdayOpenTime, setTuesdayOpenTime] = (brewery) ? useState(initHours['tueOpen']) : useState('8:00AM');
+    const [tuesdayCloseTime, setTuesdayCloseTime] = (brewery) ? useState(initHours['tueClose']) : useState('8:00PM');
+    const [wednesdayOpenTime, setWednesdayOpenTime] = (brewery) ? useState(initHours['wedOpen']) : useState('8:00AM');
+    const [wednesdayCloseTime, setWednesdayCloseTime] = (brewery) ? useState(initHours['wedClose']) : useState('8:00PM');
+    const [thursdayOpenTime, setThursdayOpenTime] = (brewery) ? useState(initHours['thuOpen']) : useState('8:00AM');
+    const [thursdayCloseTime, setThursdayCloseTime] = (brewery) ? useState(initHours['thuClose']) : useState('8:00PM');
+    const [fridayOpenTime, setFridayOpenTime] = (brewery) ? useState(initHours['friOpen']) : useState('8:00AM');
+    const [fridayCloseTime, setFridayCloseTime] = (brewery) ? useState(initHours['friClose']) : useState('8:00PM');
+    const [saturdayOpenTime, setSaturdayOpenTime] = (brewery) ? useState(initHours['satOpen']) : useState('8:00AM');
+    const [saturdayCloseTime, setSaturdayCloseTime] = (brewery) ? useState(initHours['satClose']) : useState('8:00PM');
+    const [sundayOpenTime, setSundayOpenTime] = (brewery) ? useState(initHours['sunOpen']) : useState('8:00AM');
+    const [sundayCloseTime, setSundayCloseTime] = (brewery) ? useState(initHours['sunClose']) : useState('8:00PM');
 
-    const [mondayKidOpenTime, setMondayKidOpenTime] = (brewery) ? useState(initHours['monOpen']) : useState('8AM');
-    const [mondayKidCloseTime, setMondayKidCloseTime] = (brewery) ? useState(initHours['monClose']) : useState('8PM');
-    const [tuesdayKidOpenTime, setTuesdayKidOpenTime] = (brewery) ? useState(initHours['tueOpen']) : useState('8AM');
-    const [tuesdayKidCloseTime, setTuesdayKidCloseTime] = (brewery) ? useState(initHours['tueClose']) : useState('8PM');
-    const [wednesdayKidOpenTime, setWednesdayKidOpenTime] = (brewery) ? useState(initHours['wedOpen']) : useState('8AM');
-    const [wednesdayKidCloseTime, setWednesdayKidCloseTime] = (brewery) ? useState(initHours['wedClose']) : useState('8PM');
-    const [thursdayKidOpenTime, setThursdayKidOpenTime] = (brewery) ? useState(initHours['thuOpen']) : useState('8AM');
-    const [thursdayKidCloseTime, setThursdayKidCloseTime] = (brewery) ? useState(initHours['thuClose']) : useState('8PM');
-    const [fridayKidOpenTime, setFridayKidOpenTime] = (brewery) ? useState(initHours['friOpen']) : useState('8AM');
-    const [fridayKidCloseTime, setFridayKidCloseTime] = (brewery) ? useState(initHours['friClose']) : useState('8PM');
-    const [saturdayKidOpenTime, setSaturdayKidOpenTime] = (brewery) ? useState(initHours['satOpen']) : useState('8AM');
-    const [saturdayKidCloseTime, setSaturdayKidCloseTime] = (brewery) ? useState(initHours['satClose']) : useState('8PM');
-    const [sundayKidOpenTime, setSundayKidOpenTime] = (brewery) ? useState(initHours['sunOpen']) : useState('8AM');
-    const [sundayKidCloseTime, setSundayKidCloseTime] = (brewery) ? useState(initHours['sunClose']) : useState('8PM');
+    const [mondayKidOpenTime, setMondayKidOpenTime] = (brewery) ? useState(initHours['monOpen']) : useState('8:00AM');
+    const [mondayKidCloseTime, setMondayKidCloseTime] = (brewery) ? useState(initHours['monClose']) : useState('8:00PM');
+    const [tuesdayKidOpenTime, setTuesdayKidOpenTime] = (brewery) ? useState(initHours['tueOpen']) : useState('8:00AM');
+    const [tuesdayKidCloseTime, setTuesdayKidCloseTime] = (brewery) ? useState(initHours['tueClose']) : useState('8:00PM');
+    const [wednesdayKidOpenTime, setWednesdayKidOpenTime] = (brewery) ? useState(initHours['wedOpen']) : useState('8:00AM');
+    const [wednesdayKidCloseTime, setWednesdayKidCloseTime] = (brewery) ? useState(initHours['wedClose']) : useState('8:00PM');
+    const [thursdayKidOpenTime, setThursdayKidOpenTime] = (brewery) ? useState(initHours['thuOpen']) : useState('8:00AM');
+    const [thursdayKidCloseTime, setThursdayKidCloseTime] = (brewery) ? useState(initHours['thuClose']) : useState('8:00PM');
+    const [fridayKidOpenTime, setFridayKidOpenTime] = (brewery) ? useState(initHours['friOpen']) : useState('8:00AM');
+    const [fridayKidCloseTime, setFridayKidCloseTime] = (brewery) ? useState(initHours['friClose']) : useState('8:00PM');
+    const [saturdayKidOpenTime, setSaturdayKidOpenTime] = (brewery) ? useState(initHours['satOpen']) : useState('8:00AM');
+    const [saturdayKidCloseTime, setSaturdayKidCloseTime] = (brewery) ? useState(initHours['satClose']) : useState('8:00PM');
+    const [sundayKidOpenTime, setSundayKidOpenTime] = (brewery) ? useState(initHours['sunOpen']) : useState('8:00AM');
+    const [sundayKidCloseTime, setSundayKidCloseTime] = (brewery) ? useState(initHours['sunClose']) : useState('8:00PM');
 
     const [waterStations, setWaterStations] = (brewery) ? useState(accommodations['petFriendly']['waterStations']) : useState(false);
     const [indoorSpaces, setIndoorSpaces] = (brewery) ? useState(accommodations['petFriendly']['indoorSpaces']) : useState(false);
@@ -193,6 +193,8 @@ const BreweryForm = ({isNew, navigation}) => {
     const [outdoorGames, setOutdoorGames] = (brewery) ? useState(accommodations['childAccommodations']['games']['outdoor']) : useState(false);
     const [childSeating, setChildSeating] = (brewery) ? useState(accommodations['childAccommodations']['seating']) : useState(false);
     const [strollerSpace, setStrollerSpace] = (brewery) ? useState(accommodations['childAccommodations']['strollerSpace']) : useState(false);
+
+    const [dialogMessage, setDialogMessage] = useState('');
     const [showFilters, setShowFilters] = useState(false);
 
     const [showTimes, setShowTimes] = useState(false);
@@ -459,14 +461,6 @@ const BreweryForm = ({isNew, navigation}) => {
         setWebsiteErrorMsg('');
     }
 
-    renderModalContent = () => {
-        return (
-        <View>
-            <Text>Brewery Updated Successfully!</Text>
-        </View>
-        );
-
-    }
 
     return (
         <ScrollView>
@@ -674,7 +668,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     <Text style={styles.timeTitle}>Wednesday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
                         setTimePickerVisible(!timePickerVisible)
-                        setDayPicked("wednesdayClosed");
+                        setDayPicked("wednesdayClose");
                     }}
                     >
                         <Text>{wednesdayCloseTime}</Text>
@@ -805,7 +799,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     <Text style={styles.timeTitle}>Monday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
                         setTimePickerVisible(!timePickerVisible)
-                        setDayPicked('mondayKidClosed');
+                        setDayPicked('mondayKidClose');
                     }}>
                         <Text>{mondayKidCloseTime}</Text>
                     </TouchableOpacity>
@@ -1093,12 +1087,13 @@ const BreweryForm = ({isNew, navigation}) => {
                             setWebsiteErrorMsg("Must provide a valid website URL");
                             return;
                         } 
-                        var breweryId = brewery._id;
+                        
+
                         var kidHoursSameAsNormal = kidHoursSame;
                         
                         var response;
                         if (isNew) {
-                            console.log("isNew is true")
+                            
                             response =  await createBrewery({
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
@@ -1106,6 +1101,7 @@ const BreweryForm = ({isNew, navigation}) => {
                             });
                            
                         } else {
+                            var breweryId = brewery._id;
                             response = await updateBrewery({
                                 breweryId,
                                 name, address, price, phoneNumber, 
@@ -1114,10 +1110,22 @@ const BreweryForm = ({isNew, navigation}) => {
                             });
                             getOwnedBreweries();
                         }
-                        if (response.status == 200) {
-                            setDialogOpen(true);
+                        console.log("response status " , response)
+
+                        if (!response || parseInt(response.status) >= 400) {
+                            console.log("Update failed")
+                            setDialogMessage("Something went wrong. Brewery was not created/updated successfully.");
+                        } else {
+                            
+                            if (isNew) {
+                                setDialogMessage("Brewery Created Successfully");
+                            } else {
+                                setDialogMessage("Brewery Updated Successfully");
+                            }  
                         }
-   
+                        
+                        setDialogOpen(true);
+                        
                     }}
                 />
             </View>
@@ -1127,16 +1135,10 @@ const BreweryForm = ({isNew, navigation}) => {
             >
                 <DialogContent>
                     <View>
-                        { isNew && 
                         <View style={styles.dialogTitle}>
-                            <Text>Brewery Created Successfully</Text> 
+                            <Text>{dialogMessage}</Text>
                         </View>
-                        }
-                        { !isNew &&
-                        <View style={styles.dialogTitle}>
-                            <Text>Brewery Updated Successfully</Text>
-                        </View>
-                        }
+                        
                     </View>
                     <View>
                         <WelcomeButton

@@ -140,7 +140,7 @@ const createBrewery = (dispatch) => {
             );
 
             dispatch({type: 'create', payload: response.data})
-            //return response;
+            return response;
         }
         catch (err) {
             console.log(err)
