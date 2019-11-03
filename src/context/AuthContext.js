@@ -43,51 +43,23 @@ const register = (dispatch) => {
 
             // upload the profile picture, if there is one, to the AWS S3 instance
             if (profilePic) {
-                // profilePic.name = `${userId}.jpg`
-                // console.log(profilePic.name)
-                // console.log(profilePic)
-
-                // let formData = new FormData()
-                // formData.append(
-                //     'sbills4', {
-                //         uri: profilePic.uri,
-                //         name: 'sbills4.jpg',
-                //         type: 'image/jpeg'
-                //     }
-                // )
-
-                // let options = {
-                //     method: 'PUT',
-                //     body: formData,
-                //     headers: {
-                //       Accept: 'application/json',
-                //       'Content-Type': 'multipart/form-data',
-                //     },
-                //   };
-                
-                //   const response = await fetch("https://fambrews-images.s3.amazonaws.com/accountImages/sbills4.jpg?AWSAccessKeyId=AKIAQJJ2SEXMULJ2CXN4&Content-Type=image%2Fjpeg&Expires=1572555309&Signature=UmcARxdzaU%2FzWhYyatjupEsBkV0%3D", options);
-                //   console.log(response)
                 var options = {
                     headers: {
                         'Content-Type': 'image/jpeg'
                     }
                 }
-                // const awsResponse = await axios.put("https://fambrews-images.s3.amazonaws.com/accountImages/sbills4.jpg?AWSAccessKeyId=AKIAQJJ2SEXMULJ2CXN4&Content-Type=image%2Fjpeg&Expires=1572555309&Signature=UmcARxdzaU%2FzWhYyatjupEsBkV0%3D",
-                //     profilePic, options
-                // )
+
+                console.log(profilePic.base64)
+                
                 var buff = Buffer.from(profilePic.base64, 'base64')
+                console.log(buff)
                 const awsResponse = await axios.put(
-                    "https://fambrews-images.s3.amazonaws.com/accountImages/sbills4.jpg?AWSAccessKeyId=AKIAQJJ2SEXMULJ2CXN4&Content-Type=image%2Fjpeg&Expires=1572563802&Signature=AGDkBs6XQixbThlfSKCjMatokyQ%3D",
-                    // {
-                    //     uri: profilePic.uri,
-                    //     type: 'image/jpeg',
-                    //     name: 'sbills4.jpg'
-                    // },
+                    // response.data.signedURL,
+                    "https://fambrews-images.s3.amazonaws.com/accountImages/sbills4.jpg?AWSAccessKeyId=AKIAQJJ2SEXMULJ2CXN4&Content-Type=image%2Fjpeg&Expires=1572811312&Signature=diPENOl7Zb1KRf1Qtp%2Fr8vvwkVg%3D",
                     buff,
                     options
                 )
-                console.log(awsResponse)
-                // axios.put(response.data.signedURL, profilePic, options)
+                console.log("response: " + awsResponse)
             }
 
             // dispatch({type: 'register', payload: response.data})

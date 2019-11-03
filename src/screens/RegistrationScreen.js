@@ -137,7 +137,6 @@ const RegistrationScreen = ({navigation}) => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
-            aspect: [4, 3],
             base64: true,
             quality: 1.0
         });
@@ -340,7 +339,7 @@ const RegistrationScreen = ({navigation}) => {
                                 const zipCode = zip;
                                 register({email, userId, 
                                     password, birthDate, firstName, lastName,
-                                    phoneNumber, zipCode});
+                                    phoneNumber, zipCode, profilePic});
                             } else {
                                 console.log("Input was not valid");
                             }

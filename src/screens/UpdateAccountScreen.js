@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, StyleSheet, Button, Image } from 'react-native';
 import WelcomeButton from '../components/WelcomeButton';
 import ZipTextField from '../components/ZipTextField';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -7,6 +7,9 @@ import { TextInput, TouchableOpacity, ScrollView } from 'react-native-gesture-ha
 import PasswordField from '../components/PasswordField';
 import { validatePassword, validateEmail } from '../api/InputValidation';
 import PhoneInput from 'react-native-phone-input';
+import * as ImagePicker from 'expo-image-picker'
+import Constants from 'expo-constants'
+import * as Permissions from 'expo-permissions'
 
 const UpdateAccountScreen = ({navigation}) => {
     const {state, userUpdate, updatePassword, updateEmail, updatePhone,
@@ -24,10 +27,49 @@ const UpdateAccountScreen = ({navigation}) => {
     const [ changeEmail, setChangeEmail ] = useState(false);
     const [ newEmail, setNewEmail ] = useState('');
     const [ passErrMsg, setPassErrMsg ] = useState('');
+    const [ profilePic, setProfilePic ] = useState(null)
+
+
+    useEffect(() => {
+        getPermissionAsync()
+    }, [])
+    
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    _pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            base64: true,
+            quality: 1.0
+        });
+        
+        if (!result.cancelled) {
+            setProfilePic(result)
+        }
+    };
+
 
     return ( 
         <ScrollView style={styles.background}>
             <Text style={styles.title}>Update Account</Text>
+
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Button
+                        title="Pick an image from camera roll"
+                        onPress={this._pickImage}
+                    />
+                    {profilePic &&
+                    <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />}
+                </View>
+
         { !needPassword && 
         <View>
             <View style={styles.fieldContainer}>
