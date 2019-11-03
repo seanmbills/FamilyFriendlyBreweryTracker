@@ -1,4 +1,4 @@
-import React, {useState, useContext } from 'react';
+import React, {useState, useContext, useEffect } from 'react';
 import {
     Text,
     StyleSheet,
@@ -135,23 +135,13 @@ const RegistrationScreen = ({navigation}) => {
 
     _pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [4, 3],
             base64: true,
             quality: 1.0
         });
         
-
-        // const file ={
-        //     ...result,
-        //     // name: '',
-        //     // type: 'image/jpeg',
-        // }
-        console.log(result)
-        console.log(typeof(result))
-
-
         if (!result.cancelled) {
             setProfilePic(result)
         }
@@ -170,8 +160,8 @@ const RegistrationScreen = ({navigation}) => {
 
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <Button
-                    title="Pick an image from camera roll"
-                    onPress={this._pickImage}
+                        title="Pick an image from camera roll"
+                        onPress={this._pickImage}
                     />
                     {profilePic &&
                     <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />}
