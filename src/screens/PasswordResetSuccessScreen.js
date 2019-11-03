@@ -1,11 +1,14 @@
 import React from 'react'
 import {View, StyleSheet, Text} from 'react-native'
 import WelcomeButton from '../components/WelcomeButton'
+import SubHeading from '../components/SubHeading';
 
 const PasswordResetSuccessScreen = ({navigation}) => {
     return (
         <View style={styles.background}>
-            <Text style={styles.header}>Password Reset Successful</Text>
+            <SubHeading
+                title="Password Reset Successful"
+            />
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Back to Login"
@@ -21,17 +24,11 @@ const PasswordResetSuccessScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     background: {
         backgroundColor: "#fcc203",
-        flex: 1
-    },
-    header: {
-        fontSize: 40,
-        fontWeight: "bold",
-        textAlign: "center",
-        margin: 20
+        flex: 1,
+        paddingTop: 40
     },
     buttonContainer: {
-        alignItems: "center",
-        margin: 20
+        alignItems: "center"
     }
 })
 

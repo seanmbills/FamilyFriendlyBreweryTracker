@@ -21,7 +21,8 @@ const styles = StyleSheet.create({
         height: 60,
         width: 110,
         backgroundColor: '#ffffff',
-        margin: 5,
+        marginTop: 15,
+        marginBottom: 15,
         borderRadius: 10,
         opacity: .95,
         justifyContent: 'center' //This centers text vertically
