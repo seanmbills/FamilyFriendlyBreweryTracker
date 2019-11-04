@@ -101,6 +101,9 @@ const getSearchResults = (dispatch) => {
     }
 }
 
+/*
+ * Gets a list of the brewery names and ids that a users "Owns" or has created
+*/
 const getOwnedBreweries = (dispatch) => {
     return async () => {
         try {
@@ -109,6 +112,7 @@ const getOwnedBreweries = (dispatch) => {
               'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
             }});
             
+            // attach list of owned breweries to context object
             dispatch({type: 'owned_breweries', payload: response.data})
         } catch (err) {
             console.log(err.response.data.error);
@@ -117,6 +121,23 @@ const getOwnedBreweries = (dispatch) => {
     }
 }
 
+/*
+ * Sends request to backend to create a brewery
+ *
+ * @param name - the brewery name
+ * @param address - the brewery address
+ *              - contains: street, city, state, and zipcode
+ * @param price - integer - 0-4 which indicates relatively how expensive a brewery is $-$$$
+ * @param phoneNumber - string - the brewery phone number (of form XXXXXXXXXX)
+ * @param email - string - the email address for the brewery
+ * @param website - string - the website address for the brewery
+ * @param businessHours - object - contains open and close hours for each day of the week
+ * @param kidsHoursSameAsNormal - boolean - true if kidFriendlyHours match business operational hours
+ * @param alternativeKidFriendlyHours - object - contains hours, open and close, for when brewery is kidFriendly
+ * @param accommodations - object - contains true & false for accommodations the brewery has chosen to add
+ * 
+ * @return - a response object from the backend. Most important information is the response.status (code)
+ */
 const createBrewery = (dispatch) => {
     
     return async ({
@@ -124,7 +145,7 @@ const createBrewery = (dispatch) => {
             email, website, businessHours, kidHoursSameAsNormal, 
             alternativeKidFriendlyHours, accommodations
             }) => {
-        accommodations = stripAccommodationsSearch(accommodations);
+        accommodations = stripAccommodationsSearch(accommodations); //remove fields from accommodations object which are false
 
         var req = {name, address, price, phoneNumber, email, website,
                     businessHours, kidHoursSameAsNormal, alternativeKidFriendlyHours,
@@ -150,6 +171,11 @@ const createBrewery = (dispatch) => {
     }
 }
 
+/*
+ * Gets detailed information about a brewery by querying the database using its id
+ *
+ * @param - breweryId - unique breweryId to be used to query the backend
+ */
 const getBrewery = (dispatch) => {
     return async ({
         breweryId
@@ -172,7 +198,23 @@ const getBrewery = (dispatch) => {
     }
 }
 
-
+/*
+ * Sends request to backend to update a brewery
+ *
+ * @param name - the brewery name
+ * @param address - the brewery address
+ *              - contains: street, city, state, and zipcode
+ * @param price - integer - 0-4 which indicates relatively how expensive a brewery is $-$$$
+ * @param phoneNumber - string - the brewery phone number (of form XXXXXXXXXX)
+ * @param email - string - the email address for the brewery
+ * @param website - string - the website address for the brewery
+ * @param businessHours - object - contains open and close hours for each day of the week
+ * @param kidsHoursSameAsNormal - boolean - true if kidFriendlyHours match business operational hours
+ * @param alternativeKidFriendlyHours - object - contains hours, open and close, for when brewery is kidFriendly
+ * @param accommodations - object - contains true & false for accommodations the brewery has chosen to add
+ * 
+ * @return - a response object from the backend. Most important information is the response.status (code)
+ */
 const updateBrewery = (dispatch) => {
     return async ({
             breweryId,
@@ -209,6 +251,9 @@ const updateBrewery = (dispatch) => {
     }
 }
 
+/*
+ * Removes individualBreweryResult data from context object
+*/
 const clearIndividualBreweryResult = (dispatch) => {
     return async () => {
         dispatch({type: 'clear_individual_brewery_result', payload: null});
