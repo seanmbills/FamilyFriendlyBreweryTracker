@@ -1,6 +1,12 @@
 import React from 'react';
 import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 
+/* 
+ * Simple button used across the application in attempts for styling uniformity
+ * 
+ * @prop onPress - function - determines onPress functionality of WelcomeButton Component
+ * @prop title - string - the text the button will display
+ */
 const WelcomeButton = ({onPress, title}) => {
     return (
         <TouchableOpacity onPress={onPress}>
