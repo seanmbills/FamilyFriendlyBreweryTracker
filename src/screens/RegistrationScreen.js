@@ -19,6 +19,7 @@ import Constants from 'expo-constants'
 import * as Permissions from 'expo-permissions'
 import {Input} from 'react-native-elements';
 import {validatePassword, validateEmail} from '../api/InputValidation'
+// import EmptyProfilePic from '../../assets/EmptyProfilePic.png'
 
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
@@ -162,8 +163,14 @@ const RegistrationScreen = ({navigation}) => {
                         title="Pick an image from camera roll"
                         onPress={this._pickImage}
                     />
-                    {profilePic &&
-                    <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />}
+                    {   
+                        !profilePic && 
+                        <Image source={require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
+                    }  
+                    { 
+                        profilePic &&
+                        <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />
+                    }
                 </View>
 
                 <View style={styles.formElement}>

@@ -19,6 +19,9 @@ const BreweryListScreen = ({navigation}) => {
             </ScrollView>
             <WelcomeButton
                 title="Update Account"
+                // need to add in a call to "getUserInfo" backend route
+                // to pre-populate the user's zip code, first name, last name, and 
+                // profile pic if one exists
                 onPress={()=> navigation.navigate("UpdateAccount")}
             />
             <WelcomeButton
