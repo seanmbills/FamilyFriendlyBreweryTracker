@@ -203,6 +203,10 @@ const BreweryDetailsScreen = ({navigation}) => {
               <Text style={styles.accommodations}>outside : <Emoji name="x" style={{fontSize: 18}} /></Text>}
           </View>
 
+          <TouchableOpacity onPress={()=> navigation.navigate("WriteReview", {breweryId: breweryResult._id, name:breweryResult.name})}>
+            <Text> Click to write a review </Text>
+          </TouchableOpacity>
+
     </ScrollView>
     );
 };
