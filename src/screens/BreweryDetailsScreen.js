@@ -83,7 +83,7 @@ const BreweryDetailsScreen = ({navigation}) => {
         </Text>
 
         {/*Displays the number and rating of reviews (clickable)*/}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=> navigation.navigate("ReadReviews", {breweryId: breweryResult._id, name:breweryResult.name, breweryReviews: breweryResult.comments, breweryFontSize: breweryFont})}>
           <Rating
               imageSize={20}
               readonly
@@ -202,10 +202,6 @@ const BreweryDetailsScreen = ({navigation}) => {
             {((toddlerAllowed || youngKidsAllowed || teensAllowed) && !kidGamesOutdoor) &&
               <Text style={styles.accommodations}>outside : <Emoji name="x" style={{fontSize: 18}} /></Text>}
           </View>
-
-          <TouchableOpacity onPress={()=> navigation.navigate("WriteReview", {breweryId: breweryResult._id, name:breweryResult.name})}>
-            <Text> Click to write a review </Text>
-          </TouchableOpacity>
 
     </ScrollView>
     );

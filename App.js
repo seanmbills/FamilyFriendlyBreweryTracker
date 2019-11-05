@@ -13,6 +13,7 @@ import BreweryListScreen from './src/screens/BreweryListScreen'
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import BreweryDetailsScreen from './src/screens/BreweryDetailsScreen';
 import WriteReviewScreen from './src/screens/WriteReviewScreen';
+import ReadReviewsScreen from './src/screens/ReadReviewsScreen';
 
 
 import {Provider as AuthProvider} from './src/context/AuthContext'
@@ -32,6 +33,8 @@ const switchNavigator = createSwitchNavigator({
         ForgotPassword: ForgotPasswordScreen,
         PasswordResetSuccess: PasswordResetSuccessScreen,
         BreweryDetails: BreweryDetailsScreen,
+        ReadReviews: ReadReviewsScreen,
+        WriteReview: WriteReviewScreen,
     },
     {
         initialRouteName: 'Welcome',
