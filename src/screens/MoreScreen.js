@@ -4,12 +4,20 @@ import { FlatList } from 'react-native-gesture-handler';
 import {Context as BreweryContext} from '../context/BreweryContext'
 import BreweryForm from '../components/BreweryForm';
 import WelcomeButton from '../components/WelcomeButton';
+import { withNavigationFocus } from 'react-navigation';
 
+import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 const MoreScreen = ({navigation}) => {
+    this.focusListener = navigation.addListener('didFocus', async () => {
+        setShowDialog(true);
+        await getOwnedBreweries();
+        setShowDialog(false);
+    })
 
-    const {state, getBrewery, clearIndividualBreweryResult} = useContext(BreweryContext);
+    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
     console.log(state.ownedBreweries);
+    const [showDialog, setShowDialog] = useState(false);
     return (
         <View style={styles.backgroundContainer}>
             { state.ownedBreweries.length > 0 &&
@@ -37,6 +45,15 @@ const MoreScreen = ({navigation}) => {
             </View>
             </View>
             }
+            <Dialog
+                visible={showDialog}
+            >
+                <DialogContent>
+                    <View>
+                        <Text>Fetching Owned Breweries...</Text>
+                    </View>
+                </DialogContent>
+            </Dialog>
             <View style={styles.contentContainer}>
                 <WelcomeButton
                     title="Create Brewery"
