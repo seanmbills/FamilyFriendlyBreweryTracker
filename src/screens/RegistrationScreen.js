@@ -11,6 +11,8 @@ import TitleText from '../components/TitleText';
 import WelcomeButton from '../components/WelcomeButton';
 import {validatePassword, validateEmail} from '../api/InputValidation'
 
+import BufferPopup from '../components/BufferPopup';
+
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
         return false;
@@ -65,6 +67,9 @@ const RegistrationScreen = ({navigation}) => {
     const [ zipErrMsg, setZipErrMsg ] = useState('');
     const [ birthDateErrMsg, setBirthDateErrMsg ] = useState('');
     const [ confirmPass, setConfirmPass ] = useState('');
+
+    const [bufferPopupVisible, setBufferPopupVisible ] = useState('');
+
     
     function validateInput(inputMap) {
         var isValid = true
@@ -278,7 +283,7 @@ const RegistrationScreen = ({navigation}) => {
                 <View style={styles.buttonContainer}>
                     <WelcomeButton
                         title="Register"
-                        onPress={() => {
+                        onPress={ async () => {
                             //Create map object to pass to input validation function
                             const inputMap = new Map();
                             inputMap.set('email', email);
@@ -294,9 +299,18 @@ const RegistrationScreen = ({navigation}) => {
                                 const userId = username;
                                 const phoneNumber = phone;
                                 const zipCode = zip;
-                                register({email, userId, 
+
+                                setBufferPopupVisible(true);
+
+                                var response = await register({email, userId, 
                                     password, birthDate, firstName, lastName,
                                     phoneNumber, zipCode});
+                                setBufferPopupVisible(false);
+                                if (!response || response.status >= 400) {
+                                    console.log("Error when registering");
+                                } else {
+                                    navigation.navigate('BreweryList');
+                                }
                             } else {
                                 console.log("Input was not valid");
                             }
@@ -312,6 +326,11 @@ const RegistrationScreen = ({navigation}) => {
                     />
                 </View>
             </ScrollView>
+            {/* Buffer popup will be displayed while user is waiting for registration response from backend */}
+            <BufferPopup 
+                isVisible={bufferPopupVisible}
+                text={"Registering"}
+                />
         </KeyboardAvoidingView>
     );
 };

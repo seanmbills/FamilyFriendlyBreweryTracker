@@ -2,13 +2,18 @@
 import React, {useState, useContext} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import {Context as BreweryContext} from '../context/BreweryContext'
-import { withNavigationFocus } from 'react-navigation';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
+
 
 
 // Local Imports
 import WelcomeButton from '../components/WelcomeButton';
+import {Context as BreweryContext} from '../context/BreweryContext'
+import { withNavigationFocus } from 'react-navigation';
+import BufferPopup from '../components/BufferPopup';
+
+
+
 
 /* 
  * Screen should contain two main components. 1.) a list of breweries a user "own's" or has created
@@ -21,14 +26,13 @@ const MoreScreen = ({navigation}) => {
         setShowDialog(false);
     })
 
-
-    
     /*
      * Need to import three context methods, getBrewery, clearIndividualBreweryResult, getOwnedBreweries
      * getBrewery is used when a brewery from the Owned Breweries list is selected.
      * clearIndividualBreweryResult is used when navigating to the createBrewery screen.
      * getOwnedBreweries is called when the screen is opened. This pulls down all screens a user owns
      */
+
     const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
     const [showDialog, setShowDialog] = useState(false);
     return (
@@ -37,7 +41,7 @@ const MoreScreen = ({navigation}) => {
              <View>
                 <View style={styles.contentContainer}>
                 <Text style={styles.subHeader}>My Breweries</Text>
-                 {/* flat list will get populated with breweries a user "Owns" */}
+                 {/* flat list will  get populated with breweries a user "Owns" */}
                 <FlatList
                     data={state.ownedBreweries}
                     keyExtractor={(result) => result.breweryId}
@@ -59,15 +63,7 @@ const MoreScreen = ({navigation}) => {
             </View>
             </View>
             }
-            <Dialog
-                visible={showDialog}
-            >
-                <DialogContent>
-                    <View>
-                        <Text>Fetching Owned Breweries...</Text>
-                    </View>
-                </DialogContent>
-            </Dialog>
+            <BufferPopup isVisible={showDialog} text={"Fetching Owned Breweries"}/>
             <View style={styles.contentContainer}>
                 <WelcomeButton
                     title="Create Brewery"
