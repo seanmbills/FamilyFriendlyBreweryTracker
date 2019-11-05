@@ -10,6 +10,8 @@ const authReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
+        case 'get_user_info':
+            return {...state, profileInfo: action.payload}
         case 'updatePassword':
         case 'updateUser':
         case 'updateEmail':
@@ -17,11 +19,27 @@ const authReducer = (state, action) => {
         case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
         case 'register':
-            return {...state, token: action.payload.token, /*signedURL: action.payload.signedURL,*/ errorMessage: ''}
+            return {...state, token: action.payload.token, signedURL: action.payload.signedURL, errorMessage: ''}
         case 'clear_error_message':
             return {...state, errorMessage: ''}
         default: 
             return state;
+    }
+}
+
+const getUserInfo = (dispatch) => {
+    return async() => {
+        try {
+            const response = await ServerApi.get('/getUserInfo',
+                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (await AsyncStorage.getItem('token'))}}
+            );
+            console.log(response.data)
+            dispatch({type: 'get_user_info', payload: response.data})
+
+        } catch (err) {
+            console.log(err.response.data.error)
+            dispatch({ type: 'add_error_message', payload: err.response.data})
+        }
     }
 }
 
@@ -31,15 +49,15 @@ const register = (dispatch) => {
         phoneNumber, zipCode, profilePic }) => {
         // make api request to sign up with this information
         try { 
-            // const response = await ServerApi.post('/signup', {email, userId, 
-            //     password, birthDate, firstName, lastName, phoneNumber, zipCode }, 
-            //     { 'Accept' : 'application/json', 'Content-type': 'application/json'});
+            const response = await ServerApi.post('/signup', {email, userId, 
+                password, birthDate, firstName, lastName, phoneNumber, zipCode }, 
+                { 'Accept' : 'application/json', 'Content-type': 'application/json'});
             // console.log(response.data);
             // if we sign up, modify our state to reflect that we're authenticated
             // (aka got a token back)
             // we also store the token on the device for later access
-            // await AsyncStorage.setItem('token', response.data.token)
-            // await AsyncStorage.setItem('signedURL', response.data.signedURL)
+            await AsyncStorage.setItem('token', response.data.token)
+            await AsyncStorage.setItem('signedURL', response.data.signedURL)
 
             // upload the profile picture, if there is one, to the AWS S3 instance
             if (profilePic) {
@@ -55,14 +73,14 @@ const register = (dispatch) => {
                 console.log(buff)
                 const awsResponse = await axios.put(
                     // response.data.signedURL,
-                    "https://fambrews-images.s3.amazonaws.com/accountImages/sbills4.jpg?AWSAccessKeyId=AKIAQJJ2SEXMULJ2CXN4&Content-Type=image%2Fjpeg&Expires=1572811312&Signature=diPENOl7Zb1KRf1Qtp%2Fr8vvwkVg%3D",
+                    await AsyncStorage.getItem('signedURL'),
                     buff,
                     options
                 )
                 console.log("response: " + awsResponse)
             }
 
-            // dispatch({type: 'register', payload: response.data})
+            dispatch({type: 'register', payload: response.data})
 
             // then need to navigate the user immediately to the logged in state
             navigate('loggedInFlow')
@@ -218,6 +236,6 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
-        userUpdate, updatePassword, updateEmail, updatePhone},// tryAutoSignin},
-    {token: null, signedURL: '', errorMessage: ''}
+        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo},// tryAutoSignin},
+    {token: null, signedURL: '', errorMessage: '', profileInfo: null}
 )

@@ -14,9 +14,9 @@ import * as Permissions from 'expo-permissions'
 const UpdateAccountScreen = ({navigation}) => {
     const {state, userUpdate, updatePassword, updateEmail, updatePhone,
         clearErrorMessage} = useContext(AuthContext);
-    const [ firstName, setFirstName ] = useState('');
-    const [ lastName, setLastName ] = useState('');
-    const [ zipCode, setZipCode ] = useState('');
+    const [ firstName, setFirstName ] = useState(state.profileInfo.firstName);
+    const [ lastName, setLastName ] = useState(state.profileInfo.lastName);
+    const [ zipCode, setZipCode ] = useState(state.profileInfo.zipCode);
     const [ newPhone, setNewPhone ] = useState('');
     const [ needPassword, setNeedPassword ] = useState(false);
     const [ oldPassword, setOldPassword ] = useState('');
@@ -62,13 +62,23 @@ const UpdateAccountScreen = ({navigation}) => {
             <Text style={styles.title}>Update Account</Text>
 
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <Button
-                        title="Pick an image from camera roll"
-                        onPress={this._pickImage}
-                    />
-                    {profilePic &&
-                    <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />}
-                </View>
+                <Button
+                    title="Pick an image from camera roll"
+                    onPress={this._pickImage}
+                />
+                {
+                    !profilePic && state.profileInfo.profilePic === '' && 
+                    <Image source = {require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
+                }
+                {
+                    !profilePic && state.profileInfo.profilePic !== '' &&
+                    <Image source={{uri: state.profileInfo.profilePic}} style={{width: 200, height: 200}} />
+                }
+                {
+                    profilePic &&
+                    <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />
+                }
+            </View>
 
         { !needPassword && 
         <View>

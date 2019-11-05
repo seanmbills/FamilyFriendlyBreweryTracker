@@ -1,6 +1,7 @@
 import React, {useState, useContext} from 'react'
 import {View, StyleSheet, Text, ScrollView} from 'react-native'
 import {Context as BreweryContext} from '../context/BreweryContext'
+import {Context as AuthContext} from '../context/AuthContext'
 
 import WelcomeButton from '../components/WelcomeButton'
 import SearchBar from '../components/SearchBar'
@@ -9,6 +10,7 @@ import ResultsList from '../components/ResultsList'
 
 const BreweryListScreen = ({navigation}) => {
     const {state, getSearchResults, getOwnedBreweries} = useContext(BreweryContext)
+    const {getUserInfo} = useContext(AuthContext)
     const [searchTerm, setSearchTerm] = useState("")
 
     return ( 
@@ -22,7 +24,10 @@ const BreweryListScreen = ({navigation}) => {
                 // need to add in a call to "getUserInfo" backend route
                 // to pre-populate the user's zip code, first name, last name, and 
                 // profile pic if one exists
-                onPress={()=> navigation.navigate("UpdateAccount")}
+                onPress={async ()=> {
+                    await getUserInfo()
+                    navigation.navigate("UpdateAccount")
+                }}
             />
             <WelcomeButton
                 title="More"
