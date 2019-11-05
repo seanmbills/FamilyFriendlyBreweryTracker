@@ -185,9 +185,16 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> {
+                    onPress={async ()=> {
                         if (validatePassword(newPassword) && newPassword === confirmPassword) {
-                            updatePassword({oldPassword, newPassword})
+                            //Set dialog text and make it visible
+                            setBufferText("Updating Password")
+                            setShowDialog(true);
+
+                            var response = await updatePassword({oldPassword, newPassword})
+
+                            //Set dialog to no longer be visible
+                            setShowDialog(false);
                         } else {
                             setPassErrMsg("Passwords must match!");
                         }
@@ -223,7 +230,14 @@ const UpdateAccountScreen = ({navigation}) => {
                         if (newPhone.length >= 10) {
                             password = oldPassword;
                             
+                            //Set dialog text and make it visible
+                            setBufferText("Updating Phone Number")
+                            setShowDialog(true);
+
                             var response = await updatePhone({password, newPhone});
+
+                            //Set dialog to no longer be visible
+                            setShowDialog(false);
                         }
                     }}
                 />
