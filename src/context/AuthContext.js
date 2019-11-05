@@ -13,11 +13,11 @@ const authReducer = (state, action) => {
         case 'get_user_info':
             return {...state, profileInfo: action.payload}
         case 'updatePassword':
-        case 'updateUser':
         case 'updateEmail':
         case 'updatePhone':
         case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
+        case 'udpateUser':
         case 'register':
             return {...state, token: action.payload.token, signedURL: action.payload.signedURL, errorMessage: ''}
         case 'clear_error_message':
@@ -146,13 +146,37 @@ const resetPassword = (dispatch) => {
 
 
 const userUpdate = (dispatch) => {
-    return async({firstName, lastName, zipCode}) => {
+    return async({firstName, lastName, zipCode, profilePic}) => {
         try {
             const response = await ServerApi.post('/userUpdate', {firstName, lastName, zipCode},{ headers: 
                 {'Accept' : 'application/json', 'Content-type' : 'application/json',
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
             await AsyncStorage.setItem('token', response.data.token)
-            dispatch({type: 'userUpdate', payload: response.data.token})
+            await AsyncStorage.setItem('signedURL', response.data.signedURL)
+
+            // upload the profile picture, if there is one, to the AWS S3 instance
+            if (profilePic) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+
+                console.log(profilePic.base64)
+                
+                var buff = Buffer.from(profilePic.base64, 'base64')
+                console.log(buff)
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    await AsyncStorage.getItem('signedURL'),
+                    buff,
+                    options
+                )
+                console.log("response: " + awsResponse)
+            }
+
+
+            dispatch({type: 'userUpdate', payload: response.data})
         } catch (err) {
             console.log(err.response.data);
             dispatch({type: 'add_error_message', payload: err.response.data.error});

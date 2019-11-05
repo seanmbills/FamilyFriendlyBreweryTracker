@@ -135,7 +135,7 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> userUpdate({firstName, lastName, zipCode})}
+                    onPress={()=> userUpdate({firstName, lastName, zipCode, profilePic})}
                 />
             </View>
         </View> }
