@@ -1,5 +1,16 @@
 import React, {useState, useContext, useEffect} from 'react'
-import {View, StyleSheet, Text, ScrollView, Dimensions, TouchableOpacity, Linking, Platform} from 'react-native'
+import {
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity,
+  Linking,
+  Platform,
+  FlatList, 
+  Image
+} from 'react-native'
 import {Context as BreweryContext} from '../context/BreweryContext'
 import {Rating} from 'react-native-ratings'
 import Emoji from 'react-native-emoji'
@@ -13,6 +24,16 @@ const BreweryDetailsScreen = ({navigation}) => {
     const openNow = state.individualResult[0].openNow
     const kidFriendlyNow = state.individualResult[0].kidFriendlyNow
 
+    const data = []
+    if (breweryResult.signedUrl1 && breweryResult.signedUrl1 !== ''){
+        data.push(breweryResult.signedUrl1)
+    }
+    if (breweryResult.signedUrl2 && breweryResult.signedUrl2 !== ''){
+        data.push(breweryResult.signedUrl2)
+    }
+    if (breweryResult.signedUrl3 && breweryResult.signedUrl3 !== ''){
+        data.push(breweryResult.signedUrl3)
+    }
 
     var priceStr = ""
     var priceStr2 = ""
@@ -96,10 +117,25 @@ const BreweryDetailsScreen = ({navigation}) => {
           </Text>
         </TouchableOpacity>
 
-        {/*Displays the pictures*/}
+        {/* Displays the pictures
         <Text style={{textAlign: 'center', paddingTop: 120, paddingBottom: 120}}> pics here
-        </Text>
-
+        </Text> */}
+        
+        {
+            data.length > 0 && 
+            <FlatList
+                horizontal
+                data={data}
+                renderItem={({item}) => {
+                    <Image source={{uri: item}} style={{width:400, height:400}} />
+                }}
+                keyExtractor={item => item}
+            />
+        }
+        {
+          data.length === 0 &&
+          <Image source={require('../../assets/PhotosComingSoon.jpg')} style={{width: 700, height: 500}} />
+        }
 
         {/*The first box*/}
         <View style={styles.boxInView}>
