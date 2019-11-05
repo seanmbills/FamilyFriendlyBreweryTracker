@@ -8,7 +8,7 @@ import Dialog, {DialogContent} from 'react-native-popup-dialog';
 // Local Imports
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as BreweryContext} from '../context/BreweryContext'
-import WelcomeButton from '../components/WelcomeButton';
+
 
 /* 
  * Screen should contain two main components. 1.) a list of breweries a user "own's" or has created
