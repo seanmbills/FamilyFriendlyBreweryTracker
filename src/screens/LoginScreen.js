@@ -71,8 +71,13 @@ const LoginScreen = ({navigation}) => {
                     onPress={ async () => {
                         const emailOrId = email;
                         setBufferPopupVisible(true);
-                        await signin({emailOrId, password})
+                        var response = await signin({emailOrId, password})
                         setBufferPopupVisible(false);
+                        if (!response || response.status >= 400) {
+                            console.log("Login error")
+                        } else {
+                            navigation.navigate("BreweryList");
+                        }
                     }}
                 />
             </View>
@@ -93,7 +98,10 @@ const LoginScreen = ({navigation}) => {
             </TouchableOpacity>
 
             {/* Buffer popup will be displayed while user is waiting for login response from backend */}
-            <BufferPopup isVisible={bufferPopupVisible}/>
+            <BufferPopup 
+                isVisible={bufferPopupVisible}
+                text={"Logging in"}
+                />
         </ScrollView>
     );
 }

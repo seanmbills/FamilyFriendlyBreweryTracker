@@ -302,11 +302,15 @@ const RegistrationScreen = ({navigation}) => {
 
                                 setBufferPopupVisible(true);
 
-                                await register({email, userId, 
+                                var response = await register({email, userId, 
                                     password, birthDate, firstName, lastName,
                                     phoneNumber, zipCode});
-
                                 setBufferPopupVisible(false);
+                                if (!response || response.status >= 400) {
+                                    console.log("Error when registering");
+                                } else {
+                                    navigation.navigate('BreweryList');
+                                }
                             } else {
                                 console.log("Input was not valid");
                             }
@@ -323,7 +327,10 @@ const RegistrationScreen = ({navigation}) => {
                 </View>
             </ScrollView>
             {/* Buffer popup will be displayed while user is waiting for registration response from backend */}
-            <BufferPopup isVisible={bufferPopupVisible}/>
+            <BufferPopup 
+                isVisible={bufferPopupVisible}
+                text={"Registering"}
+                />
         </KeyboardAvoidingView>
     );
 };

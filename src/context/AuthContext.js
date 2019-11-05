@@ -52,7 +52,7 @@ const register = (dispatch) => {
             dispatch({type: 'register', payload: response.data.token})
 
             // then need to navigate the user immediately to the logged in state
-            navigate('loggedInFlow')
+            return response;
         } catch (err) {
             console.log(err.response.data.error)
             // if we get an error back from signing up, need to display the appropriate error
@@ -78,7 +78,8 @@ const signin = (dispatch) => {
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'signin', payload: response.data.token})
             
-            navigate('loggedInFlow')
+            //navigate('loggedInFlow')
+            return response;
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error})
