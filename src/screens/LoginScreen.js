@@ -1,17 +1,24 @@
+// React native imports
 import React, { useState, useContext } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import {NavigationEvents} from 'react-navigation'
-import TitleText from '../components/TitleText';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import WelcomeButton from '../components/WelcomeButton';
 import {Context as AuthContext} from '../context/AuthContext'
 import {Input} from 'react-native-elements';
 
+// Local imports
+import TitleText from '../components/TitleText';
+import WelcomeButton from '../components/WelcomeButton';
 import BufferPopup from '../components/BufferPopup';
 
+/*
+ * Screen contains a form which allows a user to login using his/her username/email and password
+ * It also contains a link to another screen which will allow a user to reset his/her password
+ */
 const LoginScreen = ({navigation}) => {
     const {state, signin, clearErrorMessage} = useContext(AuthContext)
 
+    // State objecst for email/username and password input fields
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [bufferPopupVisible, setBufferPopupVisible] = useState(false);

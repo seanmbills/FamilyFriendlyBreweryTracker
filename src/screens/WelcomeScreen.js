@@ -2,6 +2,10 @@ import React from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import WelcomeButton from '../components/WelcomeButton';
 
+/*
+ * First screen a user views upon loading application. Allows them to navigate to two locations:
+ * login or registration
+ */
 const WelcomeScreen = ({navigation}) => {
     return (
         <View style= {styles.background}> 
