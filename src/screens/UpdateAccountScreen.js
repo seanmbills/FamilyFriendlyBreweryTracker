@@ -40,6 +40,11 @@ const UpdateAccountScreen = ({navigation}) => {
     const [ changeEmail, setChangeEmail ] = useState(false);
     const [ newEmail, setNewEmail ] = useState('');
 
+    //state object which indicates if popup buffer should be displayed
+    const [ showDialog, setShowDialog ] = useState(false);
+    //state object which dictates the text to be displayed at bottom of buffer dialog box
+    const [ bufferText, setBufferText ] = useState('');
+
     return ( 
         <ScrollView style={styles.background}>
             <Text style={styles.title}>Update Account</Text>
@@ -102,7 +107,18 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> userUpdate({firstName, lastName, zipCode})}
+                    onPress={ async ()=> {
+                        
+                        //Set dialog text and make it visible
+                        setBufferText("Updating Account")
+                        setShowDialog(true);
+
+                        //Make request to backend to update account
+                        var response = await userUpdate({firstName, lastName, zipCode})
+
+                        //set dialog to no longer be visible
+                        setShowDialog(false);
+                    }}
                 />
             </View>
         </View> }
@@ -203,10 +219,11 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> {
+                    onPress={ async ()=> {
                         if (newPhone.length >= 10) {
                             password = oldPassword;
-                            updatePhone({password, newPhone});
+                            
+                            var response = await updatePhone({password, newPhone});
                         }
                     }}
                 />
@@ -241,6 +258,8 @@ const UpdateAccountScreen = ({navigation}) => {
             </View>
         }
         {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
+
+        <BufferPopup isVisible={showDialog} text={bufferText}/>
         </ScrollView>
     );
 

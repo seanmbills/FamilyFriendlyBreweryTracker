@@ -2,8 +2,6 @@
 import React, {useState, useContext} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Dialog, {DialogContent} from 'react-native-popup-dialog';
-
 
 
 // Local Imports
@@ -20,10 +18,14 @@ import BufferPopup from '../components/BufferPopup';
  * 2.) an button which will navigate users to a screen where they can create a brewery
  */
 const MoreScreen = ({navigation}) => {
+    /* 
+     * Added this navigation listener so when a user navigates to the MoreScreen the app will
+     * fetch all breweries the user's owns 
+     */
     this.focusListener = navigation.addListener('didFocus', async () => {
-        setShowDialog(true);
+        setShowDialog(true); //This sets the bufferpop to be displayed
         await getOwnedBreweries();
-        setShowDialog(false);
+        setShowDialog(false); // this hids the bufferpop
     })
 
     /*
@@ -63,6 +65,7 @@ const MoreScreen = ({navigation}) => {
             </View>
             </View>
             }
+            {/* This bufferpopup gets displayed while the user is fetching breweries from the backend */}
             <BufferPopup isVisible={showDialog} text={"Fetching Owned Breweries"}/>
             <View style={styles.contentContainer}>
                 <WelcomeButton

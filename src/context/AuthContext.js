@@ -144,6 +144,7 @@ const userUpdate = (dispatch) => {
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'userUpdate', payload: response.data.token})
+            return response;
         } catch (err) {
             console.log(err.response.data);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -169,6 +170,7 @@ const updatePassword = (dispatch) => {
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'updatePassword', payload: response.data.token})
             console.log(response)
+            return response;
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -191,6 +193,7 @@ const updateEmail = (dispatch) => {
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'updateEmail', payload: response.data.token})
+            return response;
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -213,6 +216,7 @@ const updatePhone = (dispatch) => {
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'updatePhone', payload: response.data.token})
+            return response;
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
