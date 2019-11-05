@@ -7,11 +7,14 @@ import WelcomeButton from '../components/WelcomeButton';
 import {Context as AuthContext} from '../context/AuthContext'
 import {Input} from 'react-native-elements';
 
+import BufferPopup from '../components/BufferPopup';
+
 const LoginScreen = ({navigation}) => {
     const {state, signin, clearErrorMessage} = useContext(AuthContext)
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [bufferPopupVisible, setBufferPopupVisible] = useState(false);
 
        return (
         <ScrollView keyboardDismissMode='on-drag' style={styles.background}>
@@ -60,7 +63,9 @@ const LoginScreen = ({navigation}) => {
                     title="Login"
                     onPress={ async () => {
                         const emailOrId = email;
-                        signin({emailOrId, password})
+                        setBufferPopupVisible(true);
+                        await signin({emailOrId, password})
+                        setBufferPopupVisible(false);
                     }}
                 />
             </View>
@@ -79,6 +84,9 @@ const LoginScreen = ({navigation}) => {
             >
                 <Text style={styles.forgotPass}>Forgot Password</Text>
             </TouchableOpacity>
+
+            {/* Buffer popup will be displayed while user is waiting for login response from backend */}
+            <BufferPopup isVisible={bufferPopupVisible}/>
         </ScrollView>
     );
 }
