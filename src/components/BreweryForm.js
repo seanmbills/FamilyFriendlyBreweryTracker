@@ -1,14 +1,20 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {Context as BreweryContext} from '../context/BreweryContext';
 
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch} from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, FlatList, Image} from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
 import WelcomeButton from '../components/WelcomeButton'
+import * as ImagePicker from 'expo-image-picker'
+import Constants from 'expo-constants'
+import * as Permissions from 'expo-permissions'
+import {Feather } from '@expo/vector-icons'
+
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
 
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
+import { DrawerActions } from 'react-navigation-drawer';
 
 const BreweryForm = ({isNew, navigation}) => {
     
@@ -199,6 +205,59 @@ const BreweryForm = ({isNew, navigation}) => {
 
     const [showTimes, setShowTimes] = useState(false);
     const [showKidTimes, setShowKidTimes] = useState(false);
+
+    const [breweryImage1, setBreweryImage1] = useState(null)
+    const [breweryImage2, setBreweryImage2] = useState(null)
+    const [breweryImage3, setBreweryImage3] = useState(null)
+    const [imageCount, setImageCount] = useState(1)
+    var [data, setData] = useState([])
+
+
+    _listEmptyComponent = () => {
+        return null
+    }
+
+    useEffect(() => {
+        getPermissionAsync()
+    }, [])
+    
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    _pickImage = async (breweryImageNumber, update) => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            base64: true,
+            quality: 1.0
+        });
+        
+        if (!result.cancelled) {
+            if (breweryImageNumber === 1) {
+                setBreweryImage1(result)
+                if (update)
+                    setImageCount((imageCount + 1) % 3)
+                data.push(result)
+                console.log(data)
+            } else if (breweryImageNumber === 2)  {
+                setBreweryImage2(result)
+                if (update)
+                    setImageCount((imageCount + 1) % 3)
+                data.push(result)
+            } else if (breweryImageNumber === 0) {
+                setBreweryImage3(result)
+                if (update)
+                    setImageCount((imageCount + 1) % 3)
+                data.push(result)
+            }
+        }
+    };
 
     /*
      * Takes time given and formats it to conform to backend string restrictions
@@ -464,6 +523,59 @@ const BreweryForm = ({isNew, navigation}) => {
 
     return (
         <ScrollView>
+
+            {
+                (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
+                (<TouchableOpacity
+                    onPress = { () => {
+                            this._pickImage(imageCount, true)
+                        }
+                    }    
+                >
+                    <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
+                </TouchableOpacity>)
+            }
+
+            {
+                (breweryImage1) &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(1, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: breweryImage1.uri}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+
+            {
+                (breweryImage2) && 
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(2, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: breweryImage2.uri}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+
+            {
+                (breweryImage3) &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(3, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: breweryImage3.uri}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+
+
             <View style={styles.fieldView}>
                 <Text style={styles.fieldTitle}>Brewery Name:</Text>
                 <TextInput style={styles.textInput}
