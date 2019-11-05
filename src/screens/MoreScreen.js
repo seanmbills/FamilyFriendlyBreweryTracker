@@ -2,9 +2,12 @@
 import React, {useState, useContext} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import {Context as BreweryContext} from '../context/BreweryContext'
+import { withNavigationFocus } from 'react-navigation';
+import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 // Local Imports
+import WelcomeButton from '../components/WelcomeButton';
+import {Context as BreweryContext} from '../context/BreweryContext'
 import WelcomeButton from '../components/WelcomeButton';
 
 /* 
@@ -12,14 +15,20 @@ import WelcomeButton from '../components/WelcomeButton';
  * 2.) an button which will navigate users to a screen where they can create a brewery
  */
 const MoreScreen = ({navigation}) => {
+    this.focusListener = navigation.addListener('didFocus', async () => {
+        setShowDialog(true);
+        await getOwnedBreweries();
+        setShowDialog(false);
+    })
 
     /*
      * Need to import two context methods, getBrewery and clearIndividualBreweryResult
      * getBrewery is used when a brewery from the Owned Breweries list is selected.
      * clearIndividualBreweryResult is used when navigating to the createBrewery screen.
      */
-    const {state, getBrewery, clearIndividualBreweryResult} = useContext(BreweryContext);
-    //console.log(state.ownedBreweries);
+
+    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
+    const [showDialog, setShowDialog] = useState(false);
     return (
         <View style={styles.backgroundContainer}>
             { state.ownedBreweries.length > 0 &&
@@ -48,6 +57,15 @@ const MoreScreen = ({navigation}) => {
             </View>
             </View>
             }
+            <Dialog
+                visible={showDialog}
+            >
+                <DialogContent>
+                    <View>
+                        <Text>Fetching Owned Breweries...</Text>
+                    </View>
+                </DialogContent>
+            </Dialog>
             <View style={styles.contentContainer}>
                 <WelcomeButton
                     title="Create Brewery"
