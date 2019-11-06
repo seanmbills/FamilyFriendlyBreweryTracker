@@ -1,10 +1,15 @@
+// React imports
 import React, {useState} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
-import WelcomeButton from '../components/WelcomeButton';
-import BreweryForm from '../components/BreweryForm';
 import { ScrollView } from 'react-native-gesture-handler';
-import {Context as BreweryContext} from '../context/BreweryContext';
 
+// Local Imports
+import BreweryForm from '../components/BreweryForm';
+
+/* 
+ * Screen is essentially a dummy holder for the Brewery Form component. As this component contains all logic and 
+ * stylings needed to create a new brewery
+*/
 const CreateBreweryScreen = ({navigation}) => {
     return (
         <ScrollView style={styles.backgroundContainer}>
@@ -12,6 +17,9 @@ const CreateBreweryScreen = ({navigation}) => {
                 <Text style={styles.title}>Create Brewery</Text>
             </View>
             <View style={styles.contentContainer}>
+                {/* Must provide the brewery form with prop isNew=true since the user is attempting to create a new brewery 
+                  * As opposed to editing an existing brewery
+                 */}
                 <BreweryForm
                     isNew={true}
                     navigation={navigation}

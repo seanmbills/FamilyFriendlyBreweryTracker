@@ -1,8 +1,12 @@
+// React imports
 import React from 'react'
 import {View, StyleSheet, Text} from 'react-native'
+
+// Local imports 
 import WelcomeButton from '../components/WelcomeButton'
 import SubHeading from '../components/SubHeading';
 
+// Screen simply indicates if a user's password reset attempt was successful and forces them to navigate back to login
 const PasswordResetSuccessScreen = ({navigation}) => {
     return (
         <View style={styles.background}>

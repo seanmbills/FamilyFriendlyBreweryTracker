@@ -1,12 +1,17 @@
+// React imports
 import React, {useState, useContext } from 'react';
 import {Text, StyleSheet, View, ScrollView, KeyboardAvoidingView} from 'react-native';
-import TitleText from '../components/TitleText';
-import WelcomeButton from '../components/WelcomeButton';
-import DatePicker from 'react-native-datepicker';
 import {NavigationEvents} from 'react-navigation'
 import {Context as AuthContext} from '../context/AuthContext'
 import {Input} from 'react-native-elements';
+import DatePicker from 'react-native-datepicker';
+
+// local imports
+import TitleText from '../components/TitleText';
+import WelcomeButton from '../components/WelcomeButton';
 import {validatePassword, validateEmail} from '../api/InputValidation'
+
+import BufferPopup from '../components/BufferPopup';
 
 function validateUsername(name) {
     if (name.length < 6 || name.length > 30) {
@@ -38,9 +43,13 @@ function validateBirthDate(date) {
 
 }
 
+/*
+ * Screen essentially is a form component which contains field a user must enter to register for the application
+*/
 const RegistrationScreen = ({navigation}) => {
     const {state, register, clearErrorMessage} = useContext(AuthContext)
 
+    // state objects for the needed input fields
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -49,6 +58,8 @@ const RegistrationScreen = ({navigation}) => {
     const [ birthDate, setBirthDate] = useState('2000-01-01');
     const [username, setUsername] = useState('');
     const [zip, setZip] = useState('');
+
+    // state objects for error messages which are result from incorrectly formatted or invalid field inputs
     const [ inputErrMsg, setInputErrMsg ] = useState('');
     const [ passErrMsg, setPassErrMsg ] = useState('');
     const [ emailErrMsg, setEmailErrMsg ] = useState('');
@@ -56,6 +67,9 @@ const RegistrationScreen = ({navigation}) => {
     const [ zipErrMsg, setZipErrMsg ] = useState('');
     const [ birthDateErrMsg, setBirthDateErrMsg ] = useState('');
     const [ confirmPass, setConfirmPass ] = useState('');
+
+    const [bufferPopupVisible, setBufferPopupVisible ] = useState('');
+
     
     function validateInput(inputMap) {
         var isValid = true
@@ -277,7 +291,7 @@ const RegistrationScreen = ({navigation}) => {
                 <View style={styles.buttonContainer}>
                     <WelcomeButton
                         title="Register"
-                        onPress={() => {
+                        onPress={ async () => {
                             //Create map object to pass to input validation function
                             const inputMap = new Map();
                             inputMap.set('email', email);
@@ -293,9 +307,18 @@ const RegistrationScreen = ({navigation}) => {
                                 const userId = username;
                                 const phoneNumber = phone;
                                 const zipCode = zip;
-                                register({email, userId, 
+
+                                setBufferPopupVisible(true);
+
+                                var response = await register({email, userId, 
                                     password, birthDate, firstName, lastName,
                                     phoneNumber, zipCode});
+                                setBufferPopupVisible(false);
+                                if (!response || response.status >= 400) {
+                                    console.log("Error when registering");
+                                } else {
+                                    navigation.navigate('BreweryList');
+                                }
                             } else {
                                 console.log("Input was not valid");
                             }
@@ -311,18 +334,15 @@ const RegistrationScreen = ({navigation}) => {
                     />
                 </View>
             </ScrollView>
+            {/* Buffer popup will be displayed while user is waiting for registration response from backend */}
+            <BufferPopup 
+                isVisible={bufferPopupVisible}
+                text={"Registering"}
+                />
         </KeyboardAvoidingView>
     );
 };
-/*
-    email
-    password
-    birthDate: YYYY-MM-DDT00:00:00.000+00:00
-    firstName:
-    lastName:
-    phoneNumber:
-    zipCode:
-*/
+
 const styles = StyleSheet.create({
     background: {
         backgroundColor: "#fcc203",

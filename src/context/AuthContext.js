@@ -23,6 +23,18 @@ const authReducer = (state, action) => {
     }
 }
 
+/*
+ * Method used to send a request to the backend to register a user
+ * 
+ * @param email - string - a user's email address
+ * @param userId - string - a username the user may use to login with
+ * @param password - string - a user's password that a user will use to login with
+ * @param birthDate - string - a user's birthDate, used to verify the user is over 21 years old
+ * @param firstName - string - a users first name
+ * @param lastName - string - a user's last name
+ * @param phoneNumber - string - a user's phoneNumber
+ * @param zipCode - string - a user's zipCode
+ */
 const register = (dispatch) => {
     return async ({email, userId, 
         password, birthDate, firstName, lastName,
@@ -40,7 +52,7 @@ const register = (dispatch) => {
             dispatch({type: 'register', payload: response.data.token})
 
             // then need to navigate the user immediately to the logged in state
-            navigate('loggedInFlow')
+            return response;
         } catch (err) {
             console.log(err.response.data.error)
             // if we get an error back from signing up, need to display the appropriate error
@@ -50,6 +62,12 @@ const register = (dispatch) => {
     }
 }
 
+/*
+ * Method used to attempt to sign a user in to the backend
+ *
+ * @param emailOrId - string - user's email or userId they're attempting to login with
+ * @param password - string - entered password to attempt to authenticate with
+*/
 const signin = (dispatch) => {
     return async ({emailOrId, password}) => {
         // try to sign in
@@ -60,7 +78,8 @@ const signin = (dispatch) => {
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'signin', payload: response.data.token})
             
-            navigate('loggedInFlow')
+            //navigate('loggedInFlow')
+            return response;
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error})
@@ -72,6 +91,7 @@ const signin = (dispatch) => {
 }
 
 //Sends post request to /forgotPassword route on server to send email & get token
+//@param - emailOrId - an entered email or userId which will be used to send a password reset email
 const forgotPassword = (dispatch) => {
     return async({emailOrId}) => {
         try {
@@ -87,6 +107,13 @@ const forgotPassword = (dispatch) => {
     }
 }
 
+/*
+ * Method used to reset a user's password
+ * 
+ * @param emailOrid - string - the user's email or userId they had entered to receive a reset code
+ * @param resetCode - string - a unique code emailed to the user to ensure authenticity
+ * @param newPassword - string - the user's new passcode
+*/
 const resetPassword = (dispatch) => {
     return async({emailOrId, resetCode, newPassword}) => {
         try {
@@ -102,6 +129,13 @@ const resetPassword = (dispatch) => {
 }
 
 
+/*
+ * Used to update user account fields which  do not require a password to update
+ *
+ * @param firstName - string - a user's altered firstName
+ * @param lastName - string - a user's altered lastName
+ * @param zipCode - string - a user's updated zipCode
+*/
 const userUpdate = (dispatch) => {
     return async({firstName, lastName, zipCode}) => {
         try {
@@ -110,6 +144,7 @@ const userUpdate = (dispatch) => {
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'userUpdate', payload: response.data.token})
+            return response;
         } catch (err) {
             console.log(err.response.data);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -117,6 +152,12 @@ const userUpdate = (dispatch) => {
     }
 }
 
+/*
+ * Used to update a user's password (while they are logged into the app)
+ * 
+ * @param oldPassword - string - password to confirm user authenticity
+ * @param newPassword - string - the new user password
+ */
 const updatePassword = (dispatch) => {
     return async({oldPassword, newPassword}) => {
         try {
@@ -129,6 +170,7 @@ const updatePassword = (dispatch) => {
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'updatePassword', payload: response.data.token})
             console.log(response)
+            return response;
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -136,6 +178,13 @@ const updatePassword = (dispatch) => {
     }
 }
 
+/*
+ * Method used to update a user's email address. A password is needed to do this because a user's password is
+ * reset by emailing them a resetcode
+ * 
+ * @param newEmail - string - the user's new email address
+ * @param password - string - user's password (again used to confirm user authenticity)
+ */
 const updateEmail = (dispatch) => {
     return async({newEmail, password}) => {
         try {
@@ -144,6 +193,7 @@ const updateEmail = (dispatch) => {
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'updateEmail', payload: response.data.token})
+            return response;
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -151,6 +201,13 @@ const updateEmail = (dispatch) => {
     }
 }
 
+/*
+ * Method used to update a user's phoneNumber. A password is needed to do this because a hopeful additional feature
+ * is to reset a user's password using his/her phone
+ * 
+ * @param newPhone - string - the user's new phone number
+ * @param password - string - user's password (again used to confirm user authenticity)
+ */
 const updatePhone = (dispatch) => {
     return async({password, newPhone}) => {
         try {
@@ -159,6 +216,7 @@ const updatePhone = (dispatch) => {
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
             await AsyncStorage.setItem('token', response.data.token)
             dispatch({type: 'updatePhone', payload: response.data.token})
+            return response;
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -166,6 +224,9 @@ const updatePhone = (dispatch) => {
     }
 }
 
+/*
+ * Clears all error messages from the context object
+ */
 const clearErrorMessage = dispatch => () => {
     dispatch({type: 'clear_error_message'})
 }
@@ -181,6 +242,7 @@ const tryAutoSignin = dispatch => async() => {
 
         }
 }
+
 
 const signout = (dispatch) => {
     return () => {
