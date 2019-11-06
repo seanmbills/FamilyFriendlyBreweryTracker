@@ -1,3 +1,4 @@
+// React imports
 import React, {useState, useContext } from 'react'
 import {View, Text, Button, StyleSheet, TextInput, Switch, ScrollView,} from 'react-native'
 import {Feather } from '@expo/vector-icons'
@@ -8,7 +9,10 @@ import {Rating} from 'react-native-ratings'
 import ModalDropdown from 'react-native-modal-dropdown';
 import {Location, Permissions} from 'expo';
 import Checkbox from 'react-native-check-box';
+
+// Local Imports
 import {Context as BreweryContext} from '../context/BreweryContext';
+import BufferPopup from '../components/BufferPopup';
 
 
 
@@ -42,6 +46,8 @@ const SearchBar = ({term, onTermChange}) => {
     const [showFilters, setShowFilters] = useState(false);
     const [name, setName] = useState('');
 
+    // State object which indicates if bufferpopup is shown
+    const [ bufferPopupVisible, setBufferPopupVisible ] = useState(false);
     
     const priceButtons = ["$", "$$", "$$$", "$$$$"]
 
@@ -291,16 +297,26 @@ const SearchBar = ({term, onTermChange}) => {
             }
             <View style={{ marginTop: 25, }}>
                 <Button 
-                    onPress={()=> {
+                    onPress={ async ()=> {
                     const accommodationsSearch = buildAccommodationMap();
                     //onSearchSubmit(accommodationsSearch);
-                    getSearchResults({
+
+                    //Show buffer popup while requesting search results
+                    setBufferPopupVisible(true);
+
+                    //Get Search results from backend
+                    await getSearchResults({
                         name, latitude, longitude, zipCode, distance,
                         maximumPrice, accommodationsSearch, openNow,
                         kidFriendlyNow, minimumRating
-                    });}}
+                    });
+                    
+                    // Hide bufferpopup
+                    setBufferPopupVisible(false);
+                    }}
                     title="Apply to Search"
                     >
+                    
                 </Button>
             </View>
         </View>
@@ -353,6 +369,7 @@ const SearchBar = ({term, onTermChange}) => {
             >
                     {this.renderModalContent()}
             </Modal>
+            <BufferPopup text={"Getting Search Results"} isVisible={bufferPopupVisible}/>
         </View>
     )
 }
