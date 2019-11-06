@@ -18,6 +18,7 @@ import ReadReviewsScreen from './src/screens/ReadReviewsScreen';
 
 import {Provider as AuthProvider} from './src/context/AuthContext'
 import {Provider as BreweryProvider} from './src/context/BreweryContext'
+import {Provider as ReviewProvider} from './src/context/ReviewContext';
 import {setNavigator} from './src/navigationRef'
 import PasswordResetSuccessScreen from './src/screens/PasswordResetSuccessScreen';
 import UpdateAccountScreen from './src/screens/UpdateAccountScreen';
@@ -63,10 +64,12 @@ const App = createAppContainer(switchNavigator)
 
 export default () => {
     return (
+        <ReviewProvider>
         <BreweryProvider>
             <AuthProvider>
                 <App ref={(navigator) => {setNavigator(navigator)}}/>
             </AuthProvider>
         </BreweryProvider>
+        </ReviewProvider>
     )
 }

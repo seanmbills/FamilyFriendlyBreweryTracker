@@ -1,6 +1,7 @@
 import React, {useState, useContext, useEffect} from 'react'
 import {View, StyleSheet, Text, ScrollView, Dimensions, TouchableOpacity, Linking, Platform} from 'react-native'
 import {Context as BreweryContext} from '../context/BreweryContext'
+import {Context as ReviewContext} from '../context/ReviewContext'
 import {Rating} from 'react-native-ratings'
 import Emoji from 'react-native-emoji'
 
@@ -8,6 +9,7 @@ import Emoji from 'react-native-emoji'
 const BreweryDetailsScreen = ({navigation}) => {
     const breweryId = navigation.getParam('id')
     var {state, getBrewery} = useContext(BreweryContext)
+    var {getBreweryReviews} = useContext(ReviewContext);
 
     const breweryResult = state.individualResult[0].brewery
     const openNow = state.individualResult[0].openNow
@@ -83,7 +85,11 @@ const BreweryDetailsScreen = ({navigation}) => {
         </Text>
 
         {/*Displays the number and rating of reviews (clickable)*/}
-        <TouchableOpacity onPress={()=> navigation.navigate("ReadReviews", {breweryId: breweryResult._id, name:breweryResult.name, breweryReviews: breweryResult.comments, breweryFontSize: breweryFont})}>
+        <TouchableOpacity onPress={async ()=> {
+              var breweryId = breweryResult._id;
+              var response = await getBreweryReviews({breweryId});
+              navigation.navigate("ReadReviews", {breweryId: breweryResult._id, name:breweryResult.name, breweryReviews: breweryResult.comments, breweryFontSize: breweryFont});
+            }}>
           <Rating
               imageSize={20}
               readonly

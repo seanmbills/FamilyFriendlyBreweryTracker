@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpacity, Linking, Platform} from 'react-native'
+import React, { useState, useContext } from 'react';
+import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpacity, Linking, Platform, FlatList} from 'react-native'
 import {Rating, AirbnbRating} from 'react-native-ratings'
 import WelcomeButton from '../components/WelcomeButton'
 
+import {Context as ReviewContext} from '../context/ReviewContext';
+
 const ReadReviewsScreen = ({navigation}) => {
+
+  const {state} = useContext(ReviewContext);
 
   const breweryId = navigation.getParam('breweryId')
   const breweryName = navigation.getParam('name')
@@ -11,6 +15,15 @@ const ReadReviewsScreen = ({navigation}) => {
   const breweryFontSize = navigation.getParam('breweryFontSize')
 
     return (
+      <FlatList
+        data={state.results}
+        keyExtractor={(review) => review.reviewId}
+        renderItem={({review}) => {
+          return (
+            <Text>{review.message}</Text>
+          )
+        }}
+      />
       <WelcomeButton
           title="WriteReview"
           onPress={() => {

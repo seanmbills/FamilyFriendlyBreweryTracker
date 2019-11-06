@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpacity, Linking, Platform} from 'react-native'
 import {Rating, AirbnbRating} from 'react-native-ratings'
 import WelcomeButton from '../components/WelcomeButton';
+import {Context as ReviewContext} from '../context/ReviewContext';
 
 const WriteReviewScreen = ({navigation}) => {
+  const {state, createReview} = useContext(ReviewContext);
+
   const [ratingNum, setRatingNum] = useState(3);
   const [description, setDescription] = useState('');
 
@@ -59,7 +62,14 @@ const WriteReviewScreen = ({navigation}) => {
           <View style={styles.buttonContainer}>
               <WelcomeButton
                   title="Submit"
-                  onPress={()=> logMethod()}
+                  onPress={()=> {
+                    logMethod()
+                    var message = description;
+                    var rating = ratingNum;
+                    console.log({message, breweryId, rating})
+                    var response = createReview({message, breweryId, rating});
+                    //console.log("response : ", response)
+                  }}
               />
           </View>
       </ScrollView>
