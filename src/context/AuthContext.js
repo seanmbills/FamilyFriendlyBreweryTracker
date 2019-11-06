@@ -9,6 +9,8 @@ const authReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
+        case 'get_user_info':
+            return {...state, profileInfo: action.payload}
         case 'updatePassword':
         case 'updateUser':
         case 'updateEmail':
@@ -16,10 +18,29 @@ const authReducer = (state, action) => {
         case 'register':
         case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
+        case 'udpateUser':
+        case 'register':
+            return {...state, token: action.payload.token, signedURL: action.payload.signedURL, errorMessage: ''}
         case 'clear_error_message':
             return {...state, errorMessage: ''}
         default: 
             return state;
+    }
+}
+
+const getUserInfo = (dispatch) => {
+    return async() => {
+        try {
+            const response = await ServerApi.get('/getUserInfo',
+                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (await AsyncStorage.getItem('token'))}}
+            );
+            
+            dispatch({type: 'get_user_info', payload: response.data})
+            return response;
+        } catch (err) {
+            console.log(err.response.data.error)
+            dispatch({ type: 'add_error_message', payload: err.response.data})
+        }
     }
 }
 
@@ -255,6 +276,6 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
-        userUpdate, updatePassword, updateEmail, updatePhone},// tryAutoSignin},
+        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo},// tryAutoSignin},
     {token: null, errorMessage: ''}
 )

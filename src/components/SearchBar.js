@@ -1,5 +1,6 @@
 import React, {useState, useContext } from 'react'
-import {View, Text, Button, StyleSheet, TextInput, Switch, ScrollView,} from 'react-native'
+import {View, Text, Button, StyleSheet, TextInput, 
+    Switch, ScrollView, TouchableWithoutFeedback, Keyboard} from 'react-native'
 import {Feather } from '@expo/vector-icons'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Modal from 'react-native-modal'
@@ -9,11 +10,12 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import {Location, Permissions} from 'expo';
 import Checkbox from 'react-native-check-box';
 import {Context as BreweryContext} from '../context/BreweryContext';
-
-
+import {Context as AuthContext} from '../context/AuthContext';
 
 const SearchBar = ({term, onTermChange}) => {
-    const {state, getSearchResults, clearErrorMessage} = useContext(BreweryContext);
+
+    const {getSearchResults, clearErrorMessage} = useContext(BreweryContext);
+    const {state, getUserInfo} = useContext(AuthContext);
     const [modalOpen, setModalOpen] = useState(false)
     const [openNow, setOpenNow] = useState(false)
     const [kidFriendlyNow, setKidFriendlyNow] = useState(false)
@@ -25,7 +27,7 @@ const SearchBar = ({term, onTermChange}) => {
     const [latitude, setLatitude] = useState('');
     const [longitude, setLongitude] = useState('');
     const [locState, setLocState] = useState('');
-    const [zipCode, setZipCode ] = useState('');
+    const [zipCode, setZipCode ] = (state.profileInfo) ? useState(state.profileInfo.zipCode) : useState('');
     const [waterStations, setWaterStations] = useState(false);
     const [indoorSpaces, setIndoorSpaces] = useState(false);
     const [outdoorSpaces, setOutdoorSpaces] = useState(false);
@@ -99,7 +101,8 @@ const SearchBar = ({term, onTermChange}) => {
     // };
 
     renderModalContent = () => (
-        <View style={styles.content}>
+        <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()}>
+        <View keyboardDismissMode='on-drag' style={styles.content}>
             { !showFilters &&
             <View>
             <Text style={styles.contentTitle}>Hi 👋!</Text>
@@ -180,7 +183,9 @@ const SearchBar = ({term, onTermChange}) => {
                 />
             </View>
             <View style={{flexDirection: 'row', marginTop: 25}}>
-                <TouchableOpacity onPress={() => setShowFilters(true)}>
+                <TouchableOpacity onPress={async () => {
+                    setShowFilters(true);
+                }}>
                     <Text>Show other Filters</Text> 
                 </TouchableOpacity>
             </View>
@@ -304,6 +309,7 @@ const SearchBar = ({term, onTermChange}) => {
                 </Button>
             </View>
         </View>
+        </TouchableWithoutFeedback>
     );
 
     return (
@@ -326,7 +332,21 @@ const SearchBar = ({term, onTermChange}) => {
                 }}
             />
             <TouchableOpacity onPress={
-                () => setModalOpen(!modalOpen)}
+                async () => {
+                    if (zipCode === '') {
+                        console.log('Calling get user info')
+                        var response = await getUserInfo({});
+                        console.log(response);
+                        if (state.profileInfo) {
+                            setZipCode(state.profileInfo.zipCode)
+                        } else {
+                            console.log("Not setting")
+                        }
+                    } else {
+                        console.log("Zip is not empty")
+                    }
+                    setModalOpen(!modalOpen)
+            }}
             >
                 <Feather style={styles.searchIcon} name="filter" />
             </TouchableOpacity>
