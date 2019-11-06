@@ -632,7 +632,8 @@ const BreweryForm = ({isNew, navigation}) => {
                 is24Hour={false}
                 
             />
-            { !showFilters &&
+            { /* logic here ensures user can only pick one feature to edit at a time: kidsHours/businesshours/filters */
+            !showFilters && !showTimes && !showKidTimes && 
             <View style={styles.fieldView}>
                 <TouchableOpacity onPress={() => setShowFilters(true)}>
                     <Text style={styles.timeTitle}>Edit Additional Accommodations</Text>
@@ -640,7 +641,8 @@ const BreweryForm = ({isNew, navigation}) => {
             </View>
             }
 
-            { !showTimes &&
+            { /* logic here ensures user can only pick one feature to edit at a time: kidsHours/businesshours/filters */
+            !showTimes && !showKidTimes && !showFilters && 
             <View>
             <View style={styles.fieldView}>
                 <TouchableOpacity onPress={() => setShowTimes(true)}>
@@ -656,7 +658,8 @@ const BreweryForm = ({isNew, navigation}) => {
             </View>
             </View>
             }
-            { !kidHoursSame &&
+            { /* logic here ensures user can only pick one feature to edit at a time: kidsHours/businesshours/filters */
+            !kidHoursSame && !showTimes && !showKidTimes && !showFilters && 
                 <View style={styles.fieldView}>
                     <TouchableOpacity onPress={() => setShowKidTimes(true)}>
                       <Text style={styles.timeTitle}>Edit Kid Friendly Hours</Text>
