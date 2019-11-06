@@ -47,13 +47,14 @@ const getBreweryReviews = (dispatch) => {
         var req = {breweryId};
         try {
             const response = await ServerApi.get('/getBreweryReviews', 
-            req,
+            {params: req},
             { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
               'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
             }});
-            console.log(response);
+            //console.log(response);
             dispatch({type: 'search_results', count: response.data.count, payload: response.data})
+            return response;
         } catch (err) {
             console.log("Error: ", err.response)
             

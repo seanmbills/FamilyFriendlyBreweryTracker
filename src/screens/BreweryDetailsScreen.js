@@ -88,6 +88,8 @@ const BreweryDetailsScreen = ({navigation}) => {
         <TouchableOpacity onPress={async ()=> {
               var breweryId = breweryResult._id;
               var response = await getBreweryReviews({breweryId});
+              //console.log("Brewery Reviews response", response)
+              
               navigation.navigate("ReadReviews", {breweryId: breweryResult._id, name:breweryResult.name, breweryReviews: breweryResult.comments, breweryFontSize: breweryFont});
             }}>
           <Rating
