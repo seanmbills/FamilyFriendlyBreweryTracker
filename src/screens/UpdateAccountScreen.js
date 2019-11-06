@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Context as AuthContext } from '../context/AuthContext';
 import { TextInput, TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import PhoneInput from 'react-native-phone-input';
+import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 // Local imports
 import WelcomeButton from '../components/WelcomeButton';
@@ -45,6 +46,10 @@ const UpdateAccountScreen = ({navigation}) => {
     const [ showDialog, setShowDialog ] = useState(false);
     //state object which dictates the text to be displayed at bottom of buffer dialog box
     const [ bufferText, setBufferText ] = useState('');
+
+    //State object which indicates if results popup should be shown
+    const [ resultDialogVisible, setResultDialogVisible ] = useState(false);
+    const [ resultDialogText, setResultDialogText ] = useState('');
 
     return ( 
         <ScrollView style={styles.background}>
@@ -119,6 +124,15 @@ const UpdateAccountScreen = ({navigation}) => {
 
                         //set dialog to no longer be visible
                         setShowDialog(false);
+
+                        // If the update failed, show a failure popup
+                        if (!response || response.status >= 400) {
+                            setResultDialogText("Something went wrong. Unable to update account");
+                            setResultDialogVisible(true);
+                        } else { //Otherwise show a successful popup
+                            setResultDialogText("Account Successfully Updated!");
+                            setResultDialogVisible(true);
+                        }
                     }}
                 />
             </View>
@@ -149,7 +163,29 @@ const UpdateAccountScreen = ({navigation}) => {
                     onPress={()=> {
                         if (validateEmail(newEmail) && oldPassword.length > 8) {
                             password = oldPassword;
-                            updateEmail({newEmail, password});
+                            
+                            //Set dialog text and make it visible
+                            setBufferText("Updating Email")
+                            setShowDialog(true);
+
+                            var response = updateEmail({newEmail, password});
+
+                            //set dialog to no longer be visible
+                            setShowDialog(false);
+
+                             // If the update failed, show a failure popup
+                            if (!response || response.status >= 400) {
+                                setResultDialogText("Something went wrong. Unable to update email");
+                                setResultDialogVisible(true);
+                            } else { //Otherwise show a successful popup
+                                setResultDialogText("Email Successfully Updated!");
+                                setResultDialogVisible(true);
+                            }
+
+                        } else {
+                            //Show dialog stating email was invalid
+                            setResultDialogText("Email entered was not valid");
+                            setResultDialogVisible(true);
                         }
                     }}
                 />
@@ -196,6 +232,16 @@ const UpdateAccountScreen = ({navigation}) => {
 
                             //Set dialog to no longer be visible
                             setShowDialog(false);
+
+                            // If the update failed, show a failure popup
+                            if (!response || response.status >= 400) {
+                                setResultDialogText("Something went wrong. Unable to update password");
+                                setResultDialogVisible(true);
+                            } else { //Otherwise show a successful popup
+                                setResultDialogText("Password Successfully Updated!");
+                                setResultDialogVisible(true);
+                            }
+
                         } else {
                             setPassErrMsg("Passwords must match!");
                         }
@@ -239,6 +285,19 @@ const UpdateAccountScreen = ({navigation}) => {
 
                             //Set dialog to no longer be visible
                             setShowDialog(false);
+
+                            // If the update failed, show a failure popup
+                            if (!response || response.status >= 400) {
+                                setResultDialogText("Something went wrong. Unable to update phone number");
+                                setResultDialogVisible(true);
+                            } else { //Otherwise show a successful popup
+                                setResultDialogText("Phone Number Successfully Updated!");
+                                setResultDialogVisible(true);
+                            }
+                        } else {
+                            // Show result dialog which states phone number was invalid
+                            setResultDialogText("Phone Number entered was not valid");
+                            setResultDialogVisible(true);
                         }
                     }}
                 />
@@ -275,6 +334,16 @@ const UpdateAccountScreen = ({navigation}) => {
         {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
 
         <BufferPopup isVisible={showDialog} text={bufferText}/>
+        <Dialog
+            visible={resultDialogVisible}
+            onTouchOutside={()=> setResultDialogVisible(false)}
+        >
+            <DialogContent
+                style={styles.resultDialog}
+            >
+                <Text style={styles.resultDialogText}>{resultDialogText}</Text>
+            </DialogContent>
+        </Dialog>
         </ScrollView>
     );
 
@@ -323,6 +392,13 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginLeft: 5,
         marginRight: 5
+    },
+    resultDialogText: {
+        alignSelf: 'center',
+        fontSize: 25,
+    },
+    resultDialog: {
+        alignItems: 'center'
     }
 });
 
