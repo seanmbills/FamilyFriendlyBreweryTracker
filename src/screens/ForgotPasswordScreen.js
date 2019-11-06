@@ -36,6 +36,7 @@ const ForgotPasswordScreen = ({navigation}) => {
                         labelStyle={{color: 'black', fontSize: 20}}
                         label='Email/Username'
                         placeholder='Email or Username'
+                        placeholderTextColor="#262626"
                         leftIcon={{type: 'font-awesome', name: 'envelope'}}
                         leftIconContainerStyle={{paddingRight: 8}}
                         inputContainerStyle={{borderBottomColor: 'black'}}
@@ -79,6 +80,7 @@ const ForgotPasswordScreen = ({navigation}) => {
                             labelStyle={{color: 'black', fontSize: 20}}
                             label='Reset Code'
                             placeholder='Reset Code'
+                            placeholderTextColor="#262626"
                             leftIcon={{type: 'font-awesome', name: 'key'}}
                             leftIconContainerStyle={{paddingRight: 8}}
                             inputContainerStyle={{borderBottomColor: 'black'}}
@@ -95,6 +97,7 @@ const ForgotPasswordScreen = ({navigation}) => {
                             labelStyle={{color: 'black', fontSize: 20}}
                             label='New Password'
                             placeholder='New Password'
+                            placeholderTextColor="#262626"
                             leftIcon={{type: 'font-awesome', name: 'lock'}}
                             leftIconContainerStyle={{paddingRight: 8}}
                             inputContainerStyle={{borderBottomColor: 'black'}}
@@ -112,6 +115,7 @@ const ForgotPasswordScreen = ({navigation}) => {
                             labelStyle={{color: 'black', fontSize: 20}}
                             label='Confirm Password'
                             placeholder='Confirm Password'
+                            placeholderTextColor="#262626"
                             leftIcon={{type: 'font-awesome', name: 'lock'}}
                             leftIconContainerStyle={{paddingRight: 8}}
                             inputContainerStyle={{borderBottomColor: 'black'}}

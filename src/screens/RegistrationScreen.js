@@ -120,6 +120,7 @@ const RegistrationScreen = ({navigation}) => {
                         labelStyle={{color: 'black', fontSize: 20}}
                         label='Email'
                         placeholder='Email'
+                        placeholderTextColor="#262626"
                         leftIcon={{type: 'font-awesome', name: 'envelope'}}
                         leftIconContainerStyle={{paddingRight: 8}}
                         inputContainerStyle={{borderBottomColor: 'black'}}
@@ -137,6 +138,7 @@ const RegistrationScreen = ({navigation}) => {
                         labelStyle={{color: 'black', fontSize: 20}}
                         label='Username'
                         placeholder='Username'
+                        placeholderTextColor="#262626"
                         leftIcon={{type: 'font-awesome', name: 'user'}}
                         leftIconContainerStyle={{paddingRight: 8}}
                         inputContainerStyle={{borderBottomColor: 'black'}}
@@ -154,6 +156,7 @@ const RegistrationScreen = ({navigation}) => {
                         labelStyle={{color: 'black', fontSize: 20}}
                         label='Password'
                         placeholder='Password'
+                        placeholderTextColor="#262626"
                         leftIcon={{type: 'font-awesome', name: 'lock'}}
                         leftIconContainerStyle={{paddingRight: 8}}
                         inputContainerStyle={{borderBottomColor: 'black'}}
@@ -171,6 +174,7 @@ const RegistrationScreen = ({navigation}) => {
                         labelStyle={{color: 'black', fontSize: 20}}
                         label='Confirm Password'
                         placeholder='Password'
+                        placeholderTextColor="#262626"
                         leftIcon={{type: 'font-awesome', name: 'lock'}}
                         leftIconContainerStyle={{paddingRight: 8}}
                         inputContainerStyle={{borderBottomColor: 'black'}}
@@ -190,6 +194,7 @@ const RegistrationScreen = ({navigation}) => {
                         labelStyle={{color: 'black', fontSize: 20}}
                         label='First Name'
                         placeholder='First Name'
+                        placeholderTextColor="#262626"
                         leftIcon={{type: 'font-awesome', name: 'id-badge'}}
                         leftIconContainerStyle={{paddingRight: 8}}
                         inputContainerStyle={{borderBottomColor: 'black'}}
@@ -204,6 +209,7 @@ const RegistrationScreen = ({navigation}) => {
                         labelStyle={{color: 'black', fontSize: 20}}
                         label='Last Name'
                         placeholder='Last Name'
+                        placeholderTextColor="#262626"
                         leftIcon={{type: 'font-awesome', name: 'id-badge'}}
                         leftIconContainerStyle={{paddingRight: 8}}
                         inputContainerStyle={{borderBottomColor: 'black'}}
@@ -219,6 +225,7 @@ const RegistrationScreen = ({navigation}) => {
                         labelStyle={{color: 'black', fontSize: 20}}
                         label='Zip Code'
                         placeholder='Zip Code'
+                        placeholderTextColor="#262626"
                         leftIcon={{type: 'font-awesome', name: 'map-marker'}}
                         leftIconContainerStyle={{paddingRight: 8}}
                         inputContainerStyle={{borderBottomColor: 'black'}}
@@ -236,6 +243,7 @@ const RegistrationScreen = ({navigation}) => {
                         labelStyle={{color: 'black', fontSize: 20}}
                         label='Phone Number'
                         placeholder='XXX-XXX-XXXX'
+                        placeholderTextColor="#262626"
                         leftIcon={{type: 'font-awesome', name: 'phone'}}
                         leftIconContainerStyle={{paddingRight: 8}}
                         inputContainerStyle={{borderBottomColor: 'black'}}
