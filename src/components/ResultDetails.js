@@ -11,17 +11,16 @@ function getPriceSymbol(price) {
 }
 
 const ResultDetails = ({result}) => {
-    console.log(result)
+    console.log(typeof(result.signedUrl))
     return (
         <View style={styles.container}>
-            {/* <Image style={styles.images} source={{ uri: result.image_url }} /> */}
             {
-                result.signedUrl && result.signedUrl !== '' &&
-                <Image source={{uri: result.signedUrl}} style={{width:200, height:200}} />
+                (result.signedUrl === null || result.signedUrl === '') &&
+                <Image source={require('../../assets/PhotosComingSoon.jpg')} style={{width: 200, height: 200}} />
             }
             {
-                !result.signedUrl || result.signedUrl === '' &&
-                <Image source={require('../../assets/PhotosComingSoon.jpg')} style={{width: 200, height: 200}} />
+                (result.signedUrl !== null) && result.signedUrl !== '' &&
+                <Image source={{uri: result.signedUrl}} style={{width:200, height:200}} />
             }
             <Text style={styles.locationName}>{result.name}</Text> 
             <Text style={styles.locationName}>{result.address.street}</Text>
