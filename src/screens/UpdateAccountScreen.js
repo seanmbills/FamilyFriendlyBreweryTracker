@@ -10,6 +10,7 @@ import WelcomeButton from '../components/WelcomeButton';
 import ZipTextField from '../components/ZipTextField';
 import PasswordField from '../components/PasswordField';
 import { validatePassword, validateEmail } from '../api/InputValidation';
+import BufferPopup from '../components/BufferPopup';
 
 /* 
  * Screen will allow user to update account information. This includes: email, phoneNumber, password, zipcode
