@@ -1,11 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, Image } from 'react-native';
-import WelcomeButton from '../components/WelcomeButton';
-import ZipTextField from '../components/ZipTextField';
 
 import { Context as AuthContext } from '../context/AuthContext';
 import { TextInput, TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
-import PhoneInput from 'react-native-phone-input';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 // Local imports
@@ -23,11 +20,23 @@ import BufferPopup from '../components/BufferPopup';
  * Screen will allow user to update account information. This includes: email, phoneNumber, password, zipcode
  */
 const UpdateAccountScreen = ({navigation}) => {
-    const {state, userUpdate, updatePassword, updateEmail, updatePhone,
+    this.focusListener = navigation.addListener('didFocus', async () => {
+        setShowDialog(true)
+        await getUserInfo()
+        setShowDialog(false)
+        console.log(state)
+        // setFirstName(state.profileInfo.firstName)
+        // setLastName(state.profileInfo.lastName)
+        // setZipCode(state.profileInfo.zipCode)
+        // setProfilePic(state.profileInfo.profilePic)
+    })
+
+
+    const {state, userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo,
         clearErrorMessage} = useContext(AuthContext);
-    const [ firstName, setFirstName ] = useState(state.profileInfo.firstName);
-    const [ lastName, setLastName ] = useState(state.profileInfo.lastName);
-    const [ zipCode, setZipCode ] = useState(state.profileInfo.zipCode);
+    const [ firstName, setFirstName ] = (state.profileInfo) ? useState(state.profileInfo.firstName) : useState('');
+    const [ lastName, setLastName ] = useState('');
+    const [ zipCode, setZipCode ] = useState('');
 
     const [ newPhone, setNewPhone ] = useState('');
     const [ oldPassword, setOldPassword ] = useState('');
@@ -46,7 +55,6 @@ const UpdateAccountScreen = ({navigation}) => {
     const [ changePhone, setChangePhone ] = useState(false);
     const [ changeEmail, setChangeEmail ] = useState(false);
     const [ newEmail, setNewEmail ] = useState('');
-    const [ passErrMsg, setPassErrMsg ] = useState('');
     const [ profilePic, setProfilePic ] = useState(null)
 
 
@@ -94,11 +102,11 @@ const UpdateAccountScreen = ({navigation}) => {
                     onPress={this._pickImage}
                 />
                 {
-                    !profilePic && state.profileInfo.profilePic === '' && 
+                    !profilePic && (state.profileInfo === null || state.profileInfo.profilePic === '') && 
                     <Image source = {require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
                 }
                 {
-                    !profilePic && state.profileInfo.profilePic !== '' &&
+                    !profilePic && state.profileInfo !== null && state.profileInfo.profilePic !== '' &&
                     <Image source={{uri: state.profileInfo.profilePic}} style={{width: 200, height: 200}} />
                 }
                 {

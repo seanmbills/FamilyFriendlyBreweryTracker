@@ -5,7 +5,6 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
-import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 // Local Component imports
 import WelcomeButton from '../components/WelcomeButton'

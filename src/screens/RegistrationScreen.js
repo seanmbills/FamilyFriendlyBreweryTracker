@@ -9,10 +9,6 @@ import {
     Image
 } from 'react-native';
 
-import TitleText from '../components/TitleText';
-import WelcomeButton from '../components/WelcomeButton';
-import DatePicker from 'react-native-datepicker';
-
 import {NavigationEvents} from 'react-navigation'
 import {Context as AuthContext} from '../context/AuthContext'
 import * as ImagePicker from 'expo-image-picker'
