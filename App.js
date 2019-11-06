@@ -34,7 +34,6 @@ const switchNavigator = createSwitchNavigator({
         Login: LoginScreen,
         ForgotPassword: ForgotPasswordScreen,
         PasswordResetSuccess: PasswordResetSuccessScreen,
-        BreweryDetails: BreweryDetailsScreen,
     },
     {
         initialRouteName: 'Welcome',
@@ -51,7 +50,10 @@ const switchNavigator = createSwitchNavigator({
         
         
         UpdateAccount: UpdateAccountScreen,
-        BreweryList: BreweryListScreen,
+        breweryFlow: createStackNavigator({
+            BreweryList: BreweryListScreen,
+            BreweryDetails: BreweryDetailsScreen,
+        }),
         optionsFlow: createStackNavigator({
             More: MoreScreen,
             CreateBrewery: CreateBreweryScreen,
@@ -65,7 +67,7 @@ const switchNavigator = createSwitchNavigator({
                 const { routeName } = navigation.state;
                 var iconName;
                 var onPress;
-                if (routeName === 'BreweryList') {
+                if (routeName === 'breweryFlow') {
                     iconName = "md-search";
                 } else if (routeName === 'UpdateAccount') {
                     iconName = "md-person"
@@ -77,9 +79,9 @@ const switchNavigator = createSwitchNavigator({
                 return <Ionicons name={iconName} size={30} color={tintColor}/>;
             },
         }),
-        initialRouteName: 'BreweryList',
+        initialRouteName: 'breweryFlow',
         tabBarOptions: {
-            initialRouteName: 'BreweryList',
+            initialRouteName: 'breweryFlow',
             activeTintColor: 'black',
             inactiveTintColor: 'grey',
             showLabel: false,
