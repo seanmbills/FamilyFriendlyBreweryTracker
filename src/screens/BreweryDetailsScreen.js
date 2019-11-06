@@ -23,17 +23,23 @@ const BreweryDetailsScreen = ({navigation}) => {
     const breweryResult = state.individualResult[0].brewery
     const openNow = state.individualResult[0].openNow
     const kidFriendlyNow = state.individualResult[0].kidFriendlyNow
+    const signedUrl1 = state.individualResult[0].signedUrl1
+    const signedUrl2 = state.individualResult[0].signedUrl2
+    const signedUrl3 = state.individualResult[0].signedUrl3
 
     const data = []
-    if (breweryResult.signedUrl1 && breweryResult.signedUrl1 !== ''){
-        data.push(breweryResult.signedUrl1)
+    if (signedUrl1 !== null && signedUrl1 !== ''){
+        console.log(signedUrl1)
+        data.push(signedUrl1)
     }
-    if (breweryResult.signedUrl2 && breweryResult.signedUrl2 !== ''){
-        data.push(breweryResult.signedUrl2)
+    if (signedUrl2 !== null && signedUrl2 !== ''){
+        data.push(signedUrl2)
     }
-    if (breweryResult.signedUrl3 && breweryResult.signedUrl3 !== ''){
-        data.push(breweryResult.signedUrl3)
+    if (signedUrl3 !== null && signedUrl3 !== ''){
+        data.push(signedUrl3)
     }
+
+    console.log(data)
 
     var priceStr = ""
     var priceStr2 = ""
@@ -116,18 +122,16 @@ const BreweryDetailsScreen = ({navigation}) => {
               style={{textAlign: 'center', paddingTop: 5}}> {breweryResult.numReviews} reviews
           </Text>
         </TouchableOpacity>
-
-        {/* Displays the pictures
-        <Text style={{textAlign: 'center', paddingTop: 120, paddingBottom: 120}}> pics here
-        </Text> */}
         
         {
-            data.length > 0 && 
+            (data.length > 0) && 
             <FlatList
                 horizontal
                 data={data}
                 renderItem={({item}) => {
+                  return (
                     <Image source={{uri: item}} style={{width:400, height:400}} />
+                  )
                 }}
                 keyExtractor={item => item}
             />
