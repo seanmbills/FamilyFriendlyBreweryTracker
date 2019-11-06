@@ -12,7 +12,16 @@ import Checkbox from 'react-native-check-box';
 import {Context as BreweryContext} from '../context/BreweryContext';
 import {Context as AuthContext} from '../context/AuthContext';
 
-const SearchBar = ({term, onTermChange}) => {
+const SearchBar = ({navigation, term, onTermChange}) => {
+
+    this.focusListener = navigation.addListener('didFocus', async () => {
+        if (zipCode === '') {
+            var response = await getUserInfo({});
+            if (response && response.data){
+                setZipCode(response.data.zipCode)
+            }
+        }
+    });
 
     const {getSearchResults, clearErrorMessage} = useContext(BreweryContext);
     const {state, getUserInfo} = useContext(AuthContext);
@@ -332,19 +341,21 @@ const SearchBar = ({term, onTermChange}) => {
                 }}
             />
             <TouchableOpacity onPress={
-                async () => {
-                    if (zipCode === '') {
-                        console.log('Calling get user info')
-                        var response = await getUserInfo({});
-                        console.log(response);
-                        if (state.profileInfo) {
-                            setZipCode(state.profileInfo.zipCode)
-                        } else {
-                            console.log("Not setting")
-                        }
-                    } else {
-                        console.log("Zip is not empty")
-                    }
+                 () => {
+                    // if (zipCode === '') {
+                    //     console.log('Calling get user info')
+                  
+                    //     var response = await getUserInfo({});
+                    //     setModalOpen(!modalOpen)
+                    //     console.log(state);
+                    //     if (state.profileInfo) {
+                    //         setZipCode(state.profileInfo.zipCode)
+                    //     } else {
+                    //         console.log("Not setting")
+                    //     }
+                    // } else {
+                    //     console.log("Zip is not empty")
+                    // }
                     setModalOpen(!modalOpen)
             }}
             >
