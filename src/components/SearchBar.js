@@ -20,7 +20,7 @@ const SearchBar = ({term, onTermChange}) => {
     const [maximumPrice, setPrice] = useState(0)
     const [minimumRating, setRating] = useState(5)
     const [distanceIndex, setDistanceIndex] = useState(1);
-    const [distance, setDistance] = useState(1);
+    const [distance, setDistance] = useState(5 * 1609.34); //(5 miles converted into meters for backend)
     const [useLocation, setUseLocation] = useState(false)
     const [latitude, setLatitude] = useState('');
     const [longitude, setLongitude] = useState('');
