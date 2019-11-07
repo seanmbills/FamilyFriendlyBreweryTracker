@@ -17,7 +17,7 @@ const authReducer = (state, action) => {
         case 'updatePhone':
         case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
-        case 'udpateUser':
+        case 'userUpdate':
         case 'register':
             return {...state, token: action.payload.token, signedURL: action.payload.signedURL, errorMessage: ''}
         case 'clear_error_message':
@@ -35,7 +35,6 @@ const getUserInfo = (dispatch) => {
             );
             console.log(response.data)
             dispatch({type: 'get_user_info', payload: response.data})
-
         } catch (err) {
             console.log(err.response.data.error)
             dispatch({ type: 'add_error_message', payload: err.response.data})

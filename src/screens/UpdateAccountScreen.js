@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, Component } from 'react';
 import { View, Text, StyleSheet, Button, Image } from 'react-native';
 
 import { Context as AuthContext } from '../context/AuthContext';
@@ -16,27 +16,43 @@ import Constants from 'expo-constants'
 import * as Permissions from 'expo-permissions'
 import BufferPopup from '../components/BufferPopup';
 
+class UserUpdateAccount extends Component {
+    state = {
+        isLoading: true
+    };
+    
+    async componentDidMount() {
+        let {state, getUserInfo} = this.context
+        await getUserInfo().then(() => {
+            this.setState({
+                isLoading: false
+            })
+        })
+    }
+
+    render() {
+        return (
+            <View style={{flex:1}}>
+                <BufferPopup isVisible={this.state.isLoading} text={"Fetching User's Info"} />
+                {
+                    !this.state.isLoading &&
+                    <UpdateAccountScreen navigation={this.props.navigation} />
+                }
+            </View>
+        )
+    }
+}
+UserUpdateAccount.contextType = AuthContext
+
 /* 
  * Screen will allow user to update account information. This includes: email, phoneNumber, password, zipcode
  */
 const UpdateAccountScreen = ({navigation}) => {
-    this.focusListener = navigation.addListener('didFocus', async () => {
-        setShowDialog(true)
-        await getUserInfo()
-        setShowDialog(false)
-        console.log(state)
-        // setFirstName(state.profileInfo.firstName)
-        // setLastName(state.profileInfo.lastName)
-        // setZipCode(state.profileInfo.zipCode)
-        // setProfilePic(state.profileInfo.profilePic)
-    })
-
-
     const {state, userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo,
         clearErrorMessage} = useContext(AuthContext);
-    const [ firstName, setFirstName ] = (state.profileInfo) ? useState(state.profileInfo.firstName) : useState('');
-    const [ lastName, setLastName ] = useState('');
-    const [ zipCode, setZipCode ] = useState('');
+    const [ firstName, setFirstName ] = state.profileInfo.firstName === null ? useState('') : useState(state.profileInfo.firstName)
+    const [ lastName, setLastName ] = state.profileInfo.lastName === null ? useState('') : useState(state.profileInfo.lastName)
+    const [ zipCode, setZipCode ] = state.profileInfo.zipCode === null ? useState('') : useState(state.profileInfo.zipCode)
 
     const [ newPhone, setNewPhone ] = useState('');
     const [ oldPassword, setOldPassword ] = useState('');
@@ -56,6 +72,7 @@ const UpdateAccountScreen = ({navigation}) => {
     const [ changeEmail, setChangeEmail ] = useState(false);
     const [ newEmail, setNewEmail ] = useState('');
     const [ profilePic, setProfilePic ] = useState(null)
+    const [showPic, setShowPic ] = useState(true)
 
 
     useEffect(() => {
@@ -96,24 +113,27 @@ const UpdateAccountScreen = ({navigation}) => {
     return ( 
         <ScrollView style={styles.background}>
             <Text style={styles.title}>Update Account</Text>
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Button
-                    title="Pick an image from camera roll"
-                    onPress={this._pickImage}
-                />
-                {
-                    !profilePic && (state.profileInfo === null || state.profileInfo.profilePic === '') && 
-                    <Image source = {require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
-                }
-                {
-                    !profilePic && state.profileInfo !== null && state.profileInfo.profilePic !== '' &&
-                    <Image source={{uri: state.profileInfo.profilePic}} style={{width: 200, height: 200}} />
-                }
-                {
-                    profilePic &&
-                    <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />
-                }
-            </View>
+            {
+                showPic && 
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Button
+                        title="Pick an image from camera roll"
+                        onPress={this._pickImage}
+                    />
+                    {
+                        !profilePic && (state.profileInfo === null || state.profileInfo.profilePic === '') && 
+                        <Image source = {require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
+                    }
+                    {
+                        !profilePic && state.profileInfo !== null && state.profileInfo.profilePic !== '' && 
+                        <Image source={{uri: state.profileInfo.profilePic}} style={{width: 200, height: 200}} />
+                    }
+                    {
+                        profilePic &&
+                        <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />
+                    }
+                </View>
+            }
 
         { /* a password isn't needed to update zipcode or first and last name */
           !needPassword && 
@@ -148,6 +168,7 @@ const UpdateAccountScreen = ({navigation}) => {
                     // A password is needed to update email addresses
                     setNeedPassword(true);
                     setChangeEmail(true);
+                    setShowPic(false)
                 }} >
                     <Text style={styles.needPassLink}>Update Email Address</Text>
                 </TouchableOpacity>
@@ -157,6 +178,7 @@ const UpdateAccountScreen = ({navigation}) => {
                     // a password is needed to update a phone number
                     setNeedPassword(true);
                     setChangePhone(true);
+                    setShowPic(false)
                 }} >
                     <Text style={styles.needPassLink}>Update Phone Number</Text>
                 </TouchableOpacity>
@@ -166,6 +188,7 @@ const UpdateAccountScreen = ({navigation}) => {
                     // a password is needed to update a password
                     setNeedPassword(true)
                     setChangePass(true);
+                    setShowPic(false)
                 }}
                 >
                     <Text style={styles.needPassLink}>Update Password</Text>
@@ -373,6 +396,7 @@ const UpdateAccountScreen = ({navigation}) => {
                     setChangePass(false);
                     setChangePhone(false);
                     setChangeEmail(false);
+                    setShowPic(true)
                 }}
                 title="Cancel"
             />
@@ -386,6 +410,7 @@ const UpdateAccountScreen = ({navigation}) => {
                         setChangePass(false);
                         setChangePhone(false);
                         setChangeEmail(false);
+                        setShowPic(true)
                         navigation.navigate('BreweryList');
                     }}
                     title="Cancel"
@@ -463,4 +488,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default UpdateAccountScreen;
+export default UserUpdateAccount;

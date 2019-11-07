@@ -1,5 +1,5 @@
 // React native imports
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect, Component} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -10,6 +10,32 @@ import {Context as BreweryContext} from '../context/BreweryContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
 
+class MoreScreenComponent extends Component {
+    state = {
+        isLoading: true
+    }
+
+    async componentDidMount() {
+        let {state, getOwnedBreweries} = this.context
+        console.log("getting owned breweries")
+        await getOwnedBreweries().then(() => {
+            this.setState({
+                isLoading: false
+            })
+        })
+    }
+
+    render() {
+        if (this.state.isLoading) {
+            {/* This bufferpopup gets displayed while the user is fetching breweries from the backend */}
+            
+            return <BufferPopup isVisible={this.state.isLoading} text={"Fetching Owned Breweries"}/>
+        }
+        return <MoreScreen navigation={this.props.navigation}/>
+    }
+}
+MoreScreenComponent.contextType = BreweryContext
+
 
 
 
@@ -18,16 +44,6 @@ import BufferPopup from '../components/BufferPopup';
  * 2.) an button which will navigate users to a screen where they can create a brewery
  */
 const MoreScreen = ({navigation}) => {
-    /* 
-     * Added this navigation listener so when a user navigates to the MoreScreen the app will
-     * fetch all breweries the user's owns 
-     */
-    this.focusListener = navigation.addListener('didFocus', async () => {
-        setShowDialog(true); //This sets the bufferpop to be displayed
-        await getOwnedBreweries();
-        setShowDialog(false); // this hids the bufferpop
-    })
-
     /*
      * Need to import three context methods, getBrewery, clearIndividualBreweryResult, getOwnedBreweries
      * getBrewery is used when a brewery from the Owned Breweries list is selected.
@@ -37,6 +53,28 @@ const MoreScreen = ({navigation}) => {
 
     const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
     const [showDialog, setShowDialog] = useState(false);
+
+    /* 
+     * Added this navigation listener so when a user navigates to the MoreScreen the app will
+     * fetch all breweries the user's owns 
+     */
+    // async function owned() {
+    //     await getOwnedBreweries()
+    // }
+    // useEffect(() => {
+    //     setShowDialog(true)
+    //     owned()
+    //     console.log('got owned')
+    //     setShowDialog(false)
+    // }, [state.ownedBreweries.length])
+    // this.focusListener = navigation.addListener('didFocus', async () => {
+    //     setShowDialog(true); //This sets the bufferpop to be displayed
+    //     await getOwnedBreweries();
+    //     console.log('did focus')
+    //     setShowDialog(false); // this hids the bufferpop
+    // })
+
+    // console.log(state)
     return (
         <View style={styles.backgroundContainer}>
             { state.ownedBreweries.length > 0 &&
@@ -65,14 +103,13 @@ const MoreScreen = ({navigation}) => {
             </View>
             </View>
             }
-            {/* This bufferpopup gets displayed while the user is fetching breweries from the backend */}
-            <BufferPopup isVisible={showDialog} text={"Fetching Owned Breweries"}/>
             <View style={styles.contentContainer}>
                 <WelcomeButton
                     title="Create Brewery"
                     onPress={() => {
                         // call here ensures no data will be used to populate breweryform on create screen
                         clearIndividualBreweryResult(); 
+                        // this.focusListener.remove()
                         navigation.navigate('CreateBrewery')
                     }}
                 />
@@ -96,4 +133,4 @@ const styles = StyleSheet.create({
         flexDirection:'column'
     }
 })
-export default MoreScreen;
+export default MoreScreenComponent;
