@@ -15,23 +15,35 @@ class MoreScreenComponent extends Component {
         isLoading: true
     }
 
-    async componentDidMount() {
+    
+
+    componentDidMount() {
         let {state, getOwnedBreweries} = this.context
-        console.log("getting owned breweries")
-        await getOwnedBreweries().then(() => {
-            this.setState({
-                isLoading: false
+        
+        this.focusListener = this.props.navigation.addListener('didFocus', async () => {
+            console.log("getting breweries")
+            await getOwnedBreweries().then(() => {
+                this.setState({
+                    isLoading: false
+                })
             })
         })
     }
 
+    componentWillUnmount() {
+        this.focusListener.remove()
+    }
+
     render() {
-        if (this.state.isLoading) {
-            {/* This bufferpopup gets displayed while the user is fetching breweries from the backend */}
-            
-            return <BufferPopup isVisible={this.state.isLoading} text={"Fetching Owned Breweries"}/>
-        }
-        return <MoreScreen navigation={this.props.navigation}/>
+        return (
+            <View style={{flex:1}}>
+                <BufferPopup isVisible={this.state.isLoading} text={"Fetching Brewery Info"} />
+                {
+                    !this.state.isLoading &&
+                    <MoreScreen navigation={this.props.navigation} />
+                }
+            </View>
+        )
     }
 }
 MoreScreenComponent.contextType = BreweryContext
