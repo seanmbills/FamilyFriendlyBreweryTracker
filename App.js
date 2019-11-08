@@ -1,5 +1,5 @@
 import React  from 'react'
-import {TouchableOpacity, StyleSheet, Text} from 'react-native';
+import {TouchableOpacity, StyleSheet, Text,Header} from 'react-native';
 import {
     createAppContainer, 
     createSwitchNavigator,
@@ -47,54 +47,73 @@ const switchNavigator = createSwitchNavigator({
             }
         }
     }),
-    loggedInFlow: createBottomTabNavigator({
-        
-        
-        UpdateAccount: UpdateAccountScreen,
-        BreweryList: BreweryListScreen,
-        optionsFlow: createStackNavigator({
-            More: MoreScreen,
-            CreateBrewery: CreateBreweryScreen,
-            EditBrewery: EditBreweryScreen
-        })
-    },
-    
-    {
-        defaultNavigationOptions: ({ navigation }) => ({
-            tabBarIcon: ({ focused, horizontal, tintColor }) => {
-                const { routeName } = navigation.state;
-                var iconName;
-                var onPress;
-                if (routeName === 'BreweryList') {
-                    iconName = "md-search";
-                } else if (routeName === 'UpdateAccount') {
-                    iconName = "md-person"
-                } else if (routeName === 'optionsFlow') {
-                    iconName = "ios-more"
-                }
+    loggedInFlow: createStackNavigator({
 
-                // You can return any component that you like here!
-                return <Ionicons name={iconName} size={30} color={tintColor}/>;
+        loggedInInnerFlow: createBottomTabNavigator({
+        
+            UpdateAccount: UpdateAccountScreen,
+            BreweryList: BreweryListScreen,
+            optionsFlow: createStackNavigator({
+                More: MoreScreen,
+                CreateBrewery: CreateBreweryScreen,
+                EditBrewery: EditBreweryScreen
             },
-        }),
-        initialRouteName: 'BreweryList',
-        tabBarOptions: {
+            {
+                defaultNavigationOptions: {
+                    headerMode: 'none',
+                    header: null,
+                    navigationOptions: {
+                        header: null
+                    }
+                }
+            }
+            )
+        },
+    
+        {
+            defaultNavigationOptions: ({ navigation }) => ({
+                tabBarIcon: ({ focused, horizontal, tintColor }) => {
+                    const { routeName } = navigation.state;
+                    var iconName;
+                    var onPress;
+                    if (routeName === 'BreweryList') {
+                        iconName = "md-search";
+                    } else if (routeName === 'UpdateAccount') {
+                        iconName = "md-person"
+                    } else if (routeName === 'optionsFlow') {
+                        iconName = "ios-more"
+                    }
+
+                    // You can return any component that you like here!
+                    return <Ionicons name={iconName} size={30} color={tintColor}/>;
+                },
+
+            }),
             initialRouteName: 'BreweryList',
-            activeTintColor: 'black',
-            inactiveTintColor: 'grey',
-            showLabel: false,
-        }
-    },
+            tabBarOptions: {
+                initialRouteName: 'BreweryList',
+                activeTintColor: 'black',
+                inactiveTintColor: 'grey',
+                showLabel: false,
+            }
+        },
     )
-})
-
-const styles = StyleSheet.create({
-    navButton: {
-        color:'red',
-        backgroundColor:'white',
-
+    },
+    {
+        initialRouteName: 'loggedInInnerFlow',
+        defaultNavigationOptions: {
+            headerTintColor: 'grey',
+            headerStyle: {
+              backgroundColor: 'white',
+              height: 5
+            },
+          },
     }
-})
+    )  
+}
+)
+
+
 const App = createAppContainer(switchNavigator)
 
 export default () => {
