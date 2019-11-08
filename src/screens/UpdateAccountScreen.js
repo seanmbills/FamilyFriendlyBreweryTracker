@@ -1,34 +1,142 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import WelcomeButton from '../components/WelcomeButton';
-import ZipTextField from '../components/ZipTextField';
+import React, { useState, useContext, useEffect, Component } from 'react';
+import { View, Text, StyleSheet, Button, Image } from 'react-native';
+
 import { Context as AuthContext } from '../context/AuthContext';
 import { TextInput, TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
+import Dialog, {DialogContent} from 'react-native-popup-dialog';
+
+// Local imports
+import WelcomeButton from '../components/WelcomeButton';
+import ZipTextField from '../components/ZipTextField';
 import PasswordField from '../components/PasswordField';
 import { validatePassword, validateEmail } from '../api/InputValidation';
 import PhoneInput from 'react-native-phone-input';
+import * as ImagePicker from 'expo-image-picker'
+import Constants from 'expo-constants'
+import * as Permissions from 'expo-permissions'
+import BufferPopup from '../components/BufferPopup';
 
+class UserUpdateAccount extends Component {
+    state = {
+        isLoading: true
+    };
+    
+    async componentDidMount() {
+        let {state, getUserInfo} = this.context
+        await getUserInfo().then(() => {
+            this.setState({
+                isLoading: false
+            })
+        })
+    }
+
+    render() {
+        return (
+            <View style={{flex:1}}>
+                <BufferPopup isVisible={this.state.isLoading} text={"Fetching User's Info"} />
+                {
+                    !this.state.isLoading &&
+                    <UpdateAccountScreen navigation={this.props.navigation} />
+                }
+            </View>
+        )
+    }
+}
+UserUpdateAccount.contextType = AuthContext
+
+/* 
+ * Screen will allow user to update account information. This includes: email, phoneNumber, password, zipcode
+ */
 const UpdateAccountScreen = ({navigation}) => {
-    const {state, userUpdate, updatePassword, updateEmail, updatePhone,
+    const {state, userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo,
         clearErrorMessage} = useContext(AuthContext);
-    const [ firstName, setFirstName ] = useState('');
-    const [ lastName, setLastName ] = useState('');
-    const [ zipCode, setZipCode ] = useState('');
+    const [ firstName, setFirstName ] = state.profileInfo.firstName === null ? useState('') : useState(state.profileInfo.firstName)
+    const [ lastName, setLastName ] = state.profileInfo.lastName === null ? useState('') : useState(state.profileInfo.lastName)
+    const [ zipCode, setZipCode ] = state.profileInfo.zipCode === null ? useState('') : useState(state.profileInfo.zipCode)
+
     const [ newPhone, setNewPhone ] = useState('');
-    const [ needPassword, setNeedPassword ] = useState(false);
     const [ oldPassword, setOldPassword ] = useState('');
     const [ newPassword, setNewPassword ] = useState('');
     const [ confirmPassword, setConfirmPassword ] = useState('');
+    
+    // state object indicates if a user's password does not conform to valid format
+    const [ passErrMsg, setPassErrMsg ] = useState('');
+
+
+     // state object indicates if a password is needed to update a particular user account field
+    const [ needPassword, setNeedPassword ] = useState(false);
+
+    // state objects which indicate which fields are visible for when a user is updating an account
     const [ changePass, setChangePass ] = useState(false);
     const [ changePhone, setChangePhone ] = useState(false);
     const [ changeEmail, setChangeEmail ] = useState(false);
     const [ newEmail, setNewEmail ] = useState('');
-    const [ passErrMsg, setPassErrMsg ] = useState('');
+    const [ profilePic, setProfilePic ] = useState(null)
+    const [showPic, setShowPic ] = useState(true)
+
+
+    useEffect(() => {
+        getPermissionAsync()
+    }, [])
+    
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    _pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            base64: true,
+            quality: 1.0
+        });
+        
+        if (!result.cancelled) {
+            setProfilePic(result)
+        }
+    };
+
+    //state object which indicates if popup buffer should be displayed
+    const [ showDialog, setShowDialog ] = useState(false);
+    //state object which dictates the text to be displayed at bottom of buffer dialog box
+    const [ bufferText, setBufferText ] = useState('');
+
+    //State object which indicates if results popup should be shown
+    const [ resultDialogVisible, setResultDialogVisible ] = useState(false);
+    const [ resultDialogText, setResultDialogText ] = useState('');
 
     return ( 
         <ScrollView style={styles.background}>
             <Text style={styles.title}>Update Account</Text>
-        { !needPassword && 
+            {
+                showPic && 
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Button
+                        title="Pick an image from camera roll"
+                        onPress={this._pickImage}
+                    />
+                    {
+                        !profilePic && (state.profileInfo === null || state.profileInfo.profilePic === '') && 
+                        <Image source = {require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
+                    }
+                    {
+                        !profilePic && state.profileInfo !== null && state.profileInfo.profilePic !== '' && 
+                        <Image source={{uri: state.profileInfo.profilePic}} style={{width: 200, height: 200}} />
+                    }
+                    {
+                        profilePic &&
+                        <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />
+                    }
+                </View>
+            }
+
+        { /* a password isn't needed to update zipcode or first and last name */
+          !needPassword && 
         <View>
             <View style={styles.fieldContainer}>
                 <Text style={styles.inputTitle}>Zip Code</Text>
@@ -57,24 +165,30 @@ const UpdateAccountScreen = ({navigation}) => {
             </View>
             <View style={styles.fieldContainer}>
                 <TouchableOpacity onPress={()=> {
+                    // A password is needed to update email addresses
                     setNeedPassword(true);
                     setChangeEmail(true);
+                    setShowPic(false)
                 }} >
                     <Text style={styles.needPassLink}>Update Email Address</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.fieldContainer}>
                 <TouchableOpacity onPress={()=> {
+                    // a password is needed to update a phone number
                     setNeedPassword(true);
                     setChangePhone(true);
+                    setShowPic(false)
                 }} >
                     <Text style={styles.needPassLink}>Update Phone Number</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.fieldContainer}>
                 <TouchableOpacity onPress={()=> {
+                    // a password is needed to update a password
                     setNeedPassword(true)
                     setChangePass(true);
+                    setShowPic(false)
                 }}
                 >
                     <Text style={styles.needPassLink}>Update Password</Text>
@@ -83,11 +197,32 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> userUpdate({firstName, lastName, zipCode})}
+                    onPress={ async ()=> {
+                        
+                        //Set dialog text and make it visible
+                        setBufferText("Updating Account")
+                        setShowDialog(true);
+
+                        //Make request to backend to update account
+                        var response = await userUpdate({firstName, lastName, zipCode, profilePic})
+
+                        //set dialog to no longer be visible
+                        setShowDialog(false);
+
+                        // If the update failed, show a failure popup
+                        if (!response || response.status >= 400) {
+                            setResultDialogText("Something went wrong. Unable to update account");
+                            setResultDialogVisible(true);
+                        } else { //Otherwise show a successful popup
+                            setResultDialogText("Account Successfully Updated!");
+                            setResultDialogVisible(true);
+                        }
+                    }}
                 />
             </View>
         </View> }
-        { needPassword && changeEmail && 
+        { /* if a user wants to update his/her email, display a new email field and a confirm password field */
+            needPassword && changeEmail && 
         <View>
             <View style={styles.fieldContainer}>
                 <Text style={styles.inputTitle}>Confirm Password</Text>
@@ -112,14 +247,37 @@ const UpdateAccountScreen = ({navigation}) => {
                     onPress={()=> {
                         if (validateEmail(newEmail) && oldPassword.length > 8) {
                             password = oldPassword;
-                            updateEmail({newEmail, password});
+                            
+                            //Set dialog text and make it visible
+                            setBufferText("Updating Email")
+                            setShowDialog(true);
+
+                            var response = updateEmail({newEmail, password});
+
+                            //set dialog to no longer be visible
+                            setShowDialog(false);
+
+                             // If the update failed, show a failure popup
+                            if (!response || response.status >= 400) {
+                                setResultDialogText("Something went wrong. Unable to update email");
+                                setResultDialogVisible(true);
+                            } else { //Otherwise show a successful popup
+                                setResultDialogText("Email Successfully Updated!");
+                                setResultDialogVisible(true);
+                            }
+
+                        } else {
+                            //Show dialog stating email was invalid
+                            setResultDialogText("Email entered was not valid");
+                            setResultDialogVisible(true);
                         }
                     }}
                 />
             </View>
         </View>
         }
-        { needPassword && changePass && 
+        { /* if a user wants to update his/her password, display a new password field and a confirm password field */
+            needPassword && changePass && 
         <View>  
             <View style={styles.fieldContainer}>
                 <Text style={styles.inputTitle}>Old Password</Text>
@@ -148,9 +306,26 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> {
+                    onPress={async ()=> {
                         if (validatePassword(newPassword) && newPassword === confirmPassword) {
-                            updatePassword({oldPassword, newPassword})
+                            //Set dialog text and make it visible
+                            setBufferText("Updating Password")
+                            setShowDialog(true);
+
+                            var response = await updatePassword({oldPassword, newPassword})
+
+                            //Set dialog to no longer be visible
+                            setShowDialog(false);
+
+                            // If the update failed, show a failure popup
+                            if (!response || response.status >= 400) {
+                                setResultDialogText("Something went wrong. Unable to update password");
+                                setResultDialogVisible(true);
+                            } else { //Otherwise show a successful popup
+                                setResultDialogText("Password Successfully Updated!");
+                                setResultDialogVisible(true);
+                            }
+
                         } else {
                             setPassErrMsg("Passwords must match!");
                         }
@@ -158,7 +333,8 @@ const UpdateAccountScreen = ({navigation}) => {
                 />
             </View>
         </View> }
-        { needPassword && changePhone &&
+        { /* if a user wants to update his/her phone number, display a new phonenumber field and a confirm password field */
+            needPassword && changePhone &&
         <View>
             <View style={styles.fieldContainer}>
                 <Text style={styles.inputTitle}>Confirm Password</Text>
@@ -181,10 +357,31 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> {
+                    onPress={ async ()=> {
                         if (newPhone.length >= 10) {
                             password = oldPassword;
-                            updatePhone({password, newPhone});
+                            
+                            //Set dialog text and make it visible
+                            setBufferText("Updating Phone Number")
+                            setShowDialog(true);
+
+                            var response = await updatePhone({password, newPhone});
+
+                            //Set dialog to no longer be visible
+                            setShowDialog(false);
+
+                            // If the update failed, show a failure popup
+                            if (!response || response.status >= 400) {
+                                setResultDialogText("Something went wrong. Unable to update phone number");
+                                setResultDialogVisible(true);
+                            } else { //Otherwise show a successful popup
+                                setResultDialogText("Phone Number Successfully Updated!");
+                                setResultDialogVisible(true);
+                            }
+                        } else {
+                            // Show result dialog which states phone number was invalid
+                            setResultDialogText("Phone Number entered was not valid");
+                            setResultDialogVisible(true);
                         }
                     }}
                 />
@@ -199,6 +396,7 @@ const UpdateAccountScreen = ({navigation}) => {
                     setChangePass(false);
                     setChangePhone(false);
                     setChangeEmail(false);
+                    setShowPic(true)
                 }}
                 title="Cancel"
             />
@@ -212,6 +410,7 @@ const UpdateAccountScreen = ({navigation}) => {
                         setChangePass(false);
                         setChangePhone(false);
                         setChangeEmail(false);
+                        setShowPic(true)
                         navigation.navigate('BreweryList');
                     }}
                     title="Cancel"
@@ -219,6 +418,18 @@ const UpdateAccountScreen = ({navigation}) => {
             </View>
         }
         {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
+
+        <BufferPopup isVisible={showDialog} text={bufferText}/>
+        <Dialog
+            visible={resultDialogVisible}
+            onTouchOutside={()=> setResultDialogVisible(false)}
+        >
+            <DialogContent
+                style={styles.resultDialog}
+            >
+                <Text style={styles.resultDialogText}>{resultDialogText}</Text>
+            </DialogContent>
+        </Dialog>
         </ScrollView>
     );
 
@@ -267,7 +478,14 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginLeft: 5,
         marginRight: 5
+    },
+    resultDialogText: {
+        alignSelf: 'center',
+        fontSize: 25,
+    },
+    resultDialog: {
+        alignItems: 'center'
     }
 });
 
-export default UpdateAccountScreen;
+export default UserUpdateAccount;

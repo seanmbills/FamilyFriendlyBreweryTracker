@@ -1,5 +1,16 @@
 import React, {useState, useContext, useEffect} from 'react'
-import {View, StyleSheet, Text, ScrollView, Dimensions, TouchableOpacity, Linking, Platform} from 'react-native'
+import {
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity,
+  Linking,
+  Platform,
+  FlatList, 
+  Image
+} from 'react-native'
 import {Context as BreweryContext} from '../context/BreweryContext'
 import {Context as ReviewContext} from '../context/ReviewContext'
 import {Rating} from 'react-native-ratings'
@@ -14,7 +25,23 @@ const BreweryDetailsScreen = ({navigation}) => {
     const breweryResult = state.individualResult[0].brewery
     const openNow = state.individualResult[0].openNow
     const kidFriendlyNow = state.individualResult[0].kidFriendlyNow
+    const signedUrl1 = state.individualResult[0].signedUrl1
+    const signedUrl2 = state.individualResult[0].signedUrl2
+    const signedUrl3 = state.individualResult[0].signedUrl3
 
+    const data = []
+    if (signedUrl1 !== null && signedUrl1 !== ''){
+        console.log(signedUrl1)
+        data.push(signedUrl1)
+    }
+    if (signedUrl2 !== null && signedUrl2 !== ''){
+        data.push(signedUrl2)
+    }
+    if (signedUrl3 !== null && signedUrl3 !== ''){
+        data.push(signedUrl3)
+    }
+
+    console.log(data)
 
     var priceStr = ""
     var priceStr2 = ""
@@ -103,11 +130,24 @@ const BreweryDetailsScreen = ({navigation}) => {
               style={{textAlign: 'center', paddingTop: 5}}> {breweryResult.numReviews} reviews
           </Text>
         </TouchableOpacity>
-
-        {/*Displays the pictures*/}
-        <Text style={{textAlign: 'center', paddingTop: 120, paddingBottom: 120}}> pics here
-        </Text>
-
+        
+        {
+            (data.length > 0) && 
+            <FlatList
+                horizontal
+                data={data}
+                renderItem={({item}) => {
+                  return (
+                    <Image source={{uri: item}} style={{width:400, height:400}} />
+                  )
+                }}
+                keyExtractor={item => item}
+            />
+        }
+        {
+          data.length === 0 &&
+          <Image source={require('../../assets/PhotosComingSoon.jpg')} style={{width: 700, height: 500}} />
+        }
 
         {/*The first box*/}
         <View style={styles.boxInView}>

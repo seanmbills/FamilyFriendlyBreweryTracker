@@ -1,9 +1,11 @@
-import React from 'react'
-
+import React  from 'react'
+import {TouchableOpacity, StyleSheet, Text} from 'react-native';
 import {
     createAppContainer,
     createSwitchNavigator,
 } from 'react-navigation'
+
+import {Ionicons} from '@expo/vector-icons';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import {createStackNavigator} from 'react-navigation-stack';
 import WelcomeScreen from './src/screens/WelcomeScreen';
@@ -25,6 +27,9 @@ import UpdateAccountScreen from './src/screens/UpdateAccountScreen';
 import MoreScreen from './src/screens/MoreScreen';
 import CreateBreweryScreen from './src/screens/CreateBreweryScreen';
 import EditBreweryScreen from './src/screens/EditBreweryScreen.js';
+
+
+
 
 const switchNavigator = createSwitchNavigator({
     loginFlow: createStackNavigator({
@@ -49,17 +54,54 @@ const switchNavigator = createSwitchNavigator({
         }
     }),
     loggedInFlow: createBottomTabNavigator({
-        breweryListFlow: createStackNavigator({
-            BreweryList: BreweryListScreen,
-            UpdateAccount: UpdateAccountScreen,
+        
+        
+        UpdateAccount: UpdateAccountScreen,
+        BreweryList: BreweryListScreen,
+        optionsFlow: createStackNavigator({
             More: MoreScreen,
             CreateBrewery: CreateBreweryScreen,
             EditBrewery: EditBreweryScreen,
             WriteReview: WriteReviewScreen
         })
-    })
+    },
+    
+    {
+        defaultNavigationOptions: ({ navigation }) => ({
+            tabBarIcon: ({ focused, horizontal, tintColor }) => {
+                const { routeName } = navigation.state;
+                var iconName;
+                var onPress;
+                if (routeName === 'BreweryList') {
+                    iconName = "md-search";
+                } else if (routeName === 'UpdateAccount') {
+                    iconName = "md-person"
+                } else if (routeName === 'optionsFlow') {
+                    iconName = "ios-more"
+                }
+
+                // You can return any component that you like here!
+                return <Ionicons name={iconName} size={30} color={tintColor}/>;
+            },
+        }),
+        initialRouteName: 'BreweryList',
+        tabBarOptions: {
+            initialRouteName: 'BreweryList',
+            activeTintColor: 'black',
+            inactiveTintColor: 'grey',
+            showLabel: false,
+        }
+    },
+    )
 })
 
+const styles = StyleSheet.create({
+    navButton: {
+        color:'red',
+        backgroundColor:'white',
+
+    }
+})
 const App = createAppContainer(switchNavigator)
 
 export default () => {

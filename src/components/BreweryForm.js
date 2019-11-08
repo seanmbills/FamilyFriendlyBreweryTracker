@@ -1,17 +1,34 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect, Component} from 'react';
 import {Context as BreweryContext} from '../context/BreweryContext';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, FlatList, Image} from 'react-native';
 
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch} from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
+
+// Local Component imports
 import WelcomeButton from '../components/WelcomeButton'
+import * as ImagePicker from 'expo-image-picker'
+import Constants from 'expo-constants'
+import * as Permissions from 'expo-permissions'
+import {Feather } from '@expo/vector-icons'
+
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
 
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
+import { DrawerActions } from 'react-navigation-drawer';
 
 const BreweryForm = ({isNew, navigation}) => {
     
+    /*
+     * Accepts a time string in format X:XXAM - X:XXPM and returns just the AM hour mark
+     * this will be used to set the initial state for each open hour state object.
+     * (assuming this component is being populated with data from the database)
+     * 
+     * @param hoursString - a string (from the database) representation of the open and close hours for a brewery on a
+     *      particular day
+     * @return A string containing just the open hours for the brewery
+    */
     const getOpenHrsFromStr = (hoursString) => {
         var openHours = hoursString.substring(0,hoursString.indexOf(' '));
         var numIndex = 0;
@@ -24,6 +41,14 @@ const BreweryForm = ({isNew, navigation}) => {
         
         return openHours;
     }
+
+    /*
+     * Performs exact same funciton as getOpenHrsFromStr except in this case it is just the close hours for the brewery
+     *
+     * @param hoursString - a string (from the database) representation of the open and close hours for a brewery on a
+     *      particular day
+     * @return A string containing just the close hours for the brewery
+    */
     const getCloseHrsFromStr = (hoursString) => {
         var closeHours = hoursString.substring(hoursString.indexOf('- ') + 2);
         var numIndex = 0;
@@ -69,6 +94,15 @@ const BreweryForm = ({isNew, navigation}) => {
         return hoursObj;
     }
 
+    /*
+     * This method accepts a javascript object containing the accommodations fields a brewery may choose to add to its
+     * page. This function will then parse the object and create a javascript object which can be used to set the state
+     * for all accommodations fields. This is needed, because the backend does not store accommodations fields which are
+     * not set to true. 
+     * 
+     * @param map - a javascript object from the backend which contains accommodations the brewery has selected
+     * @return - a javascript object which contains ALL accommodations fields, both those which are set and those which aren't
+     */
     const fillAccommodationsFromBackend = (map) => {
        
         var accommodationsMap = new Object();
@@ -116,11 +150,14 @@ const BreweryForm = ({isNew, navigation}) => {
 
     const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
     
+    //Here were are checking if a brewery object has been supplied in the application context
     const brewery = (state['individualResult'] != null) ? state['individualResult'][0].brewery : null;
 
     var initHours;
     var initKidHours;
     var accommodations;
+
+    // if the brewery exists, use the functions above to create business & kidfriendly hours objects and an accommodations object
     if (brewery) {
         initHours = convertHoursFromString(brewery.businessHours);
         initKidHours = convertHoursFromString(brewery.alternativeKidFriendlyHours);
@@ -128,6 +165,8 @@ const BreweryForm = ({isNew, navigation}) => {
     }
 
     const [dialogOpen, setDialogOpen] = useState(false);
+
+    //The following are all state objects related to the fields on the form
     const [breweryName, setBreweryName] = (brewery) ? useState(brewery.name) : useState('');
     const [street, setStreet] = (brewery) ? useState(brewery.address.street) : useState('');
     const [city, setCity] = (brewery) ? useState(brewery.address.city) : useState('');
@@ -141,15 +180,7 @@ const BreweryForm = ({isNew, navigation}) => {
     const [dayPicked, setDayPicked] = useState('');
     const [kidHoursSame, setKidHoursSame] = (brewery) ? useState(brewery.kidHoursSameAsNormal) : useState(false);
 
-    const [nameErrorMsg, setNameErrorMsg] = useState('');
-    const [addressErrorMsg, setAddressErrorMsg] = useState('');
-    const [phoneErrorMsg, setPhoneErrorMsg] = useState('');
-    const [emailErrorMsg, setEmailErrorMsg]= useState('');
-    const [websiteErrorMsg, setWebsiteErrorMsg] = useState('');
-
-
-    const [timePickerVisible, setTimePickerVisible] = useState(false);
-
+    // State objects for business hours
     const [mondayOpenTime, setMondayOpenTime] = (brewery) ? useState(initHours['monOpen']) : useState('8:00AM');
     const [mondayCloseTime, setMondayCloseTime] = (brewery) ? useState(initHours['monClose']) : useState('8:00PM');
     const [tuesdayOpenTime, setTuesdayOpenTime] = (brewery) ? useState(initHours['tueOpen']) : useState('8:00AM');
@@ -165,6 +196,7 @@ const BreweryForm = ({isNew, navigation}) => {
     const [sundayOpenTime, setSundayOpenTime] = (brewery) ? useState(initHours['sunOpen']) : useState('8:00AM');
     const [sundayCloseTime, setSundayCloseTime] = (brewery) ? useState(initHours['sunClose']) : useState('8:00PM');
 
+    // State objects for kidFriendlyHours
     const [mondayKidOpenTime, setMondayKidOpenTime] = (brewery) ? useState(initHours['monOpen']) : useState('8:00AM');
     const [mondayKidCloseTime, setMondayKidCloseTime] = (brewery) ? useState(initHours['monClose']) : useState('8:00PM');
     const [tuesdayKidOpenTime, setTuesdayKidOpenTime] = (brewery) ? useState(initHours['tueOpen']) : useState('8:00AM');
@@ -180,6 +212,7 @@ const BreweryForm = ({isNew, navigation}) => {
     const [sundayKidOpenTime, setSundayKidOpenTime] = (brewery) ? useState(initHours['sunOpen']) : useState('8:00AM');
     const [sundayKidCloseTime, setSundayKidCloseTime] = (brewery) ? useState(initHours['sunClose']) : useState('8:00PM');
 
+    // State objects for accommodations
     const [waterStations, setWaterStations] = (brewery) ? useState(accommodations['petFriendly']['waterStations']) : useState(false);
     const [indoorSpaces, setIndoorSpaces] = (brewery) ? useState(accommodations['petFriendly']['indoorSpaces']) : useState(false);
     const [outdoorSpaces, setOutdoorSpaces] = (brewery) ? useState(accommodations['petFriendly']['outdoorSpaces']) : useState(false);
@@ -194,15 +227,83 @@ const BreweryForm = ({isNew, navigation}) => {
     const [childSeating, setChildSeating] = (brewery) ? useState(accommodations['childAccommodations']['seating']) : useState(false);
     const [strollerSpace, setStrollerSpace] = (brewery) ? useState(accommodations['childAccommodations']['strollerSpace']) : useState(false);
 
+    // The message the dialog popup contains (will say if creation/update was successful)
     const [dialogMessage, setDialogMessage] = useState('');
-    const [showFilters, setShowFilters] = useState(false);
 
-    const [showTimes, setShowTimes] = useState(false);
-    const [showKidTimes, setShowKidTimes] = useState(false);
+    const [showFilters, setShowFilters] = useState(false); // Show checklist for accommodations
+    const [showTimes, setShowTimes] = useState(false); // Show options to edit business hours
+    const [showKidTimes, setShowKidTimes] = useState(false); // Show options ot edit kidFriendlyHours
+
+    // State objects for error messages (these are checked and set on the front end)
+    const [nameErrorMsg, setNameErrorMsg] = useState('');
+    const [addressErrorMsg, setAddressErrorMsg] = useState('');
+    const [phoneErrorMsg, setPhoneErrorMsg] = useState('');
+    const [emailErrorMsg, setEmailErrorMsg]= useState('');
+    const [websiteErrorMsg, setWebsiteErrorMsg] = useState('');
+    const [timePickerVisible, setTimePickerVisible] = useState(false);
+
+
+    const [breweryImage1, setBreweryImage1] = useState(null)
+    const [breweryImage2, setBreweryImage2] = useState(null)
+    const [breweryImage3, setBreweryImage3] = useState(null)
+    const [imageCount, setImageCount] = useState(1)
+    // var [data, setData] = useState([])
+    var [data] = useState([])
+
+
+    _listEmptyComponent = () => {
+        return null
+    }
+
+    useEffect(() => {
+        getPermissionAsync()
+    }, [])
+    
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    _pickImage = async (breweryImageNumber, update) => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            base64: true,
+            quality: 1.0
+        });
+        
+        if (!result.cancelled) {
+            // setBreweryImage1(result)
+            // data.push(result)
+            if (breweryImageNumber === 1) {
+                setBreweryImage1(result)
+                if (update)
+                    setImageCount((imageCount + 1) % 3)
+                data.push(result)
+                // setData([result])
+            } else if (breweryImageNumber === 2)  {
+                setBreweryImage2(result)
+                if (update)
+                    setImageCount((imageCount + 1) % 3)
+                // this.dataArray.data.push(result.uri)
+                // setData([breweryImage1, breweryImage2])
+            } else if (breweryImageNumber === 0) {
+                setBreweryImage3(result)
+                if (update)
+                    setImageCount((imageCount + 1) % 3)
+                // this.dataArray.data.push(result.uri)
+                // setData([breweryImage1, breweryImage2, breweryImage3])
+            }
+        }
+    };
 
     /*
-     * Takes time given and formats it to conform to backend string restrictions
-     * 
+     * Takes time given from the react-native-date-picker component and formats it to conform to backend string restrictions
+     * This string is then sent to the backend
      * @param time -> time string given from time picker component
      * @return a formatted time string
     */
@@ -231,6 +332,13 @@ const BreweryForm = ({isNew, navigation}) => {
         return formatTime;
     }
 
+    /*
+     * only one react-native-datetime-picker component has been implemented on this screen.  This switch statement
+     * is used to identify which state object (relating to business or kidFriendly) hours needs to be set and then
+     * sets those hours accoordingly. 
+     * 
+     * @param - time -> the time from the datetime-picker which will used to set time state
+     */
     const handleTimePicked = (time)=> {
         time = formatTime(time);
         switch(dayPicked) {
@@ -367,6 +475,12 @@ const BreweryForm = ({isNew, navigation}) => {
     }
 
 
+    /*
+     *  Takes the address fields from the brewery form and creates a singular javascript object with multiple properties
+     * this is done so the address object correctly conforms to the format expected by the backend
+     * 
+     * @return - a singular javascript object conformed to the format expected by the backend
+     */
     const formatAddress = () => {
         var address = new Object();
         if (street == '' || city == '' || breweryState == '' || zipCode == '') {
@@ -382,7 +496,12 @@ const BreweryForm = ({isNew, navigation}) => {
         return address;
     }
 
-
+    /*
+     *  Upon submission of form, takes all businessHour state objects and creates a singular javascript object in a form
+     *  which the backend will accept
+     * 
+     * @return a singular javascript object in a form which the backend will accept
+     */
     const formatBusinessHours = () => {
         var mon = mondayOpenTime + " - " + mondayCloseTime;
         var tue = tuesdayOpenTime + ' - ' + tuesdayCloseTime;
@@ -402,6 +521,12 @@ const BreweryForm = ({isNew, navigation}) => {
         return businessHours;
     }
 
+    /*
+     *  Upon submission of form, takes all kidFriendlyHour state objects and creates a singular javascript object in a form
+     *  which the backend will accept
+     * 
+     * @return a singular javascript object in a form which the backend will accept
+     */
     const formatKidsHours = () => {
 
         var mon = mondayKidOpenTime + " - " + mondayKidCloseTime;
@@ -423,7 +548,12 @@ const BreweryForm = ({isNew, navigation}) => {
     }
 
     
-
+    /*
+     *  Upon submission of form, takes all accommodations state objects and creates a singular javascript object in a form
+     *  which the backend will accept
+     * 
+     * @return a singular javascript object in a form which the backend will accept
+     */
     const buildAccommodationMap = () => {
         const accommodations = {
             petFriendly: {
@@ -453,6 +583,9 @@ const BreweryForm = ({isNew, navigation}) => {
         return accommodations;
     }
 
+    /*
+     * Clears all (frontend) error messages from the brewery form
+     */
     const clearErrorMsgs = () => {
         setAddressErrorMsg('');
         setEmailErrorMsg('');
@@ -464,6 +597,78 @@ const BreweryForm = ({isNew, navigation}) => {
 
     return (
         <ScrollView>
+
+            {/* {
+                (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
+                (<TouchableOpacity
+                    onPress = { () => {
+                            this._pickImage(imageCount, true)
+                        }
+                    }    
+                >
+                    <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
+                </TouchableOpacity>)
+            } */}
+
+            {/* {console.log(typeof(breweryImage1))} */}
+            {/* {typeof(breweryImage1) === Object ? data.push(breweryImage1) : null} */}
+            {/* {breweryImage2 !== null ? data.push(breweryImage2) : data.push()}
+            {breweryImage3 !== null ? data.push(breweryImage3) : data.push()} */}
+            {/* {
+                (data.length > 0) &&
+                <FlatList
+                    horizontal
+                    data={data}
+                    keyExtractor={item => item.uri}
+                    renderItem={({item}) => {
+                        // console.log("item: " + item)
+                        return (
+                            <Image source={{uri: item.uri}} style={{width:200, height:200}}/>
+                        )
+                    }}
+                />
+            } */}
+
+            {/* {
+                (breweryImage1) &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(1, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: breweryImage1.uri}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+
+            {
+                (breweryImage2) && 
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(2, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: breweryImage2.uri}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+
+            {
+                (breweryImage3) &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(3, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: breweryImage3.uri}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            } */}
+
+
             <View style={styles.fieldView}>
                 <Text style={styles.fieldTitle}>Brewery Name:</Text>
                 <TextInput style={styles.textInput}
@@ -1059,18 +1264,19 @@ const BreweryForm = ({isNew, navigation}) => {
                 <WelcomeButton
                     title="Submit"
                     onPress={ async ()=> {
-                        clearErrorMsgs();
-                      
-                        var name = breweryName;
-                        var address = formatAddress();
+                        clearErrorMsgs(); // Clear any error messages from prior attempts
+                        var name = breweryName; //rename breweryName state object to conform to backend expectations
+                        var address = formatAddress(); 
                         var businessHours = formatBusinessHours();
                         var alternativeKidFriendlyHours = businessHours;
+
+                        // If the kidFriendlyHours are not the same as businessHours, build kidFriendlyHours object
                         if (!kidHoursSame) {
                             alternativeKidFriendlyHours = formatKidsHours();
                         }
                         var accommodations = buildAccommodationMap();
                         
-                        
+                        // Validate all user input
                         if (!validateBreweryName(name)) {
                             setNameErrorMsg("Brewery Name cannot be empty.");
                             return;
@@ -1089,9 +1295,11 @@ const BreweryForm = ({isNew, navigation}) => {
                         } 
                         
 
-                        var kidHoursSameAsNormal = kidHoursSame;
+                        var kidHoursSameAsNormal = kidHoursSame; //rename kidHoursFriendly state object to what backend expects
                         
                         var response;
+                        
+                        // If brewery is being used to create a new brewery, hit createBrewery route
                         if (isNew) {
                             
                             response =  await createBrewery({
@@ -1100,7 +1308,7 @@ const BreweryForm = ({isNew, navigation}) => {
                                 alternativeKidFriendlyHours, accommodations
                             });
                            
-                        } else {
+                        } else { // if brewery is being used to edit brewery, hit updateBrewery route
                             var breweryId = brewery._id;
                             response = await updateBrewery({
                                 breweryId,
@@ -1110,13 +1318,14 @@ const BreweryForm = ({isNew, navigation}) => {
                             });
                             getOwnedBreweries();
                         }
-                        console.log("response status " , response)
+                        //console.log("response status " , response)
 
+                        // If response was not received, or an error code was provided, set dialog error message
                         if (!response || parseInt(response.status) >= 400) {
                             console.log("Update failed")
                             setDialogMessage("Something went wrong. Brewery was not created/updated successfully.");
                         } else {
-                            
+                            // Set dialog success message based on if form was being used to create/update brewery
                             if (isNew) {
                                 setDialogMessage("Brewery Created Successfully");
                             } else {
