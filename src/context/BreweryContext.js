@@ -64,6 +64,7 @@ function stripAccommodationsSearch(accommodationsSearch) {
     }
     return null;
 }
+
 const getSearchResults = (dispatch) => {
     return async ({
         name, latitude, longitude, zipCode, distance,

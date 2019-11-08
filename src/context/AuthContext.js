@@ -2,24 +2,43 @@ import {AsyncStorage} from 'react-native'
 import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
 import {navigate} from '../navigationRef'
-//import { decode } from 'punycode';
-import jwt from 'react-native-pure-jwt';
+import axios from 'axios'
+Buffer = require('buffer/').Buffer
+
 
 const authReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
+        case 'get_user_info':
+            return {...state, profileInfo: action.payload}
         case 'updatePassword':
-        case 'updateUser':
         case 'updateEmail':
         case 'updatePhone':
-        case 'register':
         case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
+        case 'userUpdate':
+        case 'register':
+            return {...state, token: action.payload.token, signedURL: action.payload.signedURL, errorMessage: ''}
         case 'clear_error_message':
             return {...state, errorMessage: ''}
         default: 
             return state;
+    }
+}
+
+const getUserInfo = (dispatch) => {
+    return async() => {
+        try {
+            const response = await ServerApi.get('/getUserInfo',
+                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (await AsyncStorage.getItem('token'))}}
+            );
+            console.log(response.data)
+            dispatch({type: 'get_user_info', payload: response.data})
+        } catch (err) {
+            console.log(err.response.data.error)
+            dispatch({ type: 'add_error_message', payload: err.response.data})
+        }
     }
 }
 
@@ -38,23 +57,46 @@ const authReducer = (state, action) => {
 const register = (dispatch) => {
     return async ({email, userId, 
         password, birthDate, firstName, lastName,
-        phoneNumber, zipCode }) => {
+        phoneNumber, zipCode, profilePic }) => {
         // make api request to sign up with this information
         try { 
             const response = await ServerApi.post('/signup', {email, userId, 
                 password, birthDate, firstName, lastName, phoneNumber, zipCode }, 
                 { 'Accept' : 'application/json', 'Content-type': 'application/json'});
-            console.log(response.data);
+            // console.log(response.data);
             // if we sign up, modify our state to reflect that we're authenticated
             // (aka got a token back)
             // we also store the token on the device for later access
             await AsyncStorage.setItem('token', response.data.token)
-            dispatch({type: 'register', payload: response.data.token})
+            await AsyncStorage.setItem('signedURL', response.data.signedURL)
+
+            // upload the profile picture, if there is one, to the AWS S3 instance
+            if (profilePic) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+
+                console.log(profilePic.base64)
+                
+                var buff = Buffer.from(profilePic.base64, 'base64')
+                console.log(buff)
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    await AsyncStorage.getItem('signedURL'),
+                    buff,
+                    options
+                )
+                console.log("response: " + awsResponse)
+            }
+
+            dispatch({type: 'register', payload: response.data})
 
             // then need to navigate the user immediately to the logged in state
             return response;
         } catch (err) {
-            console.log(err.response.data.error)
+            console.log("Error: " + err)
             // if we get an error back from signing up, need to display the appropriate error
             // message to the user
             dispatch({ type: 'add_error_message', payload: err.response.data.error})
@@ -137,13 +179,37 @@ const resetPassword = (dispatch) => {
  * @param zipCode - string - a user's updated zipCode
 */
 const userUpdate = (dispatch) => {
-    return async({firstName, lastName, zipCode}) => {
+    return async({firstName, lastName, zipCode, profilePic}) => {
         try {
             const response = await ServerApi.post('/userUpdate', {firstName, lastName, zipCode},{ headers: 
                 {'Accept' : 'application/json', 'Content-type' : 'application/json',
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
             await AsyncStorage.setItem('token', response.data.token)
-            dispatch({type: 'userUpdate', payload: response.data.token})
+            await AsyncStorage.setItem('signedURL', response.data.signedURL)
+
+            // upload the profile picture, if there is one, to the AWS S3 instance
+            if (profilePic) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+
+                console.log(profilePic.base64)
+                
+                var buff = Buffer.from(profilePic.base64, 'base64')
+                console.log(buff)
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    await AsyncStorage.getItem('signedURL'),
+                    buff,
+                    options
+                )
+                console.log("response: " + awsResponse)
+            }
+
+
+            dispatch({type: 'userUpdate', payload: response.data})
             return response;
         } catch (err) {
             console.log(err.response.data);
@@ -255,6 +321,6 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
-        userUpdate, updatePassword, updateEmail, updatePhone},// tryAutoSignin},
-    {token: null, errorMessage: ''}
+        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo},// tryAutoSignin},
+    {token: null, signedURL: '', errorMessage: '', profileInfo: null}
 )
