@@ -1,8 +1,19 @@
-// React imports
-import React, {useState, useContext } from 'react';
-import {Text, StyleSheet, View, ScrollView, KeyboardAvoidingView} from 'react-native';
+import React, {useState, useContext, useEffect } from 'react';
+import {
+    Text,
+    StyleSheet,
+    View,
+    ScrollView,
+    KeyboardAvoidingView,
+    Button,
+    Image
+} from 'react-native';
+
 import {NavigationEvents} from 'react-navigation'
 import {Context as AuthContext} from '../context/AuthContext'
+import * as ImagePicker from 'expo-image-picker'
+import Constants from 'expo-constants'
+import * as Permissions from 'expo-permissions'
 import {Input} from 'react-native-elements';
 import DatePicker from 'react-native-datepicker';
 
@@ -10,6 +21,7 @@ import DatePicker from 'react-native-datepicker';
 import TitleText from '../components/TitleText';
 import WelcomeButton from '../components/WelcomeButton';
 import {validatePassword, validateEmail} from '../api/InputValidation'
+// import EmptyProfilePic from '../../assets/EmptyProfilePic.png'
 
 import BufferPopup from '../components/BufferPopup';
 
@@ -67,9 +79,8 @@ const RegistrationScreen = ({navigation}) => {
     const [ zipErrMsg, setZipErrMsg ] = useState('');
     const [ birthDateErrMsg, setBirthDateErrMsg ] = useState('');
     const [ confirmPass, setConfirmPass ] = useState('');
-
+    const [ profilePic, setProfilePic ] = useState(null)
     const [bufferPopupVisible, setBufferPopupVisible ] = useState('');
-
     
     function validateInput(inputMap) {
         var isValid = true
@@ -119,8 +130,37 @@ const RegistrationScreen = ({navigation}) => {
         }
         return isValid;
     }
+
+
+    useEffect(() => {
+        getPermissionAsync()
+    }, [])
+    
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    _pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            base64: true,
+            quality: 1.0
+        });
+        
+        if (!result.cancelled) {
+            setProfilePic(result)
+        }
+    };
+
     
     return (
+
         <KeyboardAvoidingView behavior="padding">
             <ScrollView keyboardDismissMode='on-drag' style={styles.background}>
                 <NavigationEvents 
@@ -128,6 +168,22 @@ const RegistrationScreen = ({navigation}) => {
                 />
                 <View style={styles.topSpan}/>
                 <TitleText title="Registration"/>
+
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Button
+                        title="Pick an image from camera roll"
+                        onPress={this._pickImage}
+                    />
+                    {   
+                        !profilePic && 
+                        <Image source={require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
+                    }  
+                    { 
+                        profilePic &&
+                        <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />
+                    }
+                </View>
+
                 <View style={styles.formElement}>
                     <Input
                         value={email}
@@ -312,7 +368,7 @@ const RegistrationScreen = ({navigation}) => {
 
                                 var response = await register({email, userId, 
                                     password, birthDate, firstName, lastName,
-                                    phoneNumber, zipCode});
+                                    phoneNumber, zipCode, profilePic});
                                 setBufferPopupVisible(false);
                                 if (!response || response.status >= 400) {
                                     console.log("Error when registering");

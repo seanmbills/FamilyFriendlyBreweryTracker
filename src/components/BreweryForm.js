@@ -1,15 +1,22 @@
-// React native imports
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect, Component} from 'react';
 import {Context as BreweryContext} from '../context/BreweryContext';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch} from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, FlatList, Image} from 'react-native';
+
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
-import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 // Local Component imports
 import WelcomeButton from '../components/WelcomeButton'
+import * as ImagePicker from 'expo-image-picker'
+import Constants from 'expo-constants'
+import * as Permissions from 'expo-permissions'
+import {Feather } from '@expo/vector-icons'
+
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
+
+import Dialog, {DialogContent} from 'react-native-popup-dialog';
+import { DrawerActions } from 'react-navigation-drawer';
 
 const BreweryForm = ({isNew, navigation}) => {
     
@@ -235,6 +242,64 @@ const BreweryForm = ({isNew, navigation}) => {
     const [websiteErrorMsg, setWebsiteErrorMsg] = useState('');
     const [timePickerVisible, setTimePickerVisible] = useState(false);
 
+
+    const [breweryImage1, setBreweryImage1] = useState(null)
+    const [breweryImage2, setBreweryImage2] = useState(null)
+    const [breweryImage3, setBreweryImage3] = useState(null)
+    const [imageCount, setImageCount] = useState(1)
+    // var [data, setData] = useState([])
+    var [data] = useState([])
+
+
+    _listEmptyComponent = () => {
+        return null
+    }
+
+    useEffect(() => {
+        getPermissionAsync()
+    }, [])
+    
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    _pickImage = async (breweryImageNumber, update) => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            base64: true,
+            quality: 1.0
+        });
+        
+        if (!result.cancelled) {
+            // setBreweryImage1(result)
+            // data.push(result)
+            if (breweryImageNumber === 1) {
+                setBreweryImage1(result)
+                if (update)
+                    setImageCount((imageCount + 1) % 3)
+                data.push(result)
+                // setData([result])
+            } else if (breweryImageNumber === 2)  {
+                setBreweryImage2(result)
+                if (update)
+                    setImageCount((imageCount + 1) % 3)
+                // this.dataArray.data.push(result.uri)
+                // setData([breweryImage1, breweryImage2])
+            } else if (breweryImageNumber === 0) {
+                setBreweryImage3(result)
+                if (update)
+                    setImageCount((imageCount + 1) % 3)
+                // this.dataArray.data.push(result.uri)
+                // setData([breweryImage1, breweryImage2, breweryImage3])
+            }
+        }
+    };
 
     /*
      * Takes time given from the react-native-date-picker component and formats it to conform to backend string restrictions
@@ -532,6 +597,78 @@ const BreweryForm = ({isNew, navigation}) => {
 
     return (
         <ScrollView>
+
+            {/* {
+                (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
+                (<TouchableOpacity
+                    onPress = { () => {
+                            this._pickImage(imageCount, true)
+                        }
+                    }    
+                >
+                    <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
+                </TouchableOpacity>)
+            } */}
+
+            {/* {console.log(typeof(breweryImage1))} */}
+            {/* {typeof(breweryImage1) === Object ? data.push(breweryImage1) : null} */}
+            {/* {breweryImage2 !== null ? data.push(breweryImage2) : data.push()}
+            {breweryImage3 !== null ? data.push(breweryImage3) : data.push()} */}
+            {/* {
+                (data.length > 0) &&
+                <FlatList
+                    horizontal
+                    data={data}
+                    keyExtractor={item => item.uri}
+                    renderItem={({item}) => {
+                        // console.log("item: " + item)
+                        return (
+                            <Image source={{uri: item.uri}} style={{width:200, height:200}}/>
+                        )
+                    }}
+                />
+            } */}
+
+            {/* {
+                (breweryImage1) &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(1, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: breweryImage1.uri}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+
+            {
+                (breweryImage2) && 
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(2, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: breweryImage2.uri}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+
+            {
+                (breweryImage3) &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(3, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: breweryImage3.uri}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            } */}
+
+
             <View style={styles.fieldView}>
                 <Text style={styles.fieldTitle}>Brewery Name:</Text>
                 <TextInput style={styles.textInput}
