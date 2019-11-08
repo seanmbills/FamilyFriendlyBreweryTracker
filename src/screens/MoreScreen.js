@@ -70,23 +70,6 @@ const MoreScreen = ({navigation}) => {
      * Added this navigation listener so when a user navigates to the MoreScreen the app will
      * fetch all breweries the user's owns 
      */
-    // async function owned() {
-    //     await getOwnedBreweries()
-    // }
-    // useEffect(() => {
-    //     setShowDialog(true)
-    //     owned()
-    //     console.log('got owned')
-    //     setShowDialog(false)
-    // }, [state.ownedBreweries.length])
-    // this.focusListener = navigation.addListener('didFocus', async () => {
-    //     setShowDialog(true); //This sets the bufferpop to be displayed
-    //     await getOwnedBreweries();
-    //     console.log('did focus')
-    //     setShowDialog(false); // this hids the bufferpop
-    // })
-
-    // console.log(state)
     return (
         <View style={styles.backgroundContainer}>
             { state.ownedBreweries.length > 0 &&
@@ -96,7 +79,7 @@ const MoreScreen = ({navigation}) => {
                  {/* flat list will  get populated with breweries a user "Owns" */}
                 <FlatList
                     data={state.ownedBreweries}
-                    keyExtractor={(result) => result.breweryId}
+                    keyExtractor={(result) => {return result.id}}
                     renderItem={({item}) => {
                     return (
                         <TouchableOpacity
