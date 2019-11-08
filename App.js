@@ -34,7 +34,6 @@ const switchNavigator = createSwitchNavigator({
         Login: LoginScreen,
         ForgotPassword: ForgotPasswordScreen,
         PasswordResetSuccess: PasswordResetSuccessScreen,
-        BreweryDetails: BreweryDetailsScreen,
     },
     {
         initialRouteName: 'Welcome',
@@ -51,20 +50,30 @@ const switchNavigator = createSwitchNavigator({
 
         loggedInInnerFlow: createBottomTabNavigator({
         
-            UpdateAccount: UpdateAccountScreen,
+        UpdateAccount: UpdateAccountScreen,
+        breweryFlow: createStackNavigator({
             BreweryList: BreweryListScreen,
-            optionsFlow: createStackNavigator({
-                More: MoreScreen,
-                CreateBrewery: CreateBreweryScreen,
-                EditBrewery: EditBreweryScreen
-            },
-            {
-                defaultNavigationOptions: {
-                    headerMode: 'none',
-                    header: null,
-                    navigationOptions: {
-                        header: null
-                    }
+            BreweryDetails: BreweryDetailsScreen,
+        }),
+        optionsFlow: createStackNavigator({
+            More: MoreScreen,
+            CreateBrewery: CreateBreweryScreen,
+            EditBrewery: EditBreweryScreen
+        })
+    },
+    
+    {
+        defaultNavigationOptions: ({ navigation }) => ({
+            tabBarIcon: ({ focused, horizontal, tintColor }) => {
+                const { routeName } = navigation.state;
+                var iconName;
+                var onPress;
+                if (routeName === 'breweryFlow') {
+                    iconName = "md-search";
+                } else if (routeName === 'UpdateAccount') {
+                    iconName = "md-person"
+                } else if (routeName === 'optionsFlow') {
+                    iconName = "ios-more"
                 }
             }
             )
@@ -84,19 +93,18 @@ const switchNavigator = createSwitchNavigator({
                         iconName = "ios-more"
                     }
 
-                    // You can return any component that you like here!
-                    return <Ionicons name={iconName} size={30} color={tintColor}/>;
-                },
-
-            }),
-            initialRouteName: 'BreweryList',
-            tabBarOptions: {
-                initialRouteName: 'BreweryList',
-                activeTintColor: 'black',
-                inactiveTintColor: 'grey',
-                showLabel: false,
-            }
-        },
+                // You can return any component that you like here!
+                return <Ionicons name={iconName} size={30} color={tintColor}/>;
+            },
+        }),
+        initialRouteName: 'breweryFlow',
+        tabBarOptions: {
+            initialRouteName: 'breweryFlow',
+            activeTintColor: 'black',
+            inactiveTintColor: 'grey',
+            showLabel: false,
+        }
+    },
     )
     },
     {
