@@ -18,15 +18,24 @@ import BufferPopup from '../components/BufferPopup';
 
 class UserUpdateAccount extends Component {
     state = {
-        isLoading: true
+        isLoading: true,
+        foundUser: false,
     };
     
     async componentDidMount() {
         let {state, getUserInfo} = this.context
         await getUserInfo().then(() => {
-            this.setState({
-                isLoading: false
-            })
+            console.log("state results: ", state)
+            if (state.profileInfo !== null || state.token !== null) {
+                this.setState({
+                    isLoading: false,
+                    foundUser: true
+                })
+            } else {
+                this.setState({
+                    foundUser: false
+                })
+            }
         })
     }
 
@@ -35,7 +44,7 @@ class UserUpdateAccount extends Component {
             <View style={{flex:1}}>
                 <BufferPopup isVisible={this.state.isLoading} text={"Fetching User's Info"} />
                 {
-                    !this.state.isLoading &&
+                    !this.state.isLoading && this.state.foundUser && 
                     <UpdateAccountScreen navigation={this.props.navigation} />
                 }
             </View>

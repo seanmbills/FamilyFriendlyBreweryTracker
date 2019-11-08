@@ -30,11 +30,17 @@ const authReducer = (state, action) => {
 const getUserInfo = (dispatch) => {
     return async() => {
         try {
-            const response = await ServerApi.get('/getUserInfo',
-                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (await AsyncStorage.getItem('token'))}}
-            );
-            console.log(response.data)
-            dispatch({type: 'get_user_info', payload: response.data})
+            const userToken = await AsyncStorage.getItem('token')
+            if (userToken != '') { //Checking if user is logged in or if a guest
+                const response = await ServerApi.get('/getUserInfo',
+                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (userToken)}}
+                );
+                console.log(response.data)
+                dispatch({type: 'get_user_info', payload: response.data})
+                return response
+            } else {
+                return null;
+            }    
         } catch (err) {
             console.log(err.response.data.error)
             dispatch({ type: 'add_error_message', payload: err.response.data})
