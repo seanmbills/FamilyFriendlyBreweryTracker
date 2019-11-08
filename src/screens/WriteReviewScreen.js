@@ -5,7 +5,7 @@ import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
 
 const WriteReviewScreen = ({navigation}) => {
-  const {state, createReview} = useContext(ReviewContext);
+  const {state, createReview, getBreweryReviews} = useContext(ReviewContext);
 
   const [ratingNum, setRatingNum] = useState(3);
   const [description, setDescription] = useState('');
@@ -62,12 +62,14 @@ const WriteReviewScreen = ({navigation}) => {
           <View style={styles.buttonContainer}>
               <WelcomeButton
                   title="Submit"
-                  onPress={()=> {
+                  onPress={async ()=> {
                     logMethod()
                     var message = description;
                     var rating = ratingNum;
                     console.log({message, breweryId, rating})
-                    var response = createReview({message, breweryId, rating});
+                    var response = await createReview({message, breweryId, rating});
+                    var getReviewsResponse = await getBreweryReviews({breweryId});
+
                     //console.log("response : ", response)
                   }}
               />
