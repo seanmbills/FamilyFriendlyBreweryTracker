@@ -309,6 +309,12 @@ const tryAutoSignin = dispatch => async() => {
         }
 }
 
+const clearUserToken = (dispatch) => {
+    return async () => {
+        const token = await AsyncStorage.setItem('token', '')
+        return token
+    }
+}
 
 const signout = (dispatch) => {
     return () => {
@@ -321,6 +327,6 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
-        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo},// tryAutoSignin},
+        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo, clearUserToken},// tryAutoSignin},
     {token: null, signedURL: '', errorMessage: '', profileInfo: null}
 )
