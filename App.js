@@ -1,7 +1,7 @@
 import React  from 'react'
 import {TouchableOpacity, StyleSheet, Text,Header} from 'react-native';
 import {
-    createAppContainer, 
+    createAppContainer,
     createSwitchNavigator,
 } from 'react-navigation'
 
@@ -14,9 +14,13 @@ import LoginScreen from './src/screens/LoginScreen';
 import BreweryListScreen from './src/screens/BreweryListScreen'
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import BreweryDetailsScreen from './src/screens/BreweryDetailsScreen';
+import WriteReviewScreen from './src/screens/WriteReviewScreen';
+import ReadReviewsScreen from './src/screens/ReadReviewsScreen';
+
 
 import {Provider as AuthProvider} from './src/context/AuthContext'
 import {Provider as BreweryProvider} from './src/context/BreweryContext'
+import {Provider as ReviewProvider} from './src/context/ReviewContext';
 import {setNavigator} from './src/navigationRef'
 import PasswordResetSuccessScreen from './src/screens/PasswordResetSuccessScreen';
 import UpdateAccountScreen from './src/screens/UpdateAccountScreen';
@@ -54,11 +58,14 @@ const switchNavigator = createSwitchNavigator({
         breweryFlow: createStackNavigator({
             BreweryList: BreweryListScreen,
             BreweryDetails: BreweryDetailsScreen,
+            ReadReviews: ReadReviewsScreen,
+            WriteReview: WriteReviewScreen,
         }),
         optionsFlow: createStackNavigator({
             More: MoreScreen,
             CreateBrewery: CreateBreweryScreen,
-            EditBrewery: EditBreweryScreen
+            EditBrewery: EditBreweryScreen,
+            WriteReview: WriteReviewScreen
         })
     },
     
@@ -126,12 +133,12 @@ const App = createAppContainer(switchNavigator)
 
 export default () => {
     return (
+        <ReviewProvider>
         <BreweryProvider>
             <AuthProvider>
                 <App ref={(navigator) => {setNavigator(navigator)}}/>
             </AuthProvider>
         </BreweryProvider>
+        </ReviewProvider>
     )
 }
-
-
