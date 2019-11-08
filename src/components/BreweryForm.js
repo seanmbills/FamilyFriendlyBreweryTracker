@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, Component} from 'react';
 import {Context as BreweryContext} from '../context/BreweryContext';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, FlatList, Image} from 'react-native';
 
@@ -247,7 +247,8 @@ const BreweryForm = ({isNew, navigation}) => {
     const [breweryImage2, setBreweryImage2] = useState(null)
     const [breweryImage3, setBreweryImage3] = useState(null)
     const [imageCount, setImageCount] = useState(1)
-    var [data, setData] = useState([])
+    // var [data, setData] = useState([])
+    var [data] = useState([])
 
 
     _listEmptyComponent = () => {
@@ -276,22 +277,26 @@ const BreweryForm = ({isNew, navigation}) => {
         });
         
         if (!result.cancelled) {
+            // setBreweryImage1(result)
+            // data.push(result)
             if (breweryImageNumber === 1) {
                 setBreweryImage1(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
                 data.push(result)
-                console.log(data)
+                // setData([result])
             } else if (breweryImageNumber === 2)  {
                 setBreweryImage2(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
-                data.push(result)
+                // this.dataArray.data.push(result.uri)
+                // setData([breweryImage1, breweryImage2])
             } else if (breweryImageNumber === 0) {
                 setBreweryImage3(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
-                data.push(result)
+                // this.dataArray.data.push(result.uri)
+                // setData([breweryImage1, breweryImage2, breweryImage3])
             }
         }
     };
@@ -593,7 +598,7 @@ const BreweryForm = ({isNew, navigation}) => {
     return (
         <ScrollView>
 
-            {
+            {/* {
                 (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
                 (<TouchableOpacity
                     onPress = { () => {
@@ -603,9 +608,28 @@ const BreweryForm = ({isNew, navigation}) => {
                 >
                     <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
                 </TouchableOpacity>)
-            }
+            } */}
 
-            {
+            {/* {console.log(typeof(breweryImage1))} */}
+            {/* {typeof(breweryImage1) === Object ? data.push(breweryImage1) : null} */}
+            {/* {breweryImage2 !== null ? data.push(breweryImage2) : data.push()}
+            {breweryImage3 !== null ? data.push(breweryImage3) : data.push()} */}
+            {/* {
+                (data.length > 0) &&
+                <FlatList
+                    horizontal
+                    data={data}
+                    keyExtractor={item => item.uri}
+                    renderItem={({item}) => {
+                        // console.log("item: " + item)
+                        return (
+                            <Image source={{uri: item.uri}} style={{width:200, height:200}}/>
+                        )
+                    }}
+                />
+            } */}
+
+            {/* {
                 (breweryImage1) &&
                 <TouchableOpacity
                     onPress={
@@ -642,7 +666,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 >
                     <Image source={{uri: breweryImage3.uri}} style={{width:200, height:200}} />
                 </TouchableOpacity>
-            }
+            } */}
 
 
             <View style={styles.fieldView}>
