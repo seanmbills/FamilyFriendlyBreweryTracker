@@ -32,67 +32,78 @@ import EditBreweryScreen from './src/screens/EditBreweryScreen.js';
 
 
 const switchNavigator = createSwitchNavigator({
-    loginFlow: createStackNavigator({
-        Welcome: WelcomeScreen,
-        Registration: RegistrationScreen,
-        Login: LoginScreen,
-        ForgotPassword: ForgotPasswordScreen,
-        PasswordResetSuccess: PasswordResetSuccessScreen,
-    },
-    {
-        initialRouteName: 'Welcome',
-        defaultNavigationOptions: {
-            title: '',
-            headerMode: 'none',
-            header: null,
-            navigationOptions: {
-                header: null
-            }
-        }
-    }),
-    loggedInFlow: createStackNavigator({
-
-        loggedInInnerFlow: createBottomTabNavigator({
-        
-        UpdateAccount: UpdateAccountScreen,
-        breweryFlow: createStackNavigator({
-            BreweryList: BreweryListScreen,
-            BreweryDetails: BreweryDetailsScreen,
-            ReadReviews: ReadReviewsScreen,
-            WriteReview: WriteReviewScreen,
-        }),
-        optionsFlow: createStackNavigator({
-            More: MoreScreen,
-            CreateBrewery: CreateBreweryScreen,
-            EditBrewery: EditBreweryScreen,
-            WriteReview: WriteReviewScreen
-        })
-    },
-    
-    {
-        defaultNavigationOptions: ({ navigation }) => ({
-            tabBarIcon: ({ focused, horizontal, tintColor }) => {
-                const { routeName } = navigation.state;
-                var iconName;
-                var onPress;
-                if (routeName === 'breweryFlow') {
-                    iconName = "md-search";
-                } else if (routeName === 'UpdateAccount') {
-                    iconName = "md-person"
-                } else if (routeName === 'optionsFlow') {
-                    iconName = "ios-more"
+    loginFlow: createStackNavigator(
+        {
+            Welcome: WelcomeScreen,
+            Registration: RegistrationScreen,
+            Login: LoginScreen,
+            ForgotPassword: ForgotPasswordScreen,
+            PasswordResetSuccess: PasswordResetSuccessScreen,
+        },
+        {
+            // Navigation options for the stack navigator 
+            initialRouteName: 'Welcome',
+            defaultNavigationOptions: {
+                title: '',
+                headerMode: 'none',
+                header: null,
+                navigationOptions: {
+                    header: null
                 }
             }
+        }
+    ),
+    loggedInFlow: createStackNavigator(
+        {
+
+            loggedInInnerFlow: createBottomTabNavigator({
+            UpdateAccount: UpdateAccountScreen,
+            breweryFlow: createStackNavigator(
+                {
+                    BreweryList: BreweryListScreen,
+                    BreweryDetails: BreweryDetailsScreen,
+                    ReadReviews: ReadReviewsScreen,
+                    WriteReview: WriteReviewScreen,
+                },
+                {   // Navigation options for the stack navigator containing brewery stuff
+                    defaultNavigationOptions: {
+                        title: '',
+                        headerMode: 'none',
+                        header: null,
+                        navigationOptions: {
+                            header: null
+                        }       
+                    }
+                }
+            ),
+            optionsFlow: createStackNavigator(
+                {
+                    More: MoreScreen,
+                    CreateBrewery: CreateBreweryScreen,
+                    EditBrewery: EditBreweryScreen,
+                    WriteReview: WriteReviewScreen
+                },
+                {
+                    defaultNavigationOptions: {
+                        title: '',
+                        headerMode: 'none',
+                        header: null,
+                        navigationOptions: {
+                            header: null
+                        }
+                    }
+                }
             )
         },
     
         {
+    
             defaultNavigationOptions: ({ navigation }) => ({
                 tabBarIcon: ({ focused, horizontal, tintColor }) => {
                     const { routeName } = navigation.state;
                     var iconName;
                     var onPress;
-                    if (routeName === 'BreweryList') {
+                    if (routeName === 'breweryFlow') {
                         iconName = "md-search";
                     } else if (routeName === 'UpdateAccount') {
                         iconName = "md-person"
@@ -103,18 +114,21 @@ const switchNavigator = createSwitchNavigator({
                 // You can return any component that you like here!
                 return <Ionicons name={iconName} size={30} color={tintColor}/>;
             },
-        }),
-        initialRouteName: 'breweryFlow',
-        tabBarOptions: {
+            }),
+            //Options for the bottom tab navigator
             initialRouteName: 'breweryFlow',
-            activeTintColor: 'black',
-            inactiveTintColor: 'grey',
-            showLabel: false,
-        }
-    },
-    )
+            tabBarOptions: {
+                initialRouteName: 'breweryFlow',
+                activeTintColor: 'black',
+                inactiveTintColor: 'grey',
+                showLabel: false,
+            }
+        },
+        )
     },
     {
+        //Options for the navigation object which wraps around the entire logged in flow. 
+        //Sets banner to be displayed across top of all screens after login
         initialRouteName: 'loggedInInnerFlow',
         defaultNavigationOptions: {
             headerTintColor: 'grey',
