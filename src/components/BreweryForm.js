@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
+import moment from 'moment'
 
 // Local Component imports
 import WelcomeButton from '../components/WelcomeButton'
@@ -226,6 +227,8 @@ const BreweryForm = ({isNew, navigation}) => {
     const [outdoorGames, setOutdoorGames] = (brewery) ? useState(accommodations['childAccommodations']['games']['outdoor']) : useState(false);
     const [childSeating, setChildSeating] = (brewery) ? useState(accommodations['childAccommodations']['seating']) : useState(false);
     const [strollerSpace, setStrollerSpace] = (brewery) ? useState(accommodations['childAccommodations']['strollerSpace']) : useState(false);
+
+    const [selectedTime, setSelectedTime] = useState('')
 
     // The message the dialog popup contains (will say if creation/update was successful)
     const [dialogMessage, setDialogMessage] = useState('');
@@ -472,6 +475,7 @@ const BreweryForm = ({isNew, navigation}) => {
             default:
                 setDayPicked('');
         }
+        // setSelectedTime(time)
     }
 
 
@@ -761,6 +765,7 @@ const BreweryForm = ({isNew, navigation}) => {
             <DateTimePicker
                 mode="time"
                 isVisible={timePickerVisible}
+                date={moment(`${selectedTime}`, 'H:mm a').toDate()}
                 onCancel={()=>setTimePickerVisible(!timePickerVisible)}
                 onConfirm={(time)=>{
                     handleTimePicked(time);
@@ -812,6 +817,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Monday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(mondayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('mondayOpen');
                     }}
@@ -823,6 +829,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Monday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(mondayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('mondayClose');
                     }}
@@ -837,6 +844,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Tuesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(tuesdayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('tuesdayOpen');
                     }}
@@ -848,6 +856,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Tuesday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(tuesdayCloseTime)
                         setTimePickerVisible(!timePickerVisible);
                         setDayPicked('tuesdayClose');
                     }}>
@@ -861,6 +870,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Wednesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(wednesdayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('wednesdayOpen');
                     }}
@@ -872,6 +882,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Wednesday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(wednesdayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked("wednesdayClose");
                     }}
@@ -886,6 +897,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Thursday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(thursdayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('thursdayOpen');
                     }}
@@ -897,6 +909,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Thursday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(thursdayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('thursdayClose');
                     }
@@ -911,6 +924,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Friday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(fridayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayOpen');
                     }}
@@ -922,6 +936,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Friday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(fridayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayClose');
                     }}>
@@ -935,6 +950,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Saturday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(saturdayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked("saturdayOpen")
                     }}
@@ -946,6 +962,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Saturday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(saturdayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked("saturdayClose");
                     }}>
@@ -959,6 +976,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Sunday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(sundayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayOpen');
                     }}
@@ -970,6 +988,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Sunday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(sundayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayClose');
                     }}>
@@ -992,6 +1011,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Monday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(mondayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked("mondayKidOpen");
                     }}
@@ -1003,6 +1023,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Monday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(mondayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('mondayKidClose');
                     }}>
@@ -1016,6 +1037,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Tuesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(tuesdayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('tuesdayKidOpen');
                     }}
@@ -1027,6 +1049,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Tuesday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(tuesdayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('tuesdayKidClose');
                     }}>
@@ -1040,6 +1063,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Wednesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(wednesdayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('wednesdayKidOpen');
                     }}
@@ -1051,6 +1075,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Wednesday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(wednesdayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('wednesdayKidClose');
                     }}>
@@ -1064,6 +1089,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Thursday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(thursdayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible);
                         setDayPicked('thursdayKidOpen');
                     }}
@@ -1075,6 +1101,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Thursday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(thursdayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('thursdayKidClose');
                     }}>
@@ -1088,6 +1115,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Friday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(fridayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayKidOpen');
                     }}
@@ -1099,6 +1127,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Friday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(fridayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayKidClose');
                     }}>
@@ -1112,6 +1141,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Saturday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(saturdayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('saturdayKidOpen');
                     }}
@@ -1123,6 +1153,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Saturday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(saturdayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('saturdayKidClose');
                     }}>
@@ -1136,6 +1167,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Sunday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(sundayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayKidOpen');
                     }}
@@ -1147,6 +1179,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Sunday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(sundayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayKidClose');
                     }}>
