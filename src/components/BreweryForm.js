@@ -32,15 +32,14 @@ const BreweryForm = ({isNew, navigation}) => {
     */
     const getOpenHrsFromStr = (hoursString) => {
         var openHours = hoursString.substring(0,hoursString.indexOf(' '));
-        var numIndex = 0;
-        if (openHours.length <= 3) {
-            while (numIndex < openHours.length && (openHours.charAt(numIndex) == ':' || (openHours.charAt(numIndex) >= '0' && openHours.charAt(numIndex) <= '9'))) {
-                numIndex += 1;
-            }
-            openHours = openHours.substring(0, numIndex) + ':00' + openHours.substring(numIndex);
+        if (openHours[0] === '0') openHours = openHours.substring(1)
+
+        if (openHours.indexOf(":") === -1) {
+            var amIndex = openHours.indexOf("M") - 1
+            return openHours.substring(0, amIndex) + ":00" + openHours.substring(amIndex)
+        } else {
+            return openHours
         }
-        
-        return openHours;
     }
 
     /*
@@ -51,15 +50,15 @@ const BreweryForm = ({isNew, navigation}) => {
      * @return A string containing just the close hours for the brewery
     */
     const getCloseHrsFromStr = (hoursString) => {
-        var closeHours = hoursString.substring(hoursString.indexOf('- ') + 2);
-        var numIndex = 0;
-        if (closeHours.length <= 3) {
-            while (numIndex < closeHours.length && (closeHours.charAt(numIndex) == ':' || (closeHours.charAt(numIndex) >= '0' && closeHours.charAt(numIndex) <= '9'))) {
-                numIndex += 1;
-            }
-            closeHours = closeHours.substring(0, numIndex) + ':00' + closeHours.substring(numIndex);
+        var openHours = hoursString.substring(hoursString.indexOf('- ') + 2);
+        if (openHours[0] === '0') openHours = openHours.substring(1)
+
+        if (openHours.indexOf(":") === -1) {
+            var amIndex = openHours.indexOf("M") - 1
+            return openHours.substring(0, amIndex) + ":00" + openHours.substring(amIndex)
+        } else {
+            return openHours
         }
-        return closeHours
     }
     
     /*
@@ -1301,12 +1300,14 @@ const BreweryForm = ({isNew, navigation}) => {
                         var name = breweryName; //rename breweryName state object to conform to backend expectations
                         var address = formatAddress(); 
                         var businessHours = formatBusinessHours();
-                        var alternativeKidFriendlyHours = businessHours;
 
                         // If the kidFriendlyHours are not the same as businessHours, build kidFriendlyHours object
                         if (!kidHoursSame) {
-                            alternativeKidFriendlyHours = formatKidsHours();
+                            var alternativeKidFriendlyHours = businessHours;
                         }
+
+                        alternativeKidFriendlyHours = formatKidsHours();
+
                         var accommodations = buildAccommodationMap();
                         
                         // Validate all user input
