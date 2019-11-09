@@ -55,7 +55,7 @@ const getBreweryReviews = (dispatch) => {
               'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
             }});
             //console.log(response);
-            dispatch({type: 'search_results', count: response.data.count, payload: response.data})
+            dispatch({type: 'search_results', payload: response.data})
             return response;
         } catch (err) {
             console.log("Error: ", err.response)

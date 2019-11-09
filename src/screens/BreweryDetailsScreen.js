@@ -123,7 +123,7 @@ const BreweryDetailsScreen = ({navigation}) => {
           <Rating
               imageSize={20}
               readonly
-              startingValue={breweryResult.ratings.$numberDecimal}
+              startingValue={parseFloat(breweryResult.ratings.$numberDecimal)}
               fractions={1}
           />
 
