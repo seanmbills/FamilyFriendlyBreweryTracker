@@ -23,6 +23,7 @@ const BreweryDetailsScreen = ({navigation}) => {
     var {getBreweryReviews} = useContext(ReviewContext);
 
     const breweryResult = state.individualResult[0].brewery
+    console.log(breweryResult.ratings)
     const openNow = state.individualResult[0].openNow
     const kidFriendlyNow = state.individualResult[0].kidFriendlyNow
     const signedUrl1 = state.individualResult[0].signedUrl1
@@ -122,7 +123,7 @@ const BreweryDetailsScreen = ({navigation}) => {
           <Rating
               imageSize={20}
               readonly
-              startingValue={breweryResult.rating}
+              startingValue={breweryResult.ratings.$numberDecimal}
               fractions={1}
           />
 
