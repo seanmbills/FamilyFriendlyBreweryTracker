@@ -250,7 +250,7 @@ const BreweryForm = ({isNew, navigation}) => {
     const [breweryImage3, setBreweryImage3] = useState(null)
     const [imageCount, setImageCount] = useState(1)
     // var [data, setData] = useState([])
-    var [data] = useState([])
+    var data = []
 
 
     _listEmptyComponent = () => {
@@ -282,10 +282,13 @@ const BreweryForm = ({isNew, navigation}) => {
             // setBreweryImage1(result)
             // data.push(result)
             if (breweryImageNumber === 1) {
+                console.log('setting image 1')
                 setBreweryImage1(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
+                console.log('adding data to list')
                 data.push(result)
+                console.log("length: " + data.length)
                 // setData([result])
             } else if (breweryImageNumber === 2)  {
                 setBreweryImage2(result)
@@ -601,38 +604,8 @@ const BreweryForm = ({isNew, navigation}) => {
     return (
         <ScrollView>
 
-            {/* {
-                (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
-                (<TouchableOpacity
-                    onPress = { () => {
-                            this._pickImage(imageCount, true)
-                        }
-                    }    
-                >
-                    <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
-                </TouchableOpacity>)
-            } */}
-
-            {/* {console.log(typeof(breweryImage1))} */}
-            {/* {typeof(breweryImage1) === Object ? data.push(breweryImage1) : null} */}
-            {/* {breweryImage2 !== null ? data.push(breweryImage2) : data.push()}
-            {breweryImage3 !== null ? data.push(breweryImage3) : data.push()} */}
-            {/* {
-                (data.length > 0) &&
-                <FlatList
-                    horizontal
-                    data={data}
-                    keyExtractor={item => item.uri}
-                    renderItem={({item}) => {
-                        // console.log("item: " + item)
-                        return (
-                            <Image source={{uri: item.uri}} style={{width:200, height:200}}/>
-                        )
-                    }}
-                />
-            } */}
-
-            {/* {
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {
                 (breweryImage1) &&
                 <TouchableOpacity
                     onPress={
@@ -669,7 +642,22 @@ const BreweryForm = ({isNew, navigation}) => {
                 >
                     <Image source={{uri: breweryImage3.uri}} style={{width:200, height:200}} />
                 </TouchableOpacity>
-            } */}
+            }
+            {
+                (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
+                (
+                <View style={{flex:1, width: 200, alignSelf:'center', alignContent:'center'}}>
+                    <TouchableOpacity
+                        onPress = { () => {
+                                this._pickImage(imageCount, true)
+                            }
+                        }    
+                    >
+                        <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
+                    </TouchableOpacity>
+                </View>)
+            }
+            </ScrollView>
 
 
             <View style={styles.fieldView}>
