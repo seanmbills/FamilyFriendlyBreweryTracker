@@ -23,7 +23,7 @@ const SignInPrompt = ({navigation, isVisible}) => {
                     title="Back"
                     onPress={async ()=> {
                         await setShown(!shown)
-                        navigation.navigate('breweryFlow')
+                        navigation.goBack()
                     }}
                 />
             </DialogContent>

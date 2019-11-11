@@ -50,7 +50,6 @@ const getBreweryReviews = (dispatch) => {
             {params: req},
             { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
-              'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
             }});
             //console.log(response);
             dispatch({type: 'search_results', count: response.data.count, payload: response.data})
@@ -63,11 +62,20 @@ const getBreweryReviews = (dispatch) => {
         }
     }
 }
+
+const testForToken = () => {
+    return async () => {
+        var userToken = await AsyncStorage.getItem('token')
+        
+        return !(!userToken || userToken === '')
+    }
+}
 export const {Provider, Context} = createDataContext(
     reviewReducer,
     {
         createReview,
-        getBreweryReviews
+        getBreweryReviews,
+        testForToken
     },
     {results: [], count: 0, errorMessage: '', created: '', results: []}
 )
