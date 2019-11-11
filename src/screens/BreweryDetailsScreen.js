@@ -23,7 +23,6 @@ const BreweryDetailsScreen = ({navigation}) => {
     var {getBreweryReviews} = useContext(ReviewContext);
 
     const breweryResult = state.individualResult[0].brewery
-    console.log(breweryResult.ratings)
     const openNow = state.individualResult[0].openNow
     const kidFriendlyNow = state.individualResult[0].kidFriendlyNow
     const signedUrl1 = state.individualResult[0].signedUrl1
@@ -32,7 +31,6 @@ const BreweryDetailsScreen = ({navigation}) => {
 
     const data = []
     if (signedUrl1 !== null && signedUrl1 !== ''){
-        console.log(signedUrl1)
         data.push(signedUrl1)
     }
     if (signedUrl2 !== null && signedUrl2 !== ''){
@@ -42,27 +40,21 @@ const BreweryDetailsScreen = ({navigation}) => {
         data.push(signedUrl3)
     }
 
-    console.log(data)
+    //console.log(data)
 
-    if (typeof(breweryResult.price) !== 'undefined' && breweryResult.price != null) {
-      var priceStr = ""
-      var priceStr2 = ""
-      for (var x = 0; x < breweryResult.price; x++) {
-          priceStr += "$"
-      }
-      for (var x = 0; x < 4 - breweryResult.price; x++) {
-          priceStr2 += "$"
-      }
+    var priceStr = ""
+    var priceStr2 = ""
+    for (var x = 0; x < breweryResult.price; x++) {
+        priceStr += "$"
+    }
+    for (var x = 0; x < 4 - breweryResult.price; x++) {
+        priceStr2 += "$"
     }
 
     const screenWidth = Math.round(Dimensions.get('window').width);
     const screenHeight = 50;
     var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(breweryResult.name.length))
     breweryFont = Math.min(breweryFont, 35)
-    var waterBowl = ' '
-    if (!breweryResult.accommodations.petFriendly.waterStations) {
-        waterBowl = ' not '
-    }
 
     dialCall = () => {
       var phoneNumber = breweryResult.phoneNumber;
@@ -75,33 +67,108 @@ const BreweryDetailsScreen = ({navigation}) => {
       Linking.openURL(phoneNumber);
   };
 
-    if (typeof(breweryResult.geoLocation.coordinates) !== 'undefined' && breweryResult.geoLocation.coordinates != null) {
-      const lat = breweryResult.geoLocation.coordinates[1]
-      const lng = breweryResult.geoLocation.coordinates[0]
+    const lat = breweryResult.geoLocation.coordinates[1]
+    const lng = breweryResult.geoLocation.coordinates[0]
+    const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
+    const latLng = `${lat},${lng}`;
+    const label = breweryResult.name;
+    const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`
+    });
 
-      const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
-      const latLng = `${lat},${lng}`;
-      const label = breweryResult.name;
-      const url = Platform.select({
-        ios: `${scheme}${label}@${latLng}`,
-        android: `${scheme}${latLng}(${label})`
-      });
-    }
 
     var hours = breweryResult.businessHours
     var alternativeKidFriendlyHours = breweryResult.alternativeKidFriendlyHours
-    var petsAllowedInside =  breweryResult.accommodations.petFriendly.indoorSpaces
-    var petsAllowedOutside = breweryResult.accommodations.petFriendly.outdoorSpaces
-    var toddlerAllowed = breweryResult.accommodations.friendlyKidAges.toddlers
-    var youngKidsAllowed = breweryResult.accommodations.friendlyKidAges.youngKids
-    var teensAllowed = breweryResult.accommodations.friendlyKidAges.teens
-    var kidFriendlyFood = breweryResult.accommodations.kidFoodDrinks.kidFriendlyFood
-    var kidFriendlyDrinks = breweryResult.accommodations.kidFoodDrinks.kidFriendlyDrinks
-    var kidGamesInside = breweryResult.accommodations.childAccommodations.games.indoor
-    var kidGamesOutdoor = breweryResult.accommodations.childAccommodations.games.outdoor
-    var kidSeating = breweryResult.accommodations.childAccommodations.seating
-    var strollerSpace = breweryResult.accommodations.childAccommodations.strollerSpace
-    var changingStations = breweryResult.accommodations.changingStations
+    var kidsAllowed = false
+    if (breweryResult.accommodations != undefined && breweryResult.accommodations.friendlyKidAges != undefined) {
+      kidsAllowed = true
+    }
+
+    if (breweryResult.dwdiwerfgiwe == undefined) {
+      console.log('WHY ISNT THIS WORKING?!!!!!');
+    }
+
+    console.log(breweryResult);
+
+    var accommodations = false
+    if (breweryResult.accommodations != undefined) {
+      accommodations = true
+    }
+    var petFriendly = false
+    if (accommodations && breweryResult.accommodations.petFriendly != undefined) {
+      petFriendly = true
+    }
+    var waterStations = false
+    if (accommodations && petFriendly && breweryResult.accommodations.petFriendly.waterStations != undefined) {
+        waterStations = true
+    }
+    var indoorSpaces = false
+    if (accommodations && petFriendly && breweryResult.accommodations.petFriendly.indoorSpaces != undefined) {
+        indoorSpaces = true
+    }
+    var outdoorSpaces = false
+    if (accommodations && petFriendly && breweryResult.accommodations.petFriendly.outdoorSpaces != undefined) {
+        outdoorSpaces = true
+    }
+    var friendlyKidAges = false
+    if (accommodations && breweryResult.accommodations.friendlyKidAges != undefined) {
+        friendlyKidAges = true
+    }
+    var toddlers = false
+    if (accommodations && friendlyKidAges && breweryResult.accommodations.friendlyKidAges.toddlers != undefined) {
+        toddlers = true
+    }
+    var youngKids = false
+    if (accommodations && friendlyKidAges && breweryResult.accommodations.friendlyKidAges.youngKids != undefined) {
+        youngKids = true
+    }
+    var teens = false
+    if (accommodations && friendlyKidAges && breweryResult.accommodations.friendlyKidAges.teens != undefined) {
+        teens = true
+    }
+    var kidFoodDrinks = false
+    if (accommodations && breweryResult.accommodations.kidFoodDrinks != undefined) {
+        kidFoodDrinks = true
+    }
+    var kidFriendlyFood = false
+    if (accommodations && kidFoodDrinks && breweryResult.accommodations.kidFoodDrinks.kidFriendlyFood != undefined) {
+        kidFriendlyFood = true
+    }
+    var kidFriendlyDrinks = false
+    if (accommodations && kidFoodDrinks && breweryResult.accommodations.kidFoodDrinks.kidFriendlyDrinks != undefined) {
+        kidFriendlyDrinks = true
+    }
+    var childAccommodations = false
+    if (accommodations && breweryResult.accommodations.childAccommodations != undefined) {
+        childAccommodations = true
+    }
+    var games = false
+    if (accommodations && childAccommodations && breweryResult.accommodations.childAccommodations.games != undefined) {
+        games = true
+    }
+    var indoor = false
+    if (accommodations && childAccommodations && games && breweryResult.accommodations.childAccommodations.games.indoor != undefined) {
+        indoor = true
+    }
+    var outdoor = false
+    if (accommodations && childAccommodations && games && breweryResult.accommodations.childAccommodations.games.outdoor != undefined) {
+        outdoor = true
+    }
+    var seating = false
+    if (accommodations && childAccommodations && breweryResult.accommodations.childAccommodations.seating != undefined) {
+        seating = true
+    }
+    var strollerSpace = false
+    if (accommodations && childAccommodations && breweryResult.accommodations.childAccommodations.strollerSpace != undefined) {
+        strollerSpace = true
+    }
+    var changingStations = false
+    if (accommodations && breweryResult.accommodations.changingStations != undefined) {
+        changingStations = true
+    }
+
+
 
     return (
     <ScrollView style={styles.scrollView}>
@@ -112,11 +179,10 @@ const BreweryDetailsScreen = ({navigation}) => {
         </Text>
 
         {/*Displays the price of the brewery*/}
-        {typeof(breweryResult.price) !== 'undefined' && breweryResult.price != null &&
         <Text style={{fontSize: 18, textAlign:"center", paddingBottom: 5}}>Price:
           <Text style={{color: 'rgba(0, 152, 0, 1)', fontWeight: 'bold'}}> {priceStr}</Text>
           <Text style={{color: 'rgba(0, 152, 0, .3)', fontWeight: 'bold'}}>{priceStr2}</Text>
-        </Text>}
+        </Text>
 
         {/*Displays the number and rating of reviews (clickable)*/}
         <TouchableOpacity onPress={async ()=> {
@@ -159,20 +225,26 @@ const BreweryDetailsScreen = ({navigation}) => {
         {/*The first box*/}
         <View style={styles.boxInView}>
             {/*Displays the address*/}
+            {breweryResult.address != undefined &&
             <Text style={styles.textAddress}><Emoji name="round_pushpin" style={{fontSize: 18}} />{breweryResult.address.street}, {breweryResult.address.city}
-            , {breweryResult.address.state} {breweryResult.address.zipCode}</Text>
+            , {breweryResult.address.state} {breweryResult.address.zipCode}</Text>}
 
             {/*Navigates the user to the maps (clickable)*/}
-            {typeof(breweryResult.geoLocation.coordinates) !== 'undefined' && breweryResult.geoLocation.coordinates != null &&
+            {breweryResult.geoLocation != undefined &&
             <Text style={styles.textClickables} onPress={ ()=> Linking.openURL(url) } ><Emoji name="world_map" style={{fontSize: 18}} /> Get directions</Text>}
 
             {/*Displays the website (clickable)*/}
-            {typeof(breweryResult.website) !== 'undefined' && breweryResult.website != null &&
+            {breweryResult.website != undefined &&
             <Text style={styles.textClickables} onPress={ ()=> Linking.openURL(breweryResult.website) } ><Emoji name="globe_with_meridians" style={{fontSize: 18}} /> View website</Text>}
 
             {/*Displays the phone number (clickable)*/}
-            {typeof(breweryResult.phoneNumber) !== 'undefined' && breweryResult.phoneNumber != null &&
+            {breweryResult.address != undefined &&
             <Text style={styles.textClickables} onPress={this.dialCall}><Emoji name="telephone_receiver" style={{fontSize: 18}} /> {breweryResult.phoneNumber}</Text>}
+
+            {/*Displays the email (clickable)*/}
+            {breweryResult.email != undefined &&
+            <Text style={styles.textClickables} onPress={() => Linking.openURL('mailto:'+ breweryResult.email) } ><Emoji name="email" style={{fontSize: 18}} /> {breweryResult.email}</Text>}
+
         </View>
 
         {/*The second box*/}
@@ -194,7 +266,7 @@ const BreweryDetailsScreen = ({navigation}) => {
         </View>
 
         {/*The third box*/}
-        {(toddlerAllowed || youngKidsAllowed || teensAllowed) &&
+        {kidsAllowed &&
         <View style={styles.boxInView}>
             {/*Displays "Business Hours" and if it is open or closed*/}
             <Text style={styles.businessHoursHeader}>Kid Friendly Hours -
@@ -217,67 +289,54 @@ const BreweryDetailsScreen = ({navigation}) => {
             {/*Displays pet accommodations*/}
             <Text style={styles.accommodationsHeaders}>Are pets allowed?</Text>
 
-            {petsAllowedInside && <Text style={styles.accommodations}> inside: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {!petsAllowedInside && <Text style={styles.accommodations}> inside: <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {indoorSpaces && <Text style={styles.accommodations}> inside: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {!indoorSpaces && <Text style={styles.accommodations}> inside: <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {petsAllowedOutside && <Text style={styles.accommodations}> outside: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {!petsAllowedOutside && <Text style={styles.accommodations}> outside: <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {outdoorSpaces && <Text style={styles.accommodations}> outside: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {!outdoorSpaces && <Text style={styles.accommodations}> outside: <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {(petsAllowedInside || petsAllowedOutside) && <Text style={styles.accommodations}> there are{waterBowl}water stations for pets</Text>}
+            {waterStations && <Text style={styles.accommodations}> water stations for pets: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {!waterStations && <Text style={styles.accommodations}> water stations for pets: <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
             {/*Displays kid accommodations*/}
             <Text style={styles.accommodationsHeaders}>Are kids allowed?</Text>
 
-            {toddlerAllowed && <Text style={styles.accommodations}> toddlers: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {!toddlerAllowed && <Text style={styles.accommodations}> toddlers: <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {toddlers && <Text style={styles.accommodations}> toddlers: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {!toddlers && <Text style={styles.accommodations}> toddlers: <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {youngKidsAllowed && <Text style={styles.accommodations}> young kids: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {!youngKidsAllowed && <Text style={styles.accommodations}> young kids: <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {youngKids && <Text style={styles.accommodations}> young kids: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {!youngKids && <Text style={styles.accommodations}> young kids: <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {teensAllowed && <Text style={styles.accommodations}> teens: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {!teensAllowed && <Text style={styles.accommodations}> teens: <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {teens && <Text style={styles.accommodations}> teens: <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {!teens && <Text style={styles.accommodations}> teens: <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {(toddlerAllowed || youngKidsAllowed || teensAllowed) && <Text style={styles.accommodationsHeaders}>Are there kid friendly menu items?</Text>}
+            {kidsAllowed && <Text style={styles.accommodationsHeaders}>Are there kid friendly menu items?</Text>}
 
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && kidFriendlyFood) &&
-              <Text style={styles.accommodations}>food : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && !kidFriendlyFood) &&
-              <Text style={styles.accommodations}>food : <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && kidFriendlyFood && <Text style={styles.accommodations}>food : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && !kidFriendlyFood && <Text style={styles.accommodations}>food : <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && kidFriendlyDrinks) &&
-              <Text style={styles.accommodations}>drinks : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && !kidFriendlyDrinks) &&
-              <Text style={styles.accommodations}>drinks : <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && kidFriendlyDrinks && <Text style={styles.accommodations}>drinks : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && !kidFriendlyDrinks && <Text style={styles.accommodations}>drinks : <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {(toddlerAllowed || youngKidsAllowed || teensAllowed) && <Text style={styles.accommodationsHeaders}>Are there accommodations for kids?</Text>}
+            {kidsAllowed && <Text style={styles.accommodationsHeaders}>Are there accommodations for kids?</Text>}
 
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && kidSeating) &&
-              <Text style={styles.accommodations}>kid seating : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && !kidSeating) &&
-              <Text style={styles.accommodations}>kid seating : <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && seating && <Text style={styles.accommodations}>kid seating : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && !seating && <Text style={styles.accommodations}>kid seating : <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && strollerSpace) &&
-              <Text style={styles.accommodations}>stroller space : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && !strollerSpace) &&
-              <Text style={styles.accommodations}>stroller space : <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && strollerSpace && <Text style={styles.accommodations}>stroller space : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && !strollerSpace && <Text style={styles.accommodations}>stroller space : <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && changingStations) &&
-              <Text style={styles.accommodations}>stroller space : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && !changingStations) &&
-              <Text style={styles.accommodations}>changing stations : <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && changingStations && <Text style={styles.accommodations}>stroller space : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && !changingStations && <Text style={styles.accommodations}>changing stations : <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
 
-            {(toddlerAllowed || youngKidsAllowed || teensAllowed) && <Text style={styles.accommodationsHeaders}>Are there games for kids?</Text>}
+            {kidsAllowed && <Text style={styles.accommodationsHeaders}>Are there games for kids?</Text>}
 
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && kidGamesInside) &&
-              <Text style={styles.accommodations}>inside : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && !kidGamesInside) &&
-              <Text style={styles.accommodations}>inside : <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && indoor && <Text style={styles.accommodations}>inside : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && !indoor && <Text style={styles.accommodations}>inside : <Emoji name="x" style={{fontSize: 18}} /></Text>}
 
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && kidGamesOutdoor) &&
-              <Text style={styles.accommodations}>outside : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
-            {((toddlerAllowed || youngKidsAllowed || teensAllowed) && !kidGamesOutdoor) &&
-              <Text style={styles.accommodations}>outside : <Emoji name="x" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && outdoor && <Text style={styles.accommodations}>outside : <Emoji name="heavy_check_mark" style={{fontSize: 18}} /></Text>}
+            {kidsAllowed && !outdoor && <Text style={styles.accommodations}>outside : <Emoji name="x" style={{fontSize: 18}} /></Text>}
           </View>
 
     </ScrollView>
