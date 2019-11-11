@@ -31,7 +31,9 @@ const getUserInfo = (dispatch) => {
     return async() => {
         try {
             const userToken = await AsyncStorage.getItem('token')
-            if (userToken != '') { //Checking if user is logged in or if a guest
+            if (userToken !== null && userToken !=='') { //Checking if user is logged in or if a guest
+                console.log('sending token: ', userToken)
+            
                 const response = await ServerApi.get('/getUserInfo',
                 {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (userToken)}}
                 );
