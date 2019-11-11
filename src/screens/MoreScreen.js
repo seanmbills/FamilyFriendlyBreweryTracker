@@ -21,49 +21,52 @@ class MoreScreenComponent extends Component {
     
 
     componentDidMount() {
+        console.log("mounting more screen")
         let {state, getOwnedBreweries} = this.context
         
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             console.log("getting breweries")
-            await getOwnedBreweries().then(() => {
-                console.log("State: ", state)
-                if (state.ownedBreweries !== null) {
-                    this.setState({
-                        isLoading: false,
-                        foundUser: true,
-                        showUserErr: false
-                    })
-                } else {
-                    this.setState({
-                        isLoading: false,
-                        foundUser: false,
-                        showUserErr: true
-                    })
-                    
-                }
+            var response = await getOwnedBreweries().then(() => {
+                this.setState({
+                    isLoading: false
+                })
             })
+            if (!response || response.status >= 400) {
+                this.setState({showUserErr: true})
+            }
         })
     }
 
     componentWillUnmount() {
+        //this.setState({showUserErr: false})
         this.focusListener.remove()
     }
 
     render() {
+        console.log("rendering more screen")
         return (
             <View style={{flex:1}}>
                 <BufferPopup isVisible={this.state.isLoading} text={"Fetching Brewery Info"} />
                 {
-                    !this.state.isLoading && this.state.foundUser &&
+                    !this.state.isLoading && !this.state.showUserErr &&
                     <MoreScreen navigation={this.props.navigation} />
                 }
                 {
-                    !this.state.isLoading && this.state.showUserErr &&
+                    this.state.showUserErr &&
                     <SignInPrompt
                         navigation={this.props.navigation}
                         isVisible={this.state.showUserErr}
-                        setInvisible={this.setState({showUserErr: false})}
                     />
+                }
+                {
+                    !this.state.isLoading && !this.state.foundUser && 
+                    <View>
+                        <Text>You must login to visit this part of the app</Text>
+                        <WelcomeButton
+                            title="Login or Register"
+                            onPress={()=>this.props.navigation.navigate("loginFlow")}
+                        />  
+                    </View>
                 }
             </View>
         )

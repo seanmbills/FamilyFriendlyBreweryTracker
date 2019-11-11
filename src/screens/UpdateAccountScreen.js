@@ -51,8 +51,14 @@ class UserUpdateAccount extends Component {
         })
     }
 
+    async componentWillUnmount() {
+        //this.setState({showUserErr: false})
+        //this.setState({isLoading: true})
+    }
+
     render() {
         //const [ showUserErr, setShowUserErr ] = useState(true);
+        console.log("State: ", this.state)
         return (
             <View style={{flex:1}}>
                 <BufferPopup isVisible={this.state.isLoading} text={"Fetching User's Info"} />
@@ -61,11 +67,10 @@ class UserUpdateAccount extends Component {
                     <UpdateAccountScreen navigation={this.props.navigation} />
                 }
                 {
-                    !this.state.isLoading && !this.state.foundUser && 
+                    !this.state.isLoading && this.state.showUserErr && 
                     <SignInPrompt
                         navigation={this.props.navigation}
                         isVisible={this.state.showUserErr}
-                        setVisible={(bool) => {this.setState({showUserErr: bool})}}
                     />
                 }
                 {
@@ -73,7 +78,7 @@ class UserUpdateAccount extends Component {
                     <View>
                         <Text>You must login to visit this part of the app</Text>
                         <WelcomeButton
-                            title="Login"
+                            title="Login or Register"
                             onPress={()=>this.props.navigation.navigate("loginFlow")}
                         />  
                     </View>
