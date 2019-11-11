@@ -606,7 +606,20 @@ const BreweryForm = ({isNew, navigation}) => {
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {
-                (breweryImage1) &&
+                (breweryImage1 === null && 
+                    state.individualResult !== null && state.individualResult[0].signedUrl1 !== '') &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(1, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: state.individualResult[0].signedUrl1}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+            {
+                (breweryImage1 !== null) &&
                 <TouchableOpacity
                     onPress={
                         () => {
@@ -619,7 +632,20 @@ const BreweryForm = ({isNew, navigation}) => {
             }
 
             {
-                (breweryImage2) && 
+                (breweryImage2 === null && 
+                    state.individualResult !== null && state.individualResult[0].signedUrl2 !== '') &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(2, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: state.individualResult[0].signedUrl2}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+            {
+                (breweryImage2 !== null) && 
                 <TouchableOpacity
                     onPress={
                         () => {
@@ -632,11 +658,24 @@ const BreweryForm = ({isNew, navigation}) => {
             }
 
             {
-                (breweryImage3) &&
+                (breweryImage3 === null && 
+                    state.individualResult !== null && state.individualResult[0].signedUrl3 !== '') &&
                 <TouchableOpacity
                     onPress={
                         () => {
-                            this._pickImage(3, false)
+                            this._pickImage(0, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: state.individualResult[0].signedUrl3}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+            {
+                (breweryImage3 !== null) &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(0, false)
                         }
                     }
                 >
@@ -645,6 +684,12 @@ const BreweryForm = ({isNew, navigation}) => {
             }
             {
                 (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
+                (state.individualResult === null || (state.individualResult !== null &&
+                    (state.individualResult[0].signedUrl1 === '' || 
+                    state.individualResult[0].signedUrl2 === '' ||
+                    state.individualResult[0].signedUrl3 === '')
+                ))
+                &&
                 (
                 <View style={{flex:1, width: 200, alignSelf:'center', alignContent:'center'}}>
                     <TouchableOpacity
