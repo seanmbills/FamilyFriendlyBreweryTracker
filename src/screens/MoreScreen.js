@@ -9,10 +9,13 @@ import WelcomeButton from '../components/WelcomeButton';
 import {Context as BreweryContext} from '../context/BreweryContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
+import SignInPrompt from '../components/SignInPrompt';
 
 class MoreScreenComponent extends Component {
     state = {
-        isLoading: true
+        isLoading: true,
+        foundUser: false,
+        showUserErr: false
     }
 
     
@@ -23,9 +26,21 @@ class MoreScreenComponent extends Component {
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             console.log("getting breweries")
             await getOwnedBreweries().then(() => {
-                this.setState({
-                    isLoading: false
-                })
+                console.log("State: ", state)
+                if (state.ownedBreweries !== null) {
+                    this.setState({
+                        isLoading: false,
+                        foundUser: true,
+                        showUserErr: false
+                    })
+                } else {
+                    this.setState({
+                        isLoading: false,
+                        foundUser: false,
+                        showUserErr: true
+                    })
+                    
+                }
             })
         })
     }
@@ -39,8 +54,16 @@ class MoreScreenComponent extends Component {
             <View style={{flex:1}}>
                 <BufferPopup isVisible={this.state.isLoading} text={"Fetching Brewery Info"} />
                 {
-                    !this.state.isLoading &&
+                    !this.state.isLoading && this.state.foundUser &&
                     <MoreScreen navigation={this.props.navigation} />
+                }
+                {
+                    !this.state.isLoading && this.state.showUserErr &&
+                    <SignInPrompt
+                        navigation={this.props.navigation}
+                        isVisible={this.state.showUserErr}
+                        setInvisible={this.setState({showUserErr: false})}
+                    />
                 }
             </View>
         )

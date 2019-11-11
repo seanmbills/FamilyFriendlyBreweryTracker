@@ -111,14 +111,20 @@ const getSearchResults = (dispatch) => {
 */
 const getOwnedBreweries = (dispatch) => {
     return async () => {
+        const userToken = await AsyncStorage.getItem('token');
         try {
-            const response = await ServerApi.get('/getOwnedBreweries', { headers: {
-              'Accept' : 'application/json', 'Content-type' : 'application/json',
-              'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
-            }});
+            if (userToken !== null && userToken !== '') {
+                const response = await ServerApi.get('/getOwnedBreweries', { headers: {
+                    'Accept' : 'application/json', 'Content-type' : 'application/json',
+                    'authorization' : 'Bearer ' + userToken
+                  }});
+                  
+                  // attach list of owned breweries to context object
+                  dispatch({type: 'owned_breweries', payload: response.data})
+            } else {
+                return null;
+            }
             
-            // attach list of owned breweries to context object
-            dispatch({type: 'owned_breweries', payload: response.data})
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});

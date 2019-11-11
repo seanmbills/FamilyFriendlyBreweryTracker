@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker'
 import Constants from 'expo-constants'
 import * as Permissions from 'expo-permissions'
 import BufferPopup from '../components/BufferPopup';
+import SignInPrompt from '../components/SignInPrompt';
 
 
 
@@ -61,30 +62,11 @@ class UserUpdateAccount extends Component {
                 }
                 {
                     !this.state.isLoading && !this.state.foundUser && 
-                    <Dialog
-                        visible={this.state.showUserErr}
-                    >
-                        <DialogContent>
-                            <Text>You must be signed in to access this part of the app</Text>
-                            <WelcomeButton
-                                title="Login"
-                                onPress={async ()=>{
-                                    await this.setState({showUserErr:false})
-                                    this.props.navigation.navigate('loginFlow')
-                                    
-                                }}
-                            />
-                            <WelcomeButton
-                                title="Back"
-                                onPress={async ()=> {
-                                    await this.setState({showUserErr:false})
-                                    this.props.navigation.navigate('breweryFlow')
-                                    
-                                    
-                                }}
-                            />
-                        </DialogContent>
-                    </Dialog>
+                    <SignInPrompt
+                        navigation={this.props.navigation}
+                        isVisible={this.state.showUserErr}
+                        setVisible={(bool) => {this.setState({showUserErr: bool})}}
+                    />
                 }
                 {
                     !this.state.isLoading && !this.state.foundUser &&
