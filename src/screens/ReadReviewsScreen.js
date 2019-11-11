@@ -19,6 +19,17 @@ const ReadReviewsScreen = ({navigation}) => {
 
   const reviews = state.results;
 
+  var userHasReview = false;
+
+  for (var review in reviews) {
+    if (CURRENT USER ID == review.poster.id) {
+      var userReview = review
+      delete(review)
+      userHasReview = true
+      break
+    }
+  }
+
     return (
       <ScrollView style={styles.container}>
         {/*Displays the brewery name at the top of the screen*/}
