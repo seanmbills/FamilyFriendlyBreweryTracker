@@ -14,6 +14,7 @@ const WriteReviewScreen = ({navigation}) => {
   const breweryName = navigation.getParam('name')
   const breweryFontSize = navigation.getParam('breweryFontSize')
 
+
   logMethod = () => {
     console.log(ratingNum);
     console.log(description);

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
-  FlatList, 
+  FlatList,
   Image
 } from 'react-native'
 import {Context as BreweryContext} from '../context/BreweryContext'
@@ -44,13 +44,15 @@ const BreweryDetailsScreen = ({navigation}) => {
 
     console.log(data)
 
-    var priceStr = ""
-    var priceStr2 = ""
-    for (var x = 0; x < breweryResult.price; x++) {
-        priceStr += "$"
-    }
-    for (var x = 0; x < 4 - breweryResult.price; x++) {
-        priceStr2 += "$"
+    if (typeof(breweryResult.price) !== 'undefined' && breweryResult.price != null) {
+      var priceStr = ""
+      var priceStr2 = ""
+      for (var x = 0; x < breweryResult.price; x++) {
+          priceStr += "$"
+      }
+      for (var x = 0; x < 4 - breweryResult.price; x++) {
+          priceStr2 += "$"
+      }
     }
 
     const screenWidth = Math.round(Dimensions.get('window').width);
@@ -73,18 +75,21 @@ const BreweryDetailsScreen = ({navigation}) => {
       Linking.openURL(phoneNumber);
   };
 
-    const lat = breweryResult.geoLocation.coordinates[1]
-    const lng = breweryResult.geoLocation.coordinates[0]
+    if (typeof(breweryResult.geoLocation.coordinates) !== 'undefined' && breweryResult.geoLocation.coordinates != null) {
+      const lat = breweryResult.geoLocation.coordinates[1]
+      const lng = breweryResult.geoLocation.coordinates[0]
 
-    const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
-    const latLng = `${lat},${lng}`;
-    const label = breweryResult.name;
-    const url = Platform.select({
-      ios: `${scheme}${label}@${latLng}`,
-      android: `${scheme}${latLng}(${label})`
-    });
+      const scheme = Platform.OS === 'ios' ? 'maps:0,0?q=' : 'geo:0,0?q=';
+      const latLng = `${lat},${lng}`;
+      const label = breweryResult.name;
+      const url = Platform.select({
+        ios: `${scheme}${label}@${latLng}`,
+        android: `${scheme}${latLng}(${label})`
+      });
+    }
 
     var hours = breweryResult.businessHours
+    var alternativeKidFriendlyHours = breweryResult.alternativeKidFriendlyHours
     var petsAllowedInside =  breweryResult.accommodations.petFriendly.indoorSpaces
     var petsAllowedOutside = breweryResult.accommodations.petFriendly.outdoorSpaces
     var toddlerAllowed = breweryResult.accommodations.friendlyKidAges.toddlers
@@ -107,17 +112,18 @@ const BreweryDetailsScreen = ({navigation}) => {
         </Text>
 
         {/*Displays the price of the brewery*/}
+        {typeof(breweryResult.price) !== 'undefined' && breweryResult.price != null &&
         <Text style={{fontSize: 18, textAlign:"center", paddingBottom: 5}}>Price:
           <Text style={{color: 'rgba(0, 152, 0, 1)', fontWeight: 'bold'}}> {priceStr}</Text>
           <Text style={{color: 'rgba(0, 152, 0, .3)', fontWeight: 'bold'}}>{priceStr2}</Text>
-        </Text>
+        </Text>}
 
         {/*Displays the number and rating of reviews (clickable)*/}
         <TouchableOpacity onPress={async ()=> {
               var breweryId = breweryResult._id;
               var response = await getBreweryReviews({breweryId});
               //console.log("Brewery Reviews response", response)
-              
+
               navigation.navigate("ReadReviews", {breweryId: breweryResult._id, name:breweryResult.name, breweryReviews: breweryResult.comments, breweryFontSize: breweryFont});
             }}>
           <Rating
@@ -131,9 +137,9 @@ const BreweryDetailsScreen = ({navigation}) => {
               style={{textAlign: 'center', paddingTop: 5}}> {breweryResult.numReviews} reviews
           </Text>
         </TouchableOpacity>
-        
+
         {
-            (data.length > 0) && 
+            (data.length > 0) &&
             <FlatList
                 horizontal
                 data={data}
@@ -156,14 +162,17 @@ const BreweryDetailsScreen = ({navigation}) => {
             <Text style={styles.textAddress}><Emoji name="round_pushpin" style={{fontSize: 18}} />{breweryResult.address.street}, {breweryResult.address.city}
             , {breweryResult.address.state} {breweryResult.address.zipCode}</Text>
 
-            {/*Displays the website (clickable)*/}
-            <Text style={styles.textClickables} onPress={ ()=> Linking.openURL(url) } ><Emoji name="world_map" style={{fontSize: 18}} /> Get directions</Text>
+            {/*Navigates the user to the maps (clickable)*/}
+            {typeof(breweryResult.geoLocation.coordinates) !== 'undefined' && breweryResult.geoLocation.coordinates != null &&
+            <Text style={styles.textClickables} onPress={ ()=> Linking.openURL(url) } ><Emoji name="world_map" style={{fontSize: 18}} /> Get directions</Text>}
 
             {/*Displays the website (clickable)*/}
-            <Text style={styles.textClickables} onPress={ ()=> Linking.openURL(breweryResult.website) } ><Emoji name="globe_with_meridians" style={{fontSize: 18}} /> View website</Text>
+            {typeof(breweryResult.website) !== 'undefined' && breweryResult.website != null &&
+            <Text style={styles.textClickables} onPress={ ()=> Linking.openURL(breweryResult.website) } ><Emoji name="globe_with_meridians" style={{fontSize: 18}} /> View website</Text>}
 
             {/*Displays the phone number (clickable)*/}
-            <Text style={styles.textClickables} onPress={this.dialCall}><Emoji name="telephone_receiver" style={{fontSize: 18}} /> {breweryResult.phoneNumber}</Text>
+            {typeof(breweryResult.phoneNumber) !== 'undefined' && breweryResult.phoneNumber != null &&
+            <Text style={styles.textClickables} onPress={this.dialCall}><Emoji name="telephone_receiver" style={{fontSize: 18}} /> {breweryResult.phoneNumber}</Text>}
         </View>
 
         {/*The second box*/}
@@ -185,6 +194,25 @@ const BreweryDetailsScreen = ({navigation}) => {
         </View>
 
         {/*The third box*/}
+        {(toddlerAllowed || youngKidsAllowed || teensAllowed) &&
+        <View style={styles.boxInView}>
+            {/*Displays "Business Hours" and if it is open or closed*/}
+            <Text style={styles.businessHoursHeader}>Kid Friendly Hours -
+            {kidFriendlyNow && <Text style={{fontSize: 22, color: "green", paddingLeft: 10, paddingTop: 5}}> Open Now</Text>}
+            {!kidFriendlyNow && <Text style={{fontSize: 22, color: "red", paddingLeft: 10, paddingTop: 5}}> Closed Now</Text>}
+            </Text>
+
+            {/*Displays the business hours per day*/}
+            <Text style={styles.businessDays}>Sunday: {alternativeKidFriendlyHours.sun}</Text>
+            <Text style={styles.businessDays}>Monday: {alternativeKidFriendlyHours.mon}</Text>
+            <Text style={styles.businessDays}>Tuesday: {alternativeKidFriendlyHours.tue}</Text>
+            <Text style={styles.businessDays}>Wednesday: {alternativeKidFriendlyHours.wed}</Text>
+            <Text style={styles.businessDays}>Thursday: {alternativeKidFriendlyHours.thu}</Text>
+            <Text style={styles.businessDays}>Friday: {alternativeKidFriendlyHours.fri}</Text>
+            <Text style={styles.businessDays}>Saturday: {alternativeKidFriendlyHours.sat}</Text>
+        </View>}
+
+        {/*The fourth box*/}
         <View style={styles.boxInView}>
             {/*Displays pet accommodations*/}
             <Text style={styles.accommodationsHeaders}>Are pets allowed?</Text>
