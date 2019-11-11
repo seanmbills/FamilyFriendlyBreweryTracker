@@ -1,5 +1,7 @@
 // Third Party imports 
 import {AsyncStorage} from 'react-native'
+Buffer = require('buffer/').Buffer
+import axios from 'axios'
 
 // Local Imports
 import createDataContext from './createDataContext'
@@ -148,7 +150,8 @@ const createBrewery = (dispatch) => {
     return async ({
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
-            alternativeKidFriendlyHours, accommodations
+            alternativeKidFriendlyHours, accommodations,
+            breweryImage1, breweryImage2, breweryImage3
             }) => {
         accommodations = stripAccommodationsSearch(accommodations); //remove fields from accommodations object which are false
 
@@ -164,6 +167,56 @@ const createBrewery = (dispatch) => {
                     'Accept' : 'application/json', 'Content-type' : 'application/json',
                     'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))}}
             );
+
+
+            if (breweryImage1 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage1.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl1,
+                    buff,
+                    options
+                )
+            }
+
+            if (breweryImage2 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage2.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl2,
+                    buff,
+                    options
+                )
+            }
+
+            if (breweryImage3 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage3.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl3,
+                    buff,
+                    options
+                )
+            }
+
 
             dispatch({type: 'create', payload: response.data})
             return response;
@@ -225,7 +278,8 @@ const updateBrewery = (dispatch) => {
             breweryId,
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
-            alternativeKidFriendlyHours, accommodations
+            alternativeKidFriendlyHours, accommodations,
+            breweryImage1, breweryImage2, breweryImage3
             }) => {
         accommodations = stripAccommodationsSearch(accommodations);
 
@@ -245,6 +299,55 @@ const updateBrewery = (dispatch) => {
                     'Accept' : 'application/json', 'Content-type' : 'application/json',
                     'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))}}
             );
+
+            if (breweryImage1 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage1.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl1,
+                    buff,
+                    options
+                )
+            }
+
+            if (breweryImage2 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage2.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl2,
+                    buff,
+                    options
+                )
+            }
+
+            if (breweryImage3 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage3.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl3,
+                    buff,
+                    options
+                )
+            }
+
             dispatch({type: 'create', payload: response.data})
             return response;
         }

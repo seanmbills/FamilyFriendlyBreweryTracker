@@ -1327,7 +1327,8 @@ const BreweryForm = ({isNew, navigation}) => {
                             response =  await createBrewery({
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations
+                                alternativeKidFriendlyHours, accommodations,
+                                breweryImage1, breweryImage2, breweryImage3
                             });
                            
                         } else { // if brewery is being used to edit brewery, hit updateBrewery route
@@ -1336,7 +1337,8 @@ const BreweryForm = ({isNew, navigation}) => {
                                 breweryId,
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations
+                                alternativeKidFriendlyHours, accommodations,
+                                breweryImage1, breweryImage2, breweryImage3
                             });
                             getOwnedBreweries();
                         }
