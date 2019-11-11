@@ -121,7 +121,11 @@ const getOwnedBreweries = (dispatch) => {
                   
                   // attach list of owned breweries to context object
                   dispatch({type: 'owned_breweries', payload: response.data})
+                  console.log("Response: " , response)
+                  return response
+
             } else {
+                console.log("Not sending request because there isn't a user")
                 return null;
             }
             

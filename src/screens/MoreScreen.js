@@ -26,14 +26,20 @@ class MoreScreenComponent extends Component {
         
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             console.log("getting breweries")
-            var response = await getOwnedBreweries().then(() => {
-                this.setState({
-                    isLoading: false
-                })
-            })
+            // var response = await getOwnedBreweries().then(() => {
+            //     this.setState({
+            //         isLoading: false
+            //     })
+            //     if (!response || response.status >= 400) {
+            //         this.setState({showUserErr: true})
+            //     }
+            // })
+            // console.log("response: ", response)
+            var response = await getOwnedBreweries();
             if (!response || response.status >= 400) {
                 this.setState({showUserErr: true})
             }
+            this.setState({isLoading: false})
         })
     }
 
@@ -43,31 +49,14 @@ class MoreScreenComponent extends Component {
     }
 
     render() {
-        console.log("rendering more screen")
         return (
             <View style={{flex:1}}>
                 <BufferPopup isVisible={this.state.isLoading} text={"Fetching Brewery Info"} />
                 {
-                    !this.state.isLoading && !this.state.showUserErr &&
-                    <MoreScreen navigation={this.props.navigation} />
+                    !this.state.isLoading &&
+                    <MoreScreen navigation={this.props.navigation} noUser={this.state.showUserErr} />
                 }
-                {
-                    this.state.showUserErr &&
-                    <SignInPrompt
-                        navigation={this.props.navigation}
-                        isVisible={this.state.showUserErr}
-                    />
-                }
-                {
-                    !this.state.isLoading && !this.state.foundUser && 
-                    <View>
-                        <Text>You must login to visit this part of the app</Text>
-                        <WelcomeButton
-                            title="Login or Register"
-                            onPress={()=>this.props.navigation.navigate("loginFlow")}
-                        />  
-                    </View>
-                }
+
             </View>
         )
     }
@@ -81,7 +70,7 @@ MoreScreenComponent.contextType = BreweryContext
  * Screen should contain two main components. 1.) a list of breweries a user "own's" or has created
  * 2.) an button which will navigate users to a screen where they can create a brewery
  */
-const MoreScreen = ({navigation}) => {
+const MoreScreen = ({navigation, noUser}) => {
     /*
      * Need to import three context methods, getBrewery, clearIndividualBreweryResult, getOwnedBreweries
      * getBrewery is used when a brewery from the Owned Breweries list is selected.
@@ -96,8 +85,13 @@ const MoreScreen = ({navigation}) => {
      * Added this navigation listener so when a user navigates to the MoreScreen the app will
      * fetch all breweries the user's owns 
      */
+    console.log("no User: " , noUser)
+    console.log("Current state: " , state)
     return (
         <View style={styles.backgroundContainer}>
+             <View style={styles.contentContainer}>
+                    <Text style={styles.subHeader}>More</Text>
+                </View>
             { state.ownedBreweries.length > 0 &&
              <View>
                 <View style={styles.contentContainer}>
@@ -124,6 +118,8 @@ const MoreScreen = ({navigation}) => {
             </View>
             </View>
             }
+            { !noUser && //Determines if will show autentication required features
+             <View>
             <View style={styles.contentContainer}>
                 <WelcomeButton
                     title="Create Brewery"
@@ -135,6 +131,8 @@ const MoreScreen = ({navigation}) => {
                     }}
                 />
             </View>
+        </View>
+        }
         </View>
     );
 }
