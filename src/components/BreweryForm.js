@@ -13,6 +13,8 @@ import * as ImagePicker from 'expo-image-picker'
 import Constants from 'expo-constants'
 import * as Permissions from 'expo-permissions'
 import {Feather } from '@expo/vector-icons'
+import BufferPopup from '../components/BufferPopup';
+
 
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
 
@@ -232,6 +234,9 @@ const BreweryForm = ({isNew, navigation}) => {
     // The message the dialog popup contains (will say if creation/update was successful)
     const [dialogMessage, setDialogMessage] = useState('');
 
+    const [showBufferPopup, setShowBufferPopup] = useState(false)
+    const [bufferText, setBufferText] = useState('')
+
     const [showFilters, setShowFilters] = useState(false); // Show checklist for accommodations
     const [showTimes, setShowTimes] = useState(false); // Show options to edit business hours
     const [showKidTimes, setShowKidTimes] = useState(false); // Show options ot edit kidFriendlyHours
@@ -249,8 +254,6 @@ const BreweryForm = ({isNew, navigation}) => {
     const [breweryImage2, setBreweryImage2] = useState(null)
     const [breweryImage3, setBreweryImage3] = useState(null)
     const [imageCount, setImageCount] = useState(1)
-    // var [data, setData] = useState([])
-    var [data] = useState([])
 
 
     _listEmptyComponent = () => {
@@ -1335,15 +1338,19 @@ const BreweryForm = ({isNew, navigation}) => {
                         
                         // If brewery is being used to create a new brewery, hit createBrewery route
                         if (isNew) {
-                            
+                            setBufferText('Creating New Location...')
+                            setShowBufferPopup(true)
                             response =  await createBrewery({
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
                                 alternativeKidFriendlyHours, accommodations
                             });
+                            setShowBufferPopup(false)
                            
                         } else { // if brewery is being used to edit brewery, hit updateBrewery route
                             var breweryId = brewery._id;
+                            setBufferText('Updating Location...')
+                            setShowBufferPopup(true)
                             response = await updateBrewery({
                                 breweryId,
                                 name, address, price, phoneNumber, 
@@ -1351,6 +1358,7 @@ const BreweryForm = ({isNew, navigation}) => {
                                 alternativeKidFriendlyHours, accommodations
                             });
                             getOwnedBreweries();
+                            setShowBufferPopup(false)
                         }
                         //console.log("response status " , response)
 
@@ -1401,7 +1409,9 @@ const BreweryForm = ({isNew, navigation}) => {
                     title="Cancel"
                     onPress={() => navigation.navigate("More")}
                 />
-            </View>            
+            </View> 
+
+            <BufferPopup isVisible={showBufferPopup} text={bufferText}/>           
         </ScrollView>
     );
 }
