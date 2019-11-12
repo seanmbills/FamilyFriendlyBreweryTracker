@@ -9,8 +9,9 @@ import SignInPrompt from '../components/SignInPrompt';
 class WriteReviewScreenComponent extends Component {
   state = {
     isLoading: true,
-    foundUser: true
+    foundUser: true,
   }
+
 
   async componentDidMount() {
     let {state, testForToken} = this.context;
@@ -25,16 +26,17 @@ class WriteReviewScreenComponent extends Component {
   }
 
   render() {
+    //console.log("User Present: ", userPresent)
     return (
       <View style={{flex:1}}>
         <BufferPopup isVisible={this.state.isLoading} text={"Fetching user info"} />
         {
-          !this.state.isLoading && this.state.userPresent &&
+          !this.state.isLoading && this.state.foundUser &&
           <WriteReviewScreen navigation={this.props.navigation}/>
         }
         {
-          !this.state.isLoading && !this.state.userPresent &&
-          <SignInPrompt isVisible={!this.state.userPresent} navigation={this.props.navigation}/>
+          !this.state.isLoading && !this.state.foundUser &&
+          <SignInPrompt isVisible={!this.state.foundUser} navigation={this.props.navigation}/>
         }
       </View>
     )
