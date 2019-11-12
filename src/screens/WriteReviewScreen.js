@@ -5,6 +5,7 @@ import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
+import Dialog, {DialogContent} from 'react-native-popup-dialog';
 
 class WriteReviewScreenComponent extends Component {
   state = {
@@ -49,6 +50,8 @@ const WriteReviewScreen = ({navigation}) => {
 
   const [ratingNum, setRatingNum] = useState(3);
   const [description, setDescription] = useState('');
+  const [showSuccessMsg, setShowSuccessMsg] = useState(false);
+  const [showErrMsg, setShowErrMsg] = useState(false);
 
   const breweryId = navigation.getParam('breweryId')
   const breweryName = navigation.getParam('name')
@@ -109,11 +112,37 @@ const WriteReviewScreen = ({navigation}) => {
                     console.log({message, breweryId, rating})
                     var response = await createReview({message, breweryId, rating});
                     var getReviewsResponse = await getBreweryReviews({breweryId});
-
-                    //console.log("response : ", response)
+                    if (response && response.status < 400) {
+                        setShowSuccessMsg(true);
+                    } else {
+                        setShowSuccessMsg(false);
+                        setShowErrMsg(true);
+                    }
                   }}
               />
           </View>
+          <Dialog visible={showSuccessMsg}>
+            <DialogContent style={styles.dialogContent}>
+                  <Text>Successfully Uploaded Review!</Text>
+                  <WelcomeButton
+                    title="Back"
+                    onPress={async ()=>{
+                      await setShowSuccessMsg(false)
+                      navigation.goBack()
+                    }}
+                  />
+            </DialogContent>
+          </Dialog>
+          <Dialog visible={showErrMsg}>
+            <DialogContent style={StyleSheet.dialogContent}>
+              <Text>Oops! Something went wrong</Text>
+              <Text>We weren't able to upload your Review</Text>
+              <WelcomeButton
+                title="Back"
+                onPress={async() => await setShowErrMsg(false)}
+              />
+            </DialogContent>
+          </Dialog>
       </ScrollView>
   );
 }
@@ -138,6 +167,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
       alignItems: "center"
+  },
+  dialogContent: {
+    alignItems: 'center',
+    fontSize: 25,
+    alignSelf: 'center'
   }
 });
 

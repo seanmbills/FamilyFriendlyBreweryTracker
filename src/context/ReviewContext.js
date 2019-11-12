@@ -34,6 +34,7 @@ const createReview = (dispatch) => {
             }});
             
             dispatch({type: 'create', payload: response.data})
+            return response;
         } catch (err) {
             // console.log("Error: ", err.response)
             console.log(err.response.data.error);
