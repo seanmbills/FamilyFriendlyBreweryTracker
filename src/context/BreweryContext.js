@@ -24,6 +24,8 @@ const breweryReducer = (state, action) => {
             return {...state, individualResult: null};
         case 'clear_error_message':
             return {...state, errorMessage: ''}
+        case 'clear_context':
+            return {results: [], count: 0, individualResult: null, ownedBreweries: [], errorMessage: '', created: ''}
         default:
             return state;
     }
@@ -275,6 +277,16 @@ const clearIndividualBreweryResult = (dispatch) => {
     }
 }
 
+/*
+ * clears the state of the brewery context object
+ */
+const clearBreweryContext = (dispatch) => {
+    return async () => {
+        dispatch({type: 'clear_context'});
+    }
+    
+}
+
 // const clearErrorMessage = dispatch => () => {
 //     dispatch({type: 'clear_error_message'})
 // }
@@ -288,7 +300,8 @@ export const {Provider, Context} = createDataContext(
         createBrewery,
         updateBrewery,
         getBrewery,
-        clearIndividualBreweryResult
+        clearIndividualBreweryResult,
+        clearBreweryContext
     },
     {results: [], count: 0, individualResult: null, ownedBreweries: [], errorMessage: '', created: ''}
 )

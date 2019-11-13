@@ -6,6 +6,7 @@ import { FlatList } from 'react-native-gesture-handler';
 
 // Local Imports
 import WelcomeButton from '../components/WelcomeButton';
+import {Context as AuthContext} from '../context/AuthContext';
 import {Context as BreweryContext} from '../context/BreweryContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
@@ -22,7 +23,7 @@ class MoreScreenComponent extends Component {
 
     componentDidMount() {
         console.log("mounting more screen")
-        let {state, getOwnedBreweries} = this.context
+        let {state, getOwnedBreweries, clearBreweryContext} = this.context
         
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             console.log("getting breweries")
@@ -71,6 +72,12 @@ MoreScreenComponent.contextType = BreweryContext
  * 2.) an button which will navigate users to a screen where they can create a brewery
  */
 const MoreScreen = ({navigation, noUser}) => {
+
+    /*
+     *  Need to import signout method to allow user's to signout of application. 
+     */
+    const {signout} = useContext(AuthContext);
+
     /*
      * Need to import three context methods, getBrewery, clearIndividualBreweryResult, getOwnedBreweries
      * getBrewery is used when a brewery from the Owned Breweries list is selected.
@@ -78,9 +85,9 @@ const MoreScreen = ({navigation, noUser}) => {
      * getOwnedBreweries is called when the screen is opened. This pulls down all screens a user owns
      */
 
-    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
+    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult, clearBreweryContext} = useContext(BreweryContext);
     const [showDialog, setShowDialog] = useState(false);
-
+    
     /* 
      * Added this navigation listener so when a user navigates to the MoreScreen the app will
      * fetch all breweries the user's owns 
@@ -128,6 +135,16 @@ const MoreScreen = ({navigation, noUser}) => {
                         clearIndividualBreweryResult(); 
                         // this.focusListener.remove()
                         navigation.navigate('CreateBrewery')
+                    }}
+                />
+            </View>
+            <View style={styles.contentContainer}>
+                <WelcomeButton
+                    title="Logout"
+                    onPress={()=> {
+                        clearBreweryContext();
+                        signout()
+                        navigation.navigate('Welcome');
                     }}
                 />
             </View>
