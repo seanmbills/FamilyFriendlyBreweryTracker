@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as AuthContext} from '../context/AuthContext'
