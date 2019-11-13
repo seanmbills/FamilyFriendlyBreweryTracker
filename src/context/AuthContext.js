@@ -3,6 +3,7 @@ import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
 import {navigate} from '../navigationRef'
 import axios from 'axios'
+import { NavigationActions } from 'react-navigation'
 Buffer = require('buffer/').Buffer
 
 
@@ -22,6 +23,8 @@ const authReducer = (state, action) => {
             return {...state, token: action.payload.token, signedUrl: action.payload.signedUrl, errorMessage: ''}
         case 'clear_error_message':
             return {...state, errorMessage: ''}
+        case 'signout':
+            return {token: null, signedURL: '', errorMessage: '', profileInfo: null}
         default: 
             return state;
     }
@@ -30,11 +33,19 @@ const authReducer = (state, action) => {
 const getUserInfo = (dispatch) => {
     return async() => {
         try {
-            const response = await ServerApi.get('/getUserInfo',
-                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (await AsyncStorage.getItem('token'))}}
-            );
-            console.log(response.data)
-            dispatch({type: 'get_user_info', payload: response.data})
+            const userToken = await AsyncStorage.getItem('token')
+            if (userToken !== null && userToken !=='') { //Checking if user is logged in or if a guest
+                console.log('sending token: ', userToken)
+            
+                const response = await ServerApi.get('/getUserInfo',
+                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (userToken)}}
+                );
+                console.log(response.data)
+                dispatch({type: 'get_user_info', payload: response.data})
+                return response
+            } else {
+                return null;
+            }    
         } catch (err) {
             console.log(err.response.data.error)
             dispatch({ type: 'add_error_message', payload: err.response.data})
@@ -310,10 +321,18 @@ const tryAutoSignin = dispatch => async() => {
         }
 }
 
+const clearUserToken = (dispatch) => {
+    return async () => {
+        const token = await AsyncStorage.setItem('token', '')
+        return token
+    }
+}
 
 const signout = (dispatch) => {
-    return () => {
-        // somehow sign out the uer
+    return async () => {
+        // somehow sign out the user
+        await AsyncStorage.removeItem('token');
+        dispatch({type: 'signout'});
     }
 }
 
@@ -322,6 +341,6 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
-        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo},// tryAutoSignin},
-    {token: null, signedUrl: '', errorMessage: '', profileInfo: null}
+        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo, clearUserToken},// tryAutoSignin},
+    {token: null, signedURL: '', errorMessage: '', profileInfo: null}
 )
