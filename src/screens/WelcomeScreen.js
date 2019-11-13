@@ -1,6 +1,49 @@
 import React from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import WelcomeButton from '../components/WelcomeButton';
+import {Context as AuthContext} from '../context/AuthContext'
+import BufferPopup from '../components/BufferPopup'
+
+class WelcomeScreenComponent extends Component {
+    state = {
+        isLoading: true
+    }
+
+    componentDidMount() {
+        let {state, tryAutoSignin} = this.context
+        
+        this.focusListener = this.props.navigation.addListener('didFocus', async () => {
+            await tryAutoSignin().then(() => {
+                this.setState({
+                    isLoading: false
+                })
+            })
+        })
+    }
+
+    componentWillUnmount() {
+        this.focusListener.remove()
+    }
+
+    render() {
+        let {state} = this.context
+
+        return (
+            <View style={{flex:1}}>
+                <BufferPopup isVisible={this.state.isLoading} text={"Signing in..."} />
+                {
+                    !this.state.isLoading && state.token !== null && state.token !== '' &&
+                    this.props.navigation.navigate('BreweryList')
+                }
+                {
+                    !this.state.isLoading && (state.token === null || state.token === '') &&
+                    <WelcomeScreen navigation={this.props.navigation}/>
+                }
+            </View>
+        )
+    }
+}
+WelcomeScreenComponent.contextType = AuthContext
 
 /*
  * First screen a user views upon loading application. Allows them to navigate to two locations:
@@ -53,4 +96,4 @@ const styles = StyleSheet.create({
         alignContent: 'center'
     }
 });
-export default WelcomeScreen;
+export default WelcomeScreenComponent;
