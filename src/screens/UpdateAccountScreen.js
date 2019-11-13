@@ -23,7 +23,7 @@ class UserUpdateAccount extends Component {
     
     async componentDidMount() {
         let {state, getUserInfo} = this.context
-        await getUserInfo().then(() => {
+        await getUserInfo({token: state.token}).then(() => {
             this.setState({
                 isLoading: false
             })
@@ -48,7 +48,7 @@ UserUpdateAccount.contextType = AuthContext
  * Screen will allow user to update account information. This includes: email, phoneNumber, password, zipcode
  */
 const UpdateAccountScreen = ({navigation}) => {
-    const {state, userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo,
+    const {state, userUpdate, updatePassword, updateEmail, updatePhone,
         clearErrorMessage} = useContext(AuthContext);
     const [ firstName, setFirstName ] = state.profileInfo.firstName === null ? useState('') : useState(state.profileInfo.firstName)
     const [ lastName, setLastName ] = state.profileInfo.lastName === null ? useState('') : useState(state.profileInfo.lastName)
@@ -204,7 +204,7 @@ const UpdateAccountScreen = ({navigation}) => {
                         setShowDialog(true);
 
                         //Make request to backend to update account
-                        var response = await userUpdate({firstName, lastName, zipCode, profilePic})
+                        var response = await userUpdate({firstName, lastName, zipCode, profilePic, token: state.token})
 
                         //set dialog to no longer be visible
                         setShowDialog(false);
@@ -252,7 +252,7 @@ const UpdateAccountScreen = ({navigation}) => {
                             setBufferText("Updating Email")
                             setShowDialog(true);
 
-                            var response = updateEmail({newEmail, password});
+                            var response = await updateEmail({newEmail, password, token: state.token});
 
                             //set dialog to no longer be visible
                             setShowDialog(false);
@@ -312,7 +312,7 @@ const UpdateAccountScreen = ({navigation}) => {
                             setBufferText("Updating Password")
                             setShowDialog(true);
 
-                            var response = await updatePassword({oldPassword, newPassword})
+                            var response = await updatePassword({oldPassword, newPassword, token: state.token})
 
                             //Set dialog to no longer be visible
                             setShowDialog(false);
@@ -365,7 +365,7 @@ const UpdateAccountScreen = ({navigation}) => {
                             setBufferText("Updating Phone Number")
                             setShowDialog(true);
 
-                            var response = await updatePhone({password, newPhone});
+                            var response = await updatePhone({password, newPhone, token: state.token});
 
                             //Set dialog to no longer be visible
                             setShowDialog(false);

@@ -110,11 +110,11 @@ const getSearchResults = (dispatch) => {
  * Gets a list of the brewery names and ids that a users "Owns" or has created
 */
 const getOwnedBreweries = (dispatch) => {
-    return async () => {
+    return async ({token}) => {
         try {
             const response = await ServerApi.get('/getOwnedBreweries', { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
-              'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
+              'authorization' : 'Bearer ' + token
             }});
             
             // attach list of owned breweries to context object
@@ -148,7 +148,7 @@ const createBrewery = (dispatch) => {
     return async ({
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
-            alternativeKidFriendlyHours, accommodations
+            alternativeKidFriendlyHours, accommodations, token
             }) => {
         accommodations = stripAccommodationsSearch(accommodations); //remove fields from accommodations object which are false
 
@@ -162,7 +162,7 @@ const createBrewery = (dispatch) => {
                 req, 
                 {headers: {
                     'Accept' : 'application/json', 'Content-type' : 'application/json',
-                    'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))}}
+                    'authorization' : 'Bearer ' + token}}
             );
 
             dispatch({type: 'create', payload: response.data})
@@ -225,7 +225,7 @@ const updateBrewery = (dispatch) => {
             breweryId,
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
-            alternativeKidFriendlyHours, accommodations
+            alternativeKidFriendlyHours, accommodations, token
             }) => {
         accommodations = stripAccommodationsSearch(accommodations);
 
@@ -243,7 +243,7 @@ const updateBrewery = (dispatch) => {
                 req, 
                 {headers: {
                     'Accept' : 'application/json', 'Content-type' : 'application/json',
-                    'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))}}
+                    'authorization' : 'Bearer ' + token}}
             );
             dispatch({type: 'create', payload: response.data})
             return response;

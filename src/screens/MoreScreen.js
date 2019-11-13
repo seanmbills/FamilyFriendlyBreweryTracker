@@ -7,6 +7,7 @@ import { FlatList } from 'react-native-gesture-handler';
 // Local Imports
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as BreweryContext} from '../context/BreweryContext'
+import {Context as authContext} from '../context/AuthContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
 
@@ -19,10 +20,11 @@ class MoreScreenComponent extends Component {
 
     componentDidMount() {
         let {state, getOwnedBreweries} = this.context
+        let authContext = useContext(AuthContext)
         
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             console.log("getting breweries")
-            await getOwnedBreweries().then(() => {
+            await getOwnedBreweries({token: authContext.state.token}).then(() => {
                 this.setState({
                     isLoading: false
                 })
@@ -63,7 +65,7 @@ const MoreScreen = ({navigation}) => {
      * getOwnedBreweries is called when the screen is opened. This pulls down all screens a user owns
      */
 
-    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
+    const {state, getBrewery, clearIndividualBreweryResult} = useContext(BreweryContext);
     const [showDialog, setShowDialog] = useState(false);
 
     /* 

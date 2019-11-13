@@ -322,6 +322,6 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
-        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo},// tryAutoSignin},
+        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo, tryAutoSignin},
     {token: null, signedUrl: '', errorMessage: '', profileInfo: null}
 )

@@ -3,9 +3,11 @@ import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpac
 import {Rating, AirbnbRating} from 'react-native-ratings'
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
+import {Context as AuthContext} from '../context/AuthContext'
 
 const WriteReviewScreen = ({navigation}) => {
   const {state, createReview, getBreweryReviews} = useContext(ReviewContext);
+  const authContext = useContext(AuthContext)
 
   const [ratingNum, setRatingNum] = useState(3);
   const [description, setDescription] = useState('');
@@ -67,8 +69,8 @@ const WriteReviewScreen = ({navigation}) => {
                     var message = description;
                     var rating = ratingNum;
                     console.log({message, breweryId, rating})
-                    var response = await createReview({message, breweryId, rating});
-                    var getReviewsResponse = await getBreweryReviews({breweryId});
+                    var response = await createReview({message, breweryId, rating, token: authContext.state.token});
+                    var getReviewsResponse = await getBreweryReviews({breweryId, token: authContext.state.token});
 
                     //console.log("response : ", response)
                   }}
