@@ -330,7 +330,7 @@ const clearUserToken = (dispatch) => {
 const signout = (dispatch) => {
     return async () => {
         // somehow sign out the user
-        await AsyncStorage.setItem('token', '');
+        await AsyncStorage.removeItem('token');
         dispatch({type: 'signout'});
     }
 }
