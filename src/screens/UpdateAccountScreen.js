@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Button, Image } from 'react-native';
 import { Context as AuthContext } from '../context/AuthContext';
 import { TextInput, TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
+import {withNavigation} from 'react-navigation';
 
 // Local imports
 import WelcomeButton from '../components/WelcomeButton';
@@ -15,28 +16,72 @@ import * as ImagePicker from 'expo-image-picker'
 import Constants from 'expo-constants'
 import * as Permissions from 'expo-permissions'
 import BufferPopup from '../components/BufferPopup';
+import SignInPrompt from '../components/SignInPrompt';
+
+
 
 class UserUpdateAccount extends Component {
     state = {
-        isLoading: true
+        isLoading: true,
+        foundUser: false,
+        showUserErr: false
     };
     
     async componentDidMount() {
+        this.setState({
+            isLoading: true,
+            foundUser: false,
+            showUserErr: false
+        })
         let {state, getUserInfo} = this.context
         await getUserInfo().then(() => {
-            this.setState({
-                isLoading: false
-            })
+            console.log("state results: ", state)
+            if (state.profileInfo !== null || state.token !== null) {
+                this.setState({
+                    isLoading: false,
+                    foundUser: true
+                })
+            } else {
+                this.setState({
+                    isLoading: false,
+                    foundUser: false,
+                    showUserErr: true
+                })
+            }
         })
     }
 
+    async componentWillUnmount() {
+        //this.setState({showUserErr: false})
+        //this.setState({isLoading: true})
+    }
+
     render() {
+        //const [ showUserErr, setShowUserErr ] = useState(true);
+        console.log("State: ", this.state)
         return (
             <View style={{flex:1}}>
                 <BufferPopup isVisible={this.state.isLoading} text={"Fetching User's Info"} />
                 {
-                    !this.state.isLoading &&
+                    !this.state.isLoading && this.state.foundUser && 
                     <UpdateAccountScreen navigation={this.props.navigation} />
+                }
+                {
+                    !this.state.isLoading && this.state.showUserErr && 
+                    <SignInPrompt
+                        navigation={this.props.navigation}
+                        isVisible={this.state.showUserErr}
+                    />
+                }
+                {
+                    !this.state.isLoading && !this.state.foundUser &&
+                    <View>
+                        <Text>You must login to visit this part of the app</Text>
+                        <WelcomeButton
+                            title="Login or Register"
+                            onPress={()=>this.props.navigation.navigate("loginFlow")}
+                        />  
+                    </View>
                 }
             </View>
         )

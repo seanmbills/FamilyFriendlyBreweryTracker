@@ -1,8 +1,48 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, Component} from 'react';
 import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpacity, Linking, Platform} from 'react-native'
 import {Rating, AirbnbRating} from 'react-native-ratings'
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
+import BufferPopup from '../components/BufferPopup';
+import SignInPrompt from '../components/SignInPrompt';
+
+class WriteReviewScreenComponent extends Component {
+  state = {
+    isLoading: true,
+    foundUser: true,
+  }
+
+
+  async componentDidMount() {
+    let {state, testForToken} = this.context;
+    var userPresent = await testForToken();
+    console.log("User Present: " , userPresent)
+    if (userPresent) {
+      this.setState({foundUser: true})
+    } else {
+      this.setState({foundUser: false})
+    }
+    this.setState({isLoading: false})
+  }
+
+  render() {
+    //console.log("User Present: ", userPresent)
+    return (
+      <View style={{flex:1}}>
+        <BufferPopup isVisible={this.state.isLoading} text={"Fetching user info"} />
+        {
+          !this.state.isLoading && this.state.foundUser &&
+          <WriteReviewScreen navigation={this.props.navigation}/>
+        }
+        {
+          !this.state.isLoading && !this.state.foundUser &&
+          <SignInPrompt isVisible={!this.state.foundUser} navigation={this.props.navigation}/>
+        }
+      </View>
+    )
+  }
+}
+WriteReviewScreenComponent.contextType = ReviewContext;
 
 const WriteReviewScreen = ({navigation}) => {
   const {state, createReview, getBreweryReviews} = useContext(ReviewContext);
@@ -101,4 +141,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default WriteReviewScreen
+export default WriteReviewScreenComponent
