@@ -3,6 +3,7 @@ import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
 import {navigate} from '../navigationRef'
 import axios from 'axios'
+import { NavigationActions } from 'react-navigation'
 Buffer = require('buffer/').Buffer
 
 
@@ -22,6 +23,8 @@ const authReducer = (state, action) => {
             return {...state, token: action.payload.token, signedUrl: action.payload.signedUrl, errorMessage: ''}
         case 'clear_error_message':
             return {...state, errorMessage: ''}
+        case 'signout':
+            return {token: null, signedURL: '', errorMessage: '', profileInfo: null}
         default: 
             return state;
     }
@@ -326,8 +329,10 @@ const clearUserToken = (dispatch) => {
 }
 
 const signout = (dispatch) => {
-    return () => {
-        // somehow sign out the uer
+    return async () => {
+        // somehow sign out the user
+        await AsyncStorage.removeItem('token');
+        dispatch({type: 'signout'});
     }
 }
 
