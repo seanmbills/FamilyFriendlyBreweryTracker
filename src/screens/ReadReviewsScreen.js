@@ -19,17 +19,6 @@ const ReadReviewsScreen = ({navigation}) => {
 
   const reviews = state.results;
 
-  var userHasReview = false;
-
-  for (var review in reviews) {
-    if (CURRENT USER ID == review.poster.id) {
-      var userReview = review
-      delete(review)
-      userHasReview = true
-      break
-    }
-  }
-
     return (
       <ScrollView style={styles.container}>
         {/*Displays the brewery name at the top of the screen*/}
@@ -37,7 +26,7 @@ const ReadReviewsScreen = ({navigation}) => {
               style={{fontSize: breweryFontSize, textAlign: 'center', fontWeight: 'bold', marginTop: 25, paddingBottom: 5}}>{breweryName}
         </Text>
         <TouchableOpacity onPress={() => {
-            navigation.navigate("WriteReview", {breweryId: breweryId, name:breweryName, breweryFontSize: breweryFontSize});
+            navigation.navigate("WriteReview", {breweryId: breweryId, breweryName:breweryName, breweryFontSize: breweryFontSize, isEditingAReview: false, reviewId: 'notUsed'});
           }}>
           <Text style={styles.writeReview}>Click here to write a review!</Text>
         </TouchableOpacity>

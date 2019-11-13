@@ -11,8 +11,20 @@ const WriteReviewScreen = ({navigation}) => {
   const [description, setDescription] = useState('');
 
   const breweryId = navigation.getParam('breweryId')
-  const breweryName = navigation.getParam('name')
+  const breweryName = navigation.getParam('breweryName')
   const breweryFontSize = navigation.getParam('breweryFontSize')
+  const isEditingAReview = navigation.getParam('isEditingAReview')
+  const reviewId = navigation.getParam('reviewId')
+  var reviewDescription = ''
+  var reviewRating = 3
+
+  //
+
+  if (isEditingAReview) {
+    // need to make a context method for getting a review by using the review id
+    reviewDescription = 'REVIEW DESCRIPTION' //placeholder
+    reviewRating = 2 //placeholder
+  }
 
   logMethod = () => {
     console.log(ratingNum);
@@ -20,10 +32,6 @@ const WriteReviewScreen = ({navigation}) => {
     console.log(breweryId);
     console.log(breweryName);
   }
-
-  // ratingCompleted(rating) {
-  //   console.log("Rating is: " + rating);
-  // }
 
     return (
       <ScrollView style={styles.container}>
@@ -34,7 +42,7 @@ const WriteReviewScreen = ({navigation}) => {
           <AirbnbRating
             count={5}
             reviews={["Terrible", "Bad", "Okay", "Good", "Great"]}
-            defaultRating={3}
+            defaultRating= {isEditingAReview ? (reviewRating) : (3)}
             size={50}
             onFinishRating={(newRating) => {
                 setRatingNum(newRating);
@@ -50,7 +58,7 @@ const WriteReviewScreen = ({navigation}) => {
           />
           <TextInput
             value={description}
-            placeholder="Write the review here. Make sure to include examples about what you do and do not like."
+            placeholder = {isEditingAReview ? (reviewDescription) : ("Write the review here. Make sure to include examples about what you do and do not like.")}
             autoCapitalize="none"
             autoCorrect={false}
             multiline={true}
@@ -60,6 +68,7 @@ const WriteReviewScreen = ({navigation}) => {
           />
           </View>
           <View style={styles.buttonContainer}>
+            {!isEditingAReview ? (
               <WelcomeButton
                   title="Submit"
                   onPress={async ()=> {
@@ -69,10 +78,20 @@ const WriteReviewScreen = ({navigation}) => {
                     console.log({message, breweryId, rating})
                     var response = await createReview({message, breweryId, rating});
                     var getReviewsResponse = await getBreweryReviews({breweryId});
-
-                    //console.log("response : ", response)
                   }}
-              />
+                />)
+                :
+                (<WelcomeButton
+                  title="Update"
+                  onPress={async ()=> {
+                    logMethod()
+                    var message = description;
+                    var rating = ratingNum;
+                    console.log({message, breweryId, rating})
+                    var response = await createReview({message, breweryId, rating});
+                    var getReviewsResponse = await getBreweryReviews({breweryId});
+                  }}
+              />)}
           </View>
       </ScrollView>
   );
