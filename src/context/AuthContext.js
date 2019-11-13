@@ -19,7 +19,7 @@ const authReducer = (state, action) => {
             return {...state, token: action.payload, errorMessage: ''}
         case 'userUpdate':
         case 'register':
-            return {...state, token: action.payload.token, signedURL: action.payload.signedURL, errorMessage: ''}
+            return {...state, token: action.payload.token, signedUrl: action.payload.signedUrl, errorMessage: ''}
         case 'clear_error_message':
             return {...state, errorMessage: ''}
         default: 
@@ -76,7 +76,7 @@ const register = (dispatch) => {
             // (aka got a token back)
             // we also store the token on the device for later access
             await AsyncStorage.setItem('token', response.data.token)
-            await AsyncStorage.setItem('signedURL', response.data.signedURL)
+            await AsyncStorage.setItem('signedUrl', response.data.signedUrl)
 
             // upload the profile picture, if there is one, to the AWS S3 instance
             if (profilePic) {
@@ -92,7 +92,7 @@ const register = (dispatch) => {
                 console.log(buff)
                 const awsResponse = await axios.put(
                     // response.data.signedURL,
-                    await AsyncStorage.getItem('signedURL'),
+                    await AsyncStorage.getItem('signedUrl'),
                     buff,
                     options
                 )
@@ -192,8 +192,9 @@ const userUpdate = (dispatch) => {
             const response = await ServerApi.post('/userUpdate', {firstName, lastName, zipCode},{ headers: 
                 {'Accept' : 'application/json', 'Content-type' : 'application/json',
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            console.log(response)
             await AsyncStorage.setItem('token', response.data.token)
-            await AsyncStorage.setItem('signedURL', response.data.signedURL)
+            await AsyncStorage.setItem('signedUrl', response.data.signedUrl)
 
             // upload the profile picture, if there is one, to the AWS S3 instance
             if (profilePic) {
@@ -209,7 +210,7 @@ const userUpdate = (dispatch) => {
                 console.log(buff)
                 const awsResponse = await axios.put(
                     // response.data.signedURL,
-                    await AsyncStorage.getItem('signedURL'),
+                    await AsyncStorage.getItem('signedUrl'),
                     buff,
                     options
                 )

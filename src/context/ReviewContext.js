@@ -23,6 +23,7 @@ const reviewReducer = (state, action) => {
 
 const createReview = (dispatch) => {
     return async ({message, breweryId, rating}) => {
+        console.log(typeof(rating))
         try {
             var req = {message: message, breweryId: breweryId, rating: rating}
             console.log(req);
@@ -32,6 +33,7 @@ const createReview = (dispatch) => {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
               'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
             }});
+            console.log(response.data)
             
             dispatch({type: 'create', payload: response.data})
         } catch (err) {
@@ -52,7 +54,7 @@ const getBreweryReviews = (dispatch) => {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
             }});
             //console.log(response);
-            dispatch({type: 'search_results', count: response.data.count, payload: response.data})
+            dispatch({type: 'search_results', payload: response.data})
             return response;
         } catch (err) {
             console.log("Error: ", err.response)
