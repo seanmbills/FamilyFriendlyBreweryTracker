@@ -326,7 +326,7 @@ const clearUserToken = (dispatch) => {
 const signout = (dispatch) => {
     return async () => {
         // somehow sign out the user
-        await AsyncStorage.removeItem('token');
+        await AsyncStorage.removeItem('refreshToken');
         dispatch({type: 'signout'});
     }
 }
@@ -336,6 +336,6 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
-        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo, tryAutoSignin},
+        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo, tryAutoSignin, clearUserToken},
     {token: null, signedUrl: '', errorMessage: '', profileInfo: null}
 )
