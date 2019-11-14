@@ -1,5 +1,7 @@
 // Third Party imports 
 import {AsyncStorage} from 'react-native'
+Buffer = require('buffer/').Buffer
+import axios from 'axios'
 
 // Local Imports
 import createDataContext from './createDataContext'
@@ -24,6 +26,8 @@ const breweryReducer = (state, action) => {
             return {...state, individualResult: null};
         case 'clear_error_message':
             return {...state, errorMessage: ''}
+        case 'clear_context':
+            return {results: [], count: 0, individualResult: null, ownedBreweries: [], errorMessage: '', created: ''}
         default:
             return state;
     }
@@ -112,13 +116,17 @@ const getSearchResults = (dispatch) => {
 const getOwnedBreweries = (dispatch) => {
     return async ({token}) => {
         try {
-            const response = await ServerApi.get('/getOwnedBreweries', { headers: {
-              'Accept' : 'application/json', 'Content-type' : 'application/json',
-              'authorization' : 'Bearer ' + token
-            }});
-            
-            // attach list of owned breweries to context object
-            dispatch({type: 'owned_breweries', payload: response.data})
+            if (token !== null && token !== '') {
+                const response = await ServerApi.get('/getOwnedBreweries', { headers: {
+                'Accept' : 'application/json', 'Content-type' : 'application/json',
+                'authorization' : 'Bearer ' + token
+                }});
+                dispatch({type: "owned_breweries", payload: response.data})
+                return response
+            } else {
+                console.log("Not sending request because there isn't a user")
+                return null
+            }
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -148,8 +156,9 @@ const createBrewery = (dispatch) => {
     return async ({
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
-            alternativeKidFriendlyHours, accommodations, token
-            }) => {
+            alternativeKidFriendlyHours, accommodations, token,
+            breweryImage1, breweryImage2, breweryImage3
+        }) => {
         accommodations = stripAccommodationsSearch(accommodations); //remove fields from accommodations object which are false
 
         var req = {name, address, price, phoneNumber, email, website,
@@ -164,6 +173,56 @@ const createBrewery = (dispatch) => {
                     'Accept' : 'application/json', 'Content-type' : 'application/json',
                     'authorization' : 'Bearer ' + token}}
             );
+
+
+            if (breweryImage1 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage1.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl1,
+                    buff,
+                    options
+                )
+            }
+
+            if (breweryImage2 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage2.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl2,
+                    buff,
+                    options
+                )
+            }
+
+            if (breweryImage3 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage3.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl3,
+                    buff,
+                    options
+                )
+            }
+
 
             dispatch({type: 'create', payload: response.data})
             return response;
@@ -225,8 +284,9 @@ const updateBrewery = (dispatch) => {
             breweryId,
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
-            alternativeKidFriendlyHours, accommodations, token
-            }) => {
+            alternativeKidFriendlyHours, accommodations, token,
+            breweryImage1, breweryImage2, breweryImage3
+        }) => {
         accommodations = stripAccommodationsSearch(accommodations);
 
         var req = { breweryId, newName: name, newAddress: address,
@@ -245,6 +305,55 @@ const updateBrewery = (dispatch) => {
                     'Accept' : 'application/json', 'Content-type' : 'application/json',
                     'authorization' : 'Bearer ' + token}}
             );
+
+            if (breweryImage1 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage1.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl1,
+                    buff,
+                    options
+                )
+            }
+
+            if (breweryImage2 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage2.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl2,
+                    buff,
+                    options
+                )
+            }
+
+            if (breweryImage3 !== null) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+                
+                var buff = Buffer.from(breweryImage3.base64, 'base64')
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    response.data.signedUrl3,
+                    buff,
+                    options
+                )
+            }
+
             dispatch({type: 'create', payload: response.data})
             return response;
         }
@@ -265,6 +374,16 @@ const clearIndividualBreweryResult = (dispatch) => {
     }
 }
 
+/*
+ * clears the state of the brewery context object
+ */
+const clearBreweryContext = (dispatch) => {
+    return async () => {
+        dispatch({type: 'clear_context'});
+    }
+    
+}
+
 // const clearErrorMessage = dispatch => () => {
 //     dispatch({type: 'clear_error_message'})
 // }
@@ -278,7 +397,8 @@ export const {Provider, Context} = createDataContext(
         createBrewery,
         updateBrewery,
         getBrewery,
-        clearIndividualBreweryResult
+        clearIndividualBreweryResult,
+        clearBreweryContext
     },
     {results: [], count: 0, individualResult: null, ownedBreweries: [], errorMessage: '', created: ''}
 )

@@ -36,6 +36,7 @@ const createReview = (dispatch) => {
             console.log(response.data)
             
             dispatch({type: 'create', payload: response.data})
+            return response;
         } catch (err) {
             // console.log("Error: ", err.response)
             console.log(err.response.data.error);
@@ -65,11 +66,20 @@ const getBreweryReviews = (dispatch) => {
         }
     }
 }
+
+const testForToken = () => {
+    return async () => {
+        var userToken = await AsyncStorage.getItem('token')
+        
+        return !(!userToken || userToken === '')
+    }
+}
 export const {Provider, Context} = createDataContext(
     reviewReducer,
     {
         createReview,
-        getBreweryReviews
+        getBreweryReviews,
+        testForToken
     },
     {results: [], count: 0, errorMessage: '', created: '', results: []}
 )

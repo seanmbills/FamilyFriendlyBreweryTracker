@@ -1,9 +1,51 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, Component} from 'react';
 import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpacity, Linking, Platform} from 'react-native'
 import {Rating, AirbnbRating} from 'react-native-ratings'
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
 import {Context as AuthContext} from '../context/AuthContext'
+import BufferPopup from '../components/BufferPopup';
+import SignInPrompt from '../components/SignInPrompt';
+import Dialog, {DialogContent} from 'react-native-popup-dialog';
+
+class WriteReviewScreenComponent extends Component {
+  state = {
+    isLoading: true,
+    foundUser: true,
+  }
+
+
+  async componentDidMount() {
+    let {state, testForToken} = this.context;
+    var userPresent = await testForToken();
+    console.log("User Present: " , userPresent)
+    if (userPresent) {
+      this.setState({foundUser: true})
+    } else {
+      this.setState({foundUser: false})
+    }
+    this.setState({isLoading: false})
+  }
+
+  render() {
+    //console.log("User Present: ", userPresent)
+    return (
+      <View style={{flex:1}}>
+        <BufferPopup isVisible={this.state.isLoading} text={"Fetching user info"} />
+        {
+          !this.state.isLoading && this.state.foundUser &&
+          <WriteReviewScreen navigation={this.props.navigation}/>
+        }
+        {
+          !this.state.isLoading && !this.state.foundUser &&
+          <SignInPrompt isVisible={!this.state.foundUser} navigation={this.props.navigation}/>
+        }
+      </View>
+    )
+  }
+}
+WriteReviewScreenComponent.contextType = ReviewContext;
+
 
 const WriteReviewScreen = ({navigation}) => {
   const {state, createReview, getBreweryReviews} = useContext(ReviewContext);
@@ -11,10 +53,13 @@ const WriteReviewScreen = ({navigation}) => {
 
   const [ratingNum, setRatingNum] = useState(3);
   const [description, setDescription] = useState('');
+  const [showSuccessMsg, setShowSuccessMsg] = useState(false);
+  const [showErrMsg, setShowErrMsg] = useState(false);
 
   const breweryId = navigation.getParam('breweryId')
   const breweryName = navigation.getParam('name')
   const breweryFontSize = navigation.getParam('breweryFontSize')
+
 
   logMethod = () => {
     console.log(ratingNum);
@@ -71,11 +116,37 @@ const WriteReviewScreen = ({navigation}) => {
                     console.log({message, breweryId, rating})
                     var response = await createReview({message, breweryId, rating, token: authContext.state.token});
                     var getReviewsResponse = await getBreweryReviews({breweryId, token: authContext.state.token});
-
-                    //console.log("response : ", response)
+                    if (response && response.status < 400) {
+                        setShowSuccessMsg(true);
+                    } else {
+                        setShowSuccessMsg(false);
+                        setShowErrMsg(true);
+                    }
                   }}
               />
           </View>
+          <Dialog visible={showSuccessMsg}>
+            <DialogContent style={styles.dialogContent}>
+                  <Text>Successfully Uploaded Review!</Text>
+                  <WelcomeButton
+                    title="Back"
+                    onPress={async ()=>{
+                      await setShowSuccessMsg(false)
+                      navigation.goBack()
+                    }}
+                  />
+            </DialogContent>
+          </Dialog>
+          <Dialog visible={showErrMsg}>
+            <DialogContent style={StyleSheet.dialogContent}>
+              <Text>Oops! Something went wrong</Text>
+              <Text>We weren't able to upload your Review</Text>
+              <WelcomeButton
+                title="Back"
+                onPress={async() => await setShowErrMsg(false)}
+              />
+            </DialogContent>
+          </Dialog>
       </ScrollView>
   );
 }
@@ -100,7 +171,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
       alignItems: "center"
+  },
+  dialogContent: {
+    alignItems: 'center',
+    fontSize: 25,
+    alignSelf: 'center'
   }
 });
 
-export default WriteReviewScreen
+export default WriteReviewScreenComponent

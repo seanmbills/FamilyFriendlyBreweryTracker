@@ -14,6 +14,8 @@ import * as ImagePicker from 'expo-image-picker'
 import Constants from 'expo-constants'
 import * as Permissions from 'expo-permissions'
 import {Feather } from '@expo/vector-icons'
+import BufferPopup from '../components/BufferPopup';
+
 
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
 
@@ -234,6 +236,9 @@ const BreweryForm = ({isNew, navigation}) => {
     // The message the dialog popup contains (will say if creation/update was successful)
     const [dialogMessage, setDialogMessage] = useState('');
 
+    const [showBufferPopup, setShowBufferPopup] = useState(false)
+    const [bufferText, setBufferText] = useState('')
+
     const [showFilters, setShowFilters] = useState(false); // Show checklist for accommodations
     const [showTimes, setShowTimes] = useState(false); // Show options to edit business hours
     const [showKidTimes, setShowKidTimes] = useState(false); // Show options ot edit kidFriendlyHours
@@ -251,8 +256,6 @@ const BreweryForm = ({isNew, navigation}) => {
     const [breweryImage2, setBreweryImage2] = useState(null)
     const [breweryImage3, setBreweryImage3] = useState(null)
     const [imageCount, setImageCount] = useState(1)
-    // var [data, setData] = useState([])
-    var [data] = useState([])
 
 
     _listEmptyComponent = () => {
@@ -284,10 +287,13 @@ const BreweryForm = ({isNew, navigation}) => {
             // setBreweryImage1(result)
             // data.push(result)
             if (breweryImageNumber === 1) {
+                console.log('setting image 1')
                 setBreweryImage1(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
+                console.log('adding data to list')
                 data.push(result)
+                console.log("length: " + data.length)
                 // setData([result])
             } else if (breweryImageNumber === 2)  {
                 setBreweryImage2(result)
@@ -603,39 +609,22 @@ const BreweryForm = ({isNew, navigation}) => {
     return (
         <ScrollView>
 
-            {/* {
-                (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
-                (<TouchableOpacity
-                    onPress = { () => {
-                            this._pickImage(imageCount, true)
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {
+                (breweryImage1 === null && 
+                    state.individualResult !== null && state.individualResult[0].signedUrl1 !== '') &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(1, false)
                         }
-                    }    
+                    }
                 >
-                    <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
-                </TouchableOpacity>)
-            } */}
-
-            {/* {console.log(typeof(breweryImage1))} */}
-            {/* {typeof(breweryImage1) === Object ? data.push(breweryImage1) : null} */}
-            {/* {breweryImage2 !== null ? data.push(breweryImage2) : data.push()}
-            {breweryImage3 !== null ? data.push(breweryImage3) : data.push()} */}
-            {/* {
-                (data.length > 0) &&
-                <FlatList
-                    horizontal
-                    data={data}
-                    keyExtractor={item => item.uri}
-                    renderItem={({item}) => {
-                        // console.log("item: " + item)
-                        return (
-                            <Image source={{uri: item.uri}} style={{width:200, height:200}}/>
-                        )
-                    }}
-                />
-            } */}
-
-            {/* {
-                (breweryImage1) &&
+                    <Image source={{uri: state.individualResult[0].signedUrl1}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+            {
+                (breweryImage1 !== null) &&
                 <TouchableOpacity
                     onPress={
                         () => {
@@ -648,7 +637,20 @@ const BreweryForm = ({isNew, navigation}) => {
             }
 
             {
-                (breweryImage2) && 
+                (breweryImage2 === null && 
+                    state.individualResult !== null && state.individualResult[0].signedUrl2 !== '') &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(2, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: state.individualResult[0].signedUrl2}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+            {
+                (breweryImage2 !== null) && 
                 <TouchableOpacity
                     onPress={
                         () => {
@@ -661,17 +663,51 @@ const BreweryForm = ({isNew, navigation}) => {
             }
 
             {
-                (breweryImage3) &&
+                (breweryImage3 === null && 
+                    state.individualResult !== null && state.individualResult[0].signedUrl3 !== '') &&
                 <TouchableOpacity
                     onPress={
                         () => {
-                            this._pickImage(3, false)
+                            this._pickImage(0, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: state.individualResult[0].signedUrl3}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+            {
+                (breweryImage3 !== null) &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(0, false)
                         }
                     }
                 >
                     <Image source={{uri: breweryImage3.uri}} style={{width:200, height:200}} />
                 </TouchableOpacity>
-            } */}
+            }
+            {
+                (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
+                (state.individualResult === null || (state.individualResult !== null &&
+                    (state.individualResult[0].signedUrl1 === '' || 
+                    state.individualResult[0].signedUrl2 === '' ||
+                    state.individualResult[0].signedUrl3 === '')
+                ))
+                &&
+                (
+                <View style={{flex:1, width: 200, alignSelf:'center', alignContent:'center'}}>
+                    <TouchableOpacity
+                        onPress = { () => {
+                                this._pickImage(imageCount, true)
+                            }
+                        }    
+                    >
+                        <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
+                    </TouchableOpacity>
+                </View>)
+            }
+            </ScrollView>
 
 
             <View style={styles.fieldView}>
@@ -1337,22 +1373,29 @@ const BreweryForm = ({isNew, navigation}) => {
                         
                         // If brewery is being used to create a new brewery, hit createBrewery route
                         if (isNew) {
-                            
+                            setBufferText('Creating New Location...')
+                            setShowBufferPopup(true)
                             response =  await createBrewery({
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations, token: authContext.state.token
+                                alternativeKidFriendlyHours, accommodations, token: authContext.state.token,
+                                breweryImage1, breweryImage2, breweryImage3
                             });
+                            setShowBufferPopup(false)
                            
                         } else { // if brewery is being used to edit brewery, hit updateBrewery route
                             var breweryId = brewery._id;
+                            setBufferText('Updating Location...')
+                            setShowBufferPopup(true)
                             response = await updateBrewery({
                                 breweryId,
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations, token: authContext.state.token
+                                alternativeKidFriendlyHours, accommodations, token: authContext.state.token,
+                                breweryImage1, breweryImage2, breweryImage3
                             });
                             getOwnedBreweries({token: authContext.state.token});
+                            setShowBufferPopup(false)
                         }
                         //console.log("response status " , response)
 
@@ -1403,7 +1446,9 @@ const BreweryForm = ({isNew, navigation}) => {
                     title="Cancel"
                     onPress={() => navigation.navigate("More")}
                 />
-            </View>            
+            </View> 
+
+            <BufferPopup isVisible={showBufferPopup} text={bufferText}/>           
         </ScrollView>
     );
 }
