@@ -17,10 +17,10 @@ const authReducer = (state, action) => {
         case 'updateEmail':
         case 'updatePhone':
         case 'signin':
-            return {...state, token: action.payload.accessToken, errorMessage: ''}
+            return {...state, token: action.payload.token, errorMessage: ''}
         case 'userUpdate':
         case 'register':
-            return {...state, token: action.payload.accessToken, signedUrl: action.payload.signedUrl, errorMessage: ''}
+            return {...state, token: action.payload.token, signedUrl: action.payload.signedUrl, errorMessage: ''}
         case 'clear_error_message':
             return {...state, errorMessage: ''}
         case 'signout':
