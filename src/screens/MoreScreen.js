@@ -8,10 +8,19 @@ import { FlatList } from 'react-native-gesture-handler';
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as AuthContext} from '../context/AuthContext';
 import {Context as BreweryContext} from '../context/BreweryContext'
-import {Context as authContext} from '../context/AuthContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
+
+const MapAuthContext = ({navigation}) => {
+    return (
+        <AuthContext.Consumer>
+            {
+                context => (<MoreScreenComponent navigation={navigation} context={context} />)
+            }
+        </AuthContext.Consumer>
+    )
+}
 
 class MoreScreenComponent extends Component {
     state = {
@@ -22,10 +31,11 @@ class MoreScreenComponent extends Component {
 
     componentDidMount() {
         let {state, getOwnedBreweries, clearBreweryContext} = this.context
-        let authContext = useContext(AuthContext)
+
+        console.log("context: " + this.props.context)
         
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
-            var response = await getOwnedBreweries({token: authContext.state.token});
+            var response = await getOwnedBreweries({token: this.props.context.state.token});
             if (!response || response.status >= 400) {
                 this.setState({showUserErr: true})
             }
@@ -156,4 +166,4 @@ const styles = StyleSheet.create({
         flexDirection:'column'
     }
 })
-export default MoreScreenComponent;
+export default MapAuthContext;

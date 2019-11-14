@@ -67,19 +67,12 @@ const getBreweryReviews = (dispatch) => {
     }
 }
 
-const testForToken = () => {
-    return async () => {
-        var userToken = await AsyncStorage.getItem('token')
-        
-        return !(!userToken || userToken === '')
-    }
-}
+
 export const {Provider, Context} = createDataContext(
     reviewReducer,
     {
         createReview,
         getBreweryReviews,
-        testForToken
     },
     {results: [], count: 0, errorMessage: '', created: '', results: []}
 )

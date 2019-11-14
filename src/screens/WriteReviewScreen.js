@@ -16,8 +16,8 @@ class WriteReviewScreenComponent extends Component {
 
 
   async componentDidMount() {
-    let {state, testForToken} = this.context;
-    var userPresent = await testForToken();
+    let {state} = this.context;
+    var userPresent = state.token && state.token !== ''
     console.log("User Present: " , userPresent)
     if (userPresent) {
       this.setState({foundUser: true})
@@ -44,7 +44,7 @@ class WriteReviewScreenComponent extends Component {
     )
   }
 }
-WriteReviewScreenComponent.contextType = ReviewContext;
+WriteReviewScreenComponent.contextType = AuthContext;
 
 
 const WriteReviewScreen = ({navigation}) => {
