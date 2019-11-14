@@ -296,15 +296,13 @@ const tryAutoSignin = dispatch => async() => {
     const refreshToken = await AsyncStorage.getItem('refreshToken')
     if (refreshToken)
         try {
-            const {exp} = decode(token)
-            if (Date.now() < exp * 1000) {
-                const response = await ServerApi.post('/refreshAuth', {},
-                {headers: {
-                    'Accept': 'application/json', 'Context-type': 'application/json',
-                    'authorization' : 'Bearer ' + refreshToken
-                }})
-                dispatch({type: 'signin', payload: response.data})
-            }
+            const response = await ServerApi.post('/refreshAuth', {},
+            {headers: {
+                'Accept': 'application/json', 'Context-type': 'application/json',
+                'authorization' : 'Bearer ' + refreshToken
+            }})
+            console.log(response.data)
+            dispatch({type: 'signin', payload: response.data})
         } catch(err) {
             dispatch({type: 'add_error_message', payload: err.response.data.error})
         }

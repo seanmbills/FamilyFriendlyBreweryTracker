@@ -16,8 +16,6 @@ class MoreScreenComponent extends Component {
         isLoading: true
     }
 
-    
-
     componentDidMount() {
         let {state, getOwnedBreweries} = this.context
         let authContext = useContext(AuthContext)

@@ -9,7 +9,7 @@ class WelcomeScreenComponent extends Component {
         isLoading: true
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         let {state, tryAutoSignin} = this.context
         
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
@@ -27,18 +27,16 @@ class WelcomeScreenComponent extends Component {
 
     render() {
         let {state} = this.context
+        let popup = <BufferPopup isVisible={this.state.isLoading && (state.token === null || state.token === '')} text={""} />
 
         return (
             <View style={{flex:1}}>
-                <BufferPopup isVisible={this.state.isLoading} text={"Signing in..."} />
+                {popup}
                 {
-                    !this.state.isLoading && state.token !== null && state.token !== '' &&
-                    this.props.navigation.navigate('BreweryList')
+                    !this.state.isLoading && state.token !== null && state.token !== ''
+                    && <View>{this.props.navigation.navigate('BreweryList')}</View>
                 }
-                {
-                    !this.state.isLoading && (state.token === null || state.token === '') &&
-                    <WelcomeScreen navigation={this.props.navigation}/>
-                }
+                <WelcomeScreen navigation={this.props.navigation} />
             </View>
         )
     }

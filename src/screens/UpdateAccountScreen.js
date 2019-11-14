@@ -244,7 +244,7 @@ const UpdateAccountScreen = ({navigation}) => {
             <View style={styles.buttonContainer}>
                 <WelcomeButton
                     title="Submit"
-                    onPress={()=> {
+                    onPress={async ()=> {
                         if (validateEmail(newEmail) && oldPassword.length > 8) {
                             password = oldPassword;
                             
