@@ -98,12 +98,6 @@ const LoginScreen = ({navigation}) => {
             >
                 <Text style={styles.forgotPass}>Forgot Password</Text>
             </TouchableOpacity>
-
-            {/* Buffer popup will be displayed while user is waiting for login response from backend */}
-            <BufferPopup 
-                isVisible={bufferPopupVisible}
-                text={"Logging in"}
-                />
         </ScrollView>
     );
 }

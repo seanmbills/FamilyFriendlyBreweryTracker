@@ -1,22 +1,25 @@
 import React, {Component, useState, useContext} from 'react';
-import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as AuthContext} from '../context/AuthContext';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
 import BufferPopup from '../components/BufferPopup'
+import Modal from 'react-native-modal'
 
 class WelcomeScreenComponent extends Component {
     state = {
-        isLoading: true
+        isLoading: true,
+        isVisible: true
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         let {state, tryAutoSignin} = this.context
         
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             await tryAutoSignin().then(() => {
                 this.setState({
-                    isLoading: false
+                    isLoading: false,
+                    isVisible: false
                 })
             })
         })
@@ -26,17 +29,27 @@ class WelcomeScreenComponent extends Component {
         this.focusListener.remove()
     }
 
-    render() {
+    componentDidUpdate() {
         let {state} = this.context
-        let popup = <BufferPopup isVisible={this.state.isLoading && (state.token === null || state.token === '')} text={""} />
+
+        if(!this.state.isLoading && state.token !== null && state.token !== '') {
+            this.props.navigation.navigate('BreweryList')
+        }
+    }
+
+    render() {
+        let popup = (
+            <Modal isVisible={this.state.isVisible}>
+                <View style={{flex:1}, styles.container}>
+                    <Image source={require('../../assets/buffering.gif')}/>
+                    <Text style={styles.text}>{"Logging in..."}</Text>
+                </View>
+            </Modal>
+        )
 
         return (
             <View style={{flex:1}}>
                 {popup}
-                {
-                    !this.state.isLoading && state.token !== null && state.token !== ''
-                    && <View>{this.props.navigation.navigate('BreweryList')}</View>
-                }
                 <WelcomeScreen navigation={this.props.navigation} />
             </View>
         )
@@ -153,6 +166,20 @@ const styles = StyleSheet.create({
     dialogText: {
         fontSize: 20,
         fontWeight: 'bold'
-    }
+    },
+    text: {
+        alignSelf: 'center',
+        color: 'black',
+        fontSize:25,
+        margin: 5
+    },
+    container: {
+        backgroundColor: 'white',
+        padding: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+      },
 });
 export default WelcomeScreenComponent;
