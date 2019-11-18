@@ -1,14 +1,68 @@
 // React native imports
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect, Component} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 
 // Local Imports
 import WelcomeButton from '../components/WelcomeButton';
+import {Context as AuthContext} from '../context/AuthContext';
 import {Context as BreweryContext} from '../context/BreweryContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
+import SignInPrompt from '../components/SignInPrompt';
+
+class MoreScreenComponent extends Component {
+    state = {
+        isLoading: true,
+        foundUser: false,
+        showUserErr: false
+    }
+
+    
+
+    componentDidMount() {
+        console.log("mounting more screen")
+        let {state, getOwnedBreweries, clearBreweryContext} = this.context
+        
+        this.focusListener = this.props.navigation.addListener('didFocus', async () => {
+            console.log("getting breweries")
+            // var response = await getOwnedBreweries().then(() => {
+            //     this.setState({
+            //         isLoading: false
+            //     })
+            //     if (!response || response.status >= 400) {
+            //         this.setState({showUserErr: true})
+            //     }
+            // })
+            // console.log("response: ", response)
+            var response = await getOwnedBreweries();
+            if (!response || response.status >= 400) {
+                this.setState({showUserErr: true})
+            }
+            this.setState({isLoading: false})
+        })
+    }
+
+    componentWillUnmount() {
+        //this.setState({showUserErr: false})
+        this.focusListener.remove()
+    }
+
+    render() {
+        return (
+            <View style={{flex:1}}>
+                <BufferPopup isVisible={this.state.isLoading} text={"Fetching Brewery Info"} />
+                {
+                    !this.state.isLoading &&
+                    <MoreScreen navigation={this.props.navigation} noUser={this.state.showUserErr} />
+                }
+
+            </View>
+        )
+    }
+}
+MoreScreenComponent.contextType = BreweryContext
 
 
 
@@ -17,16 +71,12 @@ import BufferPopup from '../components/BufferPopup';
  * Screen should contain two main components. 1.) a list of breweries a user "own's" or has created
  * 2.) an button which will navigate users to a screen where they can create a brewery
  */
-const MoreScreen = ({navigation}) => {
-    /* 
-     * Added this navigation listener so when a user navigates to the MoreScreen the app will
-     * fetch all breweries the user's owns 
+const MoreScreen = ({navigation, noUser}) => {
+
+    /*
+     *  Need to import signout method to allow user's to signout of application. 
      */
-    this.focusListener = navigation.addListener('didFocus', async () => {
-        setShowDialog(true); //This sets the bufferpop to be displayed
-        await getOwnedBreweries();
-        setShowDialog(false); // this hids the bufferpop
-    })
+    const {signout} = useContext(AuthContext);
 
     /*
      * Need to import three context methods, getBrewery, clearIndividualBreweryResult, getOwnedBreweries
@@ -35,10 +85,20 @@ const MoreScreen = ({navigation}) => {
      * getOwnedBreweries is called when the screen is opened. This pulls down all screens a user owns
      */
 
-    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
+    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult, clearBreweryContext} = useContext(BreweryContext);
     const [showDialog, setShowDialog] = useState(false);
+    
+    /* 
+     * Added this navigation listener so when a user navigates to the MoreScreen the app will
+     * fetch all breweries the user's owns 
+     */
+    console.log("no User: " , noUser)
+    console.log("Current state: " , state)
     return (
         <View style={styles.backgroundContainer}>
+             <View style={styles.contentContainer}>
+                    <Text style={styles.subHeader}>More</Text>
+                </View>
             { state.ownedBreweries.length > 0 &&
              <View>
                 <View style={styles.contentContainer}>
@@ -46,7 +106,7 @@ const MoreScreen = ({navigation}) => {
                  {/* flat list will  get populated with breweries a user "Owns" */}
                 <FlatList
                     data={state.ownedBreweries}
-                    keyExtractor={(result) => result.breweryId}
+                    keyExtractor={(result) => {return result.id}}
                     renderItem={({item}) => {
                     return (
                         <TouchableOpacity
@@ -65,18 +125,31 @@ const MoreScreen = ({navigation}) => {
             </View>
             </View>
             }
-            {/* This bufferpopup gets displayed while the user is fetching breweries from the backend */}
-            <BufferPopup isVisible={showDialog} text={"Fetching Owned Breweries"}/>
+            { !noUser && //Determines if will show autentication required features
+             <View>
             <View style={styles.contentContainer}>
                 <WelcomeButton
                     title="Create Brewery"
                     onPress={() => {
                         // call here ensures no data will be used to populate breweryform on create screen
                         clearIndividualBreweryResult(); 
+                        // this.focusListener.remove()
                         navigation.navigate('CreateBrewery')
                     }}
                 />
             </View>
+            <View style={styles.contentContainer}>
+                <WelcomeButton
+                    title="Logout"
+                    onPress={()=> {
+                        clearBreweryContext();
+                        signout()
+                        navigation.navigate('Welcome');
+                    }}
+                />
+            </View>
+        </View>
+        }
         </View>
     );
 }
@@ -96,4 +169,4 @@ const styles = StyleSheet.create({
         flexDirection:'column'
     }
 })
-export default MoreScreen;
+export default MoreScreenComponent;

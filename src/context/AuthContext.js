@@ -2,8 +2,10 @@ import {AsyncStorage} from 'react-native'
 import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
 import {navigate} from '../navigationRef'
-//import { decode } from 'punycode';
-import jwt from 'react-native-pure-jwt';
+import axios from 'axios'
+import { NavigationActions } from 'react-navigation'
+Buffer = require('buffer/').Buffer
+
 
 const authReducer = (state, action) => {
     switch(action.type) {
@@ -12,17 +14,23 @@ const authReducer = (state, action) => {
         case 'get_user_info':
             return {...state, profileInfo: action.payload}
         case 'updatePassword':
-        case 'updateUser':
         case 'updateEmail':
         case 'updatePhone':
-        case 'register':
         case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
+<<<<<<< HEAD
         case 'udpateUser':
         case 'register':
             return {...state, token: action.payload.token, signedURL: action.payload.signedURL, errorMessage: ''}
+=======
+        case 'userUpdate':
+        case 'register':
+            return {...state, token: action.payload.token, signedUrl: action.payload.signedUrl, errorMessage: ''}
+>>>>>>> 80571a642fedc4a5266372fcc914000cfc582da8
         case 'clear_error_message':
             return {...state, errorMessage: ''}
+        case 'signout':
+            return {token: null, signedURL: '', errorMessage: '', profileInfo: null}
         default: 
             return state;
     }
@@ -31,12 +39,28 @@ const authReducer = (state, action) => {
 const getUserInfo = (dispatch) => {
     return async() => {
         try {
+<<<<<<< HEAD
             const response = await ServerApi.get('/getUserInfo',
                 {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (await AsyncStorage.getItem('token'))}}
             );
             
             dispatch({type: 'get_user_info', payload: response.data})
             return response;
+=======
+            const userToken = await AsyncStorage.getItem('token')
+            if (userToken !== null && userToken !=='') { //Checking if user is logged in or if a guest
+                console.log('sending token: ', userToken)
+            
+                const response = await ServerApi.get('/getUserInfo',
+                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (userToken)}}
+                );
+                console.log(response.data)
+                dispatch({type: 'get_user_info', payload: response.data})
+                return response
+            } else {
+                return null;
+            }    
+>>>>>>> 80571a642fedc4a5266372fcc914000cfc582da8
         } catch (err) {
             console.log(err.response.data.error)
             dispatch({ type: 'add_error_message', payload: err.response.data})
@@ -59,23 +83,46 @@ const getUserInfo = (dispatch) => {
 const register = (dispatch) => {
     return async ({email, userId, 
         password, birthDate, firstName, lastName,
-        phoneNumber, zipCode }) => {
+        phoneNumber, zipCode, profilePic }) => {
         // make api request to sign up with this information
         try { 
             const response = await ServerApi.post('/signup', {email, userId, 
                 password, birthDate, firstName, lastName, phoneNumber, zipCode }, 
                 { 'Accept' : 'application/json', 'Content-type': 'application/json'});
-            console.log(response.data);
+            // console.log(response.data);
             // if we sign up, modify our state to reflect that we're authenticated
             // (aka got a token back)
             // we also store the token on the device for later access
             await AsyncStorage.setItem('token', response.data.token)
-            dispatch({type: 'register', payload: response.data.token})
+            await AsyncStorage.setItem('signedUrl', response.data.signedUrl)
+
+            // upload the profile picture, if there is one, to the AWS S3 instance
+            if (profilePic) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+
+                console.log(profilePic.base64)
+                
+                var buff = Buffer.from(profilePic.base64, 'base64')
+                console.log(buff)
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    await AsyncStorage.getItem('signedUrl'),
+                    buff,
+                    options
+                )
+                console.log("response: " + awsResponse)
+            }
+
+            dispatch({type: 'register', payload: response.data})
 
             // then need to navigate the user immediately to the logged in state
             return response;
         } catch (err) {
-            console.log(err.response.data.error)
+            console.log("Error: " + err)
             // if we get an error back from signing up, need to display the appropriate error
             // message to the user
             dispatch({ type: 'add_error_message', payload: err.response.data.error})
@@ -158,13 +205,38 @@ const resetPassword = (dispatch) => {
  * @param zipCode - string - a user's updated zipCode
 */
 const userUpdate = (dispatch) => {
-    return async({firstName, lastName, zipCode}) => {
+    return async({firstName, lastName, zipCode, profilePic}) => {
         try {
             const response = await ServerApi.post('/userUpdate', {firstName, lastName, zipCode},{ headers: 
                 {'Accept' : 'application/json', 'Content-type' : 'application/json',
                 'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            console.log(response)
             await AsyncStorage.setItem('token', response.data.token)
-            dispatch({type: 'userUpdate', payload: response.data.token})
+            await AsyncStorage.setItem('signedUrl', response.data.signedUrl)
+
+            // upload the profile picture, if there is one, to the AWS S3 instance
+            if (profilePic) {
+                var options = {
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+
+                console.log(profilePic.base64)
+                
+                var buff = Buffer.from(profilePic.base64, 'base64')
+                console.log(buff)
+                const awsResponse = await axios.put(
+                    // response.data.signedURL,
+                    await AsyncStorage.getItem('signedUrl'),
+                    buff,
+                    options
+                )
+                console.log("response: " + awsResponse)
+            }
+
+
+            dispatch({type: 'userUpdate', payload: response.data})
             return response;
         } catch (err) {
             console.log(err.response.data);
@@ -264,10 +336,18 @@ const tryAutoSignin = dispatch => async() => {
         }
 }
 
+const clearUserToken = (dispatch) => {
+    return async () => {
+        const token = await AsyncStorage.setItem('token', '')
+        return token
+    }
+}
 
 const signout = (dispatch) => {
-    return () => {
-        // somehow sign out the uer
+    return async () => {
+        // somehow sign out the user
+        await AsyncStorage.removeItem('token');
+        dispatch({type: 'signout'});
     }
 }
 
@@ -276,6 +356,6 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
-        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo},// tryAutoSignin},
-    {token: null, errorMessage: ''}
+        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo, clearUserToken},// tryAutoSignin},
+    {token: null, signedURL: '', errorMessage: '', profileInfo: null}
 )
