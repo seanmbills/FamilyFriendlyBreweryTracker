@@ -13,7 +13,7 @@ import {navigate} from '../navigationRef'
 const breweryReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
-            return {...state, errorMessage: action.payload, results: null}
+            return {...state, errorMessage: action.payload, results: []}
         case 'create':
             return {...state, created: action.payload.response}
         case 'brewery':

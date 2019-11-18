@@ -8,7 +8,7 @@ import {Context as BreweryContext} from '../context/BreweryContext'
 
 const ResultsList = ({listName, results, navigation}) => {
     var {state, getBrewery} = useContext(BreweryContext);
-    if (!results.length){
+    if (results === null || results.length === 0) {
         return null;
     }
     return (
