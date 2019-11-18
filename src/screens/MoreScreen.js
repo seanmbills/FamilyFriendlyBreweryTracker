@@ -99,7 +99,7 @@ const MoreScreen = ({navigation, noUser}) => {
              <View style={styles.contentContainer}>
                     <Text style={styles.subHeader}>More</Text>
                 </View>
-            { state.ownedBreweries.length > 0 &&
+            { state.ownedBreweries && state.ownedBreweries.length > 0 &&
              <View>
                 <View style={styles.contentContainer}>
                 <Text style={styles.subHeader}>My Breweries</Text>

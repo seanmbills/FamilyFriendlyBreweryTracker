@@ -106,7 +106,11 @@ const BreweryForm = ({isNew, navigation}) => {
      * @return - a javascript object which contains ALL accommodations fields, both those which are set and those which aren't
      */
     const fillAccommodationsFromBackend = (map) => {
-       
+        
+        // If not given a map, or the map is null, create  a new blank object so all fields will get set to false
+        if (map === null) {
+            map = new Map();
+        }
         var accommodationsMap = new Object();
         
         accommodationsMap['petFriendly'] = new Object();
@@ -175,7 +179,7 @@ const BreweryForm = ({isNew, navigation}) => {
     const [breweryState, setState] = (brewery) ? useState(brewery.address.state) : useState('');
     const [zipCode, setZipCode] = (brewery) ? useState(brewery.address.zipCode) : useState('');
     const [price, setPrice] = (brewery) ? useState(brewery.price) : useState(0);
-    const [email, setEmail] = (brewery) ? useState(brewery.email) : useState(0);
+    const [email, setEmail] = (brewery) ? useState(brewery.email) : useState('');
     const [website, setWebsite] = (brewery) ? useState(brewery.website) : useState('');
     const priceButtons = [ '$', '$$', '$$$' , '$$$$']
     const [phoneNumber, setPhoneNumber] = (brewery) ? useState(brewery.phoneNumber) : useState('');
@@ -291,7 +295,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     setImageCount((imageCount + 1) % 3)
                 console.log('adding data to list')
                 data.push(result)
-                console.log("length: " + data.length)
+                //console.log("length: " + data.length)
                 // setData([result])
             } else if (breweryImageNumber === 2)  {
                 setBreweryImage2(result)
@@ -743,6 +747,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     value={zipCode}
                     onChangeText={(newZip) => setZipCode(newZip)}
                     placeholder="Zip Code"
+                    keyboardType="decimal-pad"
                     maxLength={5}
                 />
                 <Text style={styles.errorMsg}>{addressErrorMsg}</Text>
@@ -1356,42 +1361,65 @@ const BreweryForm = ({isNew, navigation}) => {
                         } else if (!validatePhoneNumber) {
                             setPhoneErrorMsg("Must provide a valid phone number");
                             return;
-                        } else if (!validateEmail(email)) {
-                            setEmailErrorMsg("Must provide a valid email address");
-                            return;
-                        } else if (!validateURL(website)) {
-                            setWebsiteErrorMsg("Must provide a valid website URL");
-                            return;
                         } 
-                        
 
                         var kidHoursSameAsNormal = kidHoursSame; //rename kidHoursFriendly state object to what backend expects
                         
-                        var response;
+                        var params = {
+                            name: name,
+                            address: address,
+                            price: price,
+                            phoneNumber: phoneNumber,
+                            businessHours: businessHours,
+                            kidHoursSameAsNormal: kidHoursSameAsNormal,
+                            alternativeKidFriendlyHours: alternativeKidFriendlyHours,
+                            accommodations: accommodations,
+                            breweryImage1: breweryImage1,
+                            breweryImage2: breweryImage2,
+                            breweryImage3: breweryImage3
+                        }
+
+                        if (email && email.length > 0 && validateEmail(email)) {
+                            params['email'] = email;
+                        } else if (email && email.length > 0){
+                            setEmailErrorMsg("Must provide a valid email address");
+                            return;
+                        }
+
+                        if (website && website.length > 0 && validateURL(website)) {
+                            params['website'] = website
+                        } else if (website && website.length > 0){
+                            setWebsiteErrorMsg("Must provide a valid website URL");
+                            return;
+                        }
+                        
                         
                         // If brewery is being used to create a new brewery, hit createBrewery route
                         if (isNew) {
                             setBufferText('Creating New Location...')
                             setShowBufferPopup(true)
-                            response =  await createBrewery({
-                                name, address, price, phoneNumber, 
-                                email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations,
-                                breweryImage1, breweryImage2, breweryImage3
-                            });
+                            // response =  await createBrewery({
+                            //     name, address, price, phoneNumber, 
+                            //     email, website, businessHours, kidHoursSameAsNormal, 
+                            //     alternativeKidFriendlyHours, accommodations,
+                            //     breweryImage1, breweryImage2, breweryImage3
+                            // });
+                            response = await createBrewery(params)
                             setShowBufferPopup(false)
                            
                         } else { // if brewery is being used to edit brewery, hit updateBrewery route
                             var breweryId = brewery._id;
+                            params['breweryId'] = breweryId;
                             setBufferText('Updating Location...')
                             setShowBufferPopup(true)
-                            response = await updateBrewery({
-                                breweryId,
-                                name, address, price, phoneNumber, 
-                                email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations,
-                                breweryImage1, breweryImage2, breweryImage3
-                            });
+                            response = await updateBrewery(params)
+                            // response = await updateBrewery({
+                            //     breweryId,
+                            //     name, address, price, phoneNumber, 
+                            //     email, website, businessHours, kidHoursSameAsNormal, 
+                            //     alternativeKidFriendlyHours, accommodations,
+                            //     breweryImage1, breweryImage2, breweryImage3
+                            // });
                             getOwnedBreweries();
                             setShowBufferPopup(false)
                         }
