@@ -101,9 +101,9 @@ const getReview = (dispatch) => {
 
 const editReview = (dispatch) => {
     return async({breweryId, message, rating, reviewId}) => {
-        var req = {breweryId, message, rating, reviewId}
+        var req = {newMessage: message, newRating: rating, reviewId: reviewId}
         try {
-            const response = await ServerApi.post('/createReview', 
+            const response = await ServerApi.post('/editReview', 
             req,
             { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
