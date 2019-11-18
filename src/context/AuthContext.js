@@ -18,15 +18,9 @@ const authReducer = (state, action) => {
         case 'updatePhone':
         case 'signin':
             return {...state, token: action.payload, errorMessage: ''}
-<<<<<<< HEAD
-        case 'udpateUser':
-        case 'register':
-            return {...state, token: action.payload.token, signedURL: action.payload.signedURL, errorMessage: ''}
-=======
         case 'userUpdate':
         case 'register':
             return {...state, token: action.payload.token, signedUrl: action.payload.signedUrl, errorMessage: ''}
->>>>>>> 80571a642fedc4a5266372fcc914000cfc582da8
         case 'clear_error_message':
             return {...state, errorMessage: ''}
         case 'signout':
@@ -39,14 +33,6 @@ const authReducer = (state, action) => {
 const getUserInfo = (dispatch) => {
     return async() => {
         try {
-<<<<<<< HEAD
-            const response = await ServerApi.get('/getUserInfo',
-                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (await AsyncStorage.getItem('token'))}}
-            );
-            
-            dispatch({type: 'get_user_info', payload: response.data})
-            return response;
-=======
             const userToken = await AsyncStorage.getItem('token')
             if (userToken !== null && userToken !=='') { //Checking if user is logged in or if a guest
                 console.log('sending token: ', userToken)
@@ -60,7 +46,6 @@ const getUserInfo = (dispatch) => {
             } else {
                 return null;
             }    
->>>>>>> 80571a642fedc4a5266372fcc914000cfc582da8
         } catch (err) {
             console.log(err.response.data.error)
             dispatch({ type: 'add_error_message', payload: err.response.data})

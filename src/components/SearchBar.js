@@ -14,15 +14,19 @@ import {Context as AuthContext} from '../context/AuthContext';
 
 const SearchBar = ({navigation, term, onTermChange}) => {
 
+
+    const [zipLoaded, setZipLoaded] = useState(false);
+
     this.focusListener = navigation.addListener('didFocus', async () => {
-        if (zipCode === '') {
+        if (!zipLoaded) {
             var response = await getUserInfo({});
             if (response && response.data){
                 setZipCode(response.data.zipCode)
             }
+            setZipLoaded(true);
         }
     });
-
+    
     const {getSearchResults, clearErrorMessage} = useContext(BreweryContext);
     const {state, getUserInfo} = useContext(AuthContext);
     const [modalOpen, setModalOpen] = useState(false)
@@ -36,7 +40,7 @@ const SearchBar = ({navigation, term, onTermChange}) => {
     const [latitude, setLatitude] = useState('');
     const [longitude, setLongitude] = useState('');
     const [locState, setLocState] = useState('');
-    const [zipCode, setZipCode ] = (state.profileInfo) ? useState(state.profileInfo.zipCode) : useState('');
+    const [zipCode, setZipCode ] = (state.profileInfo) ? useState(state.profileInfo.zipCode) : useState('30332');
     const [waterStations, setWaterStations] = useState(false);
     const [indoorSpaces, setIndoorSpaces] = useState(false);
     const [outdoorSpaces, setOutdoorSpaces] = useState(false);
