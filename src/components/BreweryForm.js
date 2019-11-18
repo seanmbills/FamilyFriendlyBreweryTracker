@@ -108,7 +108,8 @@ const BreweryForm = ({isNew, navigation}) => {
     const fillAccommodationsFromBackend = (map) => {
         
         // If not given a map, or the map is null, create  a new blank object so all fields will get set to false
-        if (map === null) {
+        console.log(map)
+        if (!map || map === null || map === undefined) {
             map = new Map();
         }
         var accommodationsMap = new Object();
