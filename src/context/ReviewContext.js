@@ -22,7 +22,7 @@ const reviewReducer = (state, action) => {
 }
 
 const createReview = (dispatch) => {
-    return async ({message, breweryId, rating}) => {
+    return async ({message, breweryId, rating, token}) => {
         console.log(typeof(rating))
         try {
             var req = {message: message, breweryId: breweryId, rating: rating}
@@ -31,7 +31,7 @@ const createReview = (dispatch) => {
             req,
             { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
-              'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
+              'authorization' : 'Bearer ' + token
             }});
             console.log(response.data)
             
@@ -46,13 +46,14 @@ const createReview = (dispatch) => {
 }
 
 const getBreweryReviews = (dispatch) => {
-    return async ({breweryId}) => {
+    return async ({breweryId, token}) => {
         var req = {breweryId};
         try {
             const response = await ServerApi.get('/getBreweryReviews', 
             {params: req},
             { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
+              'authorization' : 'Bearer ' + token
             }});
             //console.log(response);
             dispatch({type: 'search_results', payload: response.data})
@@ -66,19 +67,12 @@ const getBreweryReviews = (dispatch) => {
     }
 }
 
-const testForToken = () => {
-    return async () => {
-        var userToken = await AsyncStorage.getItem('token')
-        
-        return !(!userToken || userToken === '')
-    }
-}
+
 export const {Provider, Context} = createDataContext(
     reviewReducer,
     {
         createReview,
         getBreweryReviews,
-        testForToken
     },
     {results: [], count: 0, errorMessage: '', created: '', results: []}
 )

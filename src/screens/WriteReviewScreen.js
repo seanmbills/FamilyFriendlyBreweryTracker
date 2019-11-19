@@ -3,6 +3,7 @@ import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpac
 import {Rating, AirbnbRating} from 'react-native-ratings'
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
+import {Context as AuthContext} from '../context/AuthContext'
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
@@ -15,8 +16,8 @@ class WriteReviewScreenComponent extends Component {
 
 
   async componentDidMount() {
-    let {state, testForToken} = this.context;
-    var userPresent = await testForToken();
+    let {state} = this.context;
+    var userPresent = state.token && state.token !== ''
     console.log("User Present: " , userPresent)
     if (userPresent) {
       this.setState({foundUser: true})
@@ -43,10 +44,12 @@ class WriteReviewScreenComponent extends Component {
     )
   }
 }
-WriteReviewScreenComponent.contextType = ReviewContext;
+WriteReviewScreenComponent.contextType = AuthContext;
+
 
 const WriteReviewScreen = ({navigation}) => {
   const {state, createReview, getBreweryReviews} = useContext(ReviewContext);
+  const authContext = useContext(AuthContext)
 
   const [ratingNum, setRatingNum] = useState(3);
   const [description, setDescription] = useState('');
@@ -111,8 +114,8 @@ const WriteReviewScreen = ({navigation}) => {
                     var message = description;
                     var rating = ratingNum;
                     console.log({message, breweryId, rating})
-                    var response = await createReview({message, breweryId, rating});
-                    var getReviewsResponse = await getBreweryReviews({breweryId});
+                    var response = await createReview({message, breweryId, rating, token: authContext.state.token});
+                    var getReviewsResponse = await getBreweryReviews({breweryId, token: authContext.state.token});
                     if (response && response.status < 400) {
                         setShowSuccessMsg(true);
                     } else {

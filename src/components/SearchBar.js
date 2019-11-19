@@ -12,23 +12,13 @@ import Checkbox from 'react-native-check-box';
 import {Context as BreweryContext} from '../context/BreweryContext';
 import {Context as AuthContext} from '../context/AuthContext';
 
-const SearchBar = ({navigation, term, onTermChange}) => {
 
 
-    const [zipLoaded, setZipLoaded] = useState(false);
+const SearchBar = ({navigation, term, onTermChange, userZip}) => {
 
-    this.focusListener = navigation.addListener('didFocus', async () => {
-        if (!zipLoaded) {
-            var response = await getUserInfo({});
-            if (response && response.data){
-                setZipCode(response.data.zipCode)
-            }
-            setZipLoaded(true);
-        }
-    });
-    
     const {getSearchResults, clearErrorMessage} = useContext(BreweryContext);
     const {state, getUserInfo} = useContext(AuthContext);
+
     const [modalOpen, setModalOpen] = useState(false)
     const [openNow, setOpenNow] = useState(false)
     const [kidFriendlyNow, setKidFriendlyNow] = useState(false)
@@ -40,7 +30,7 @@ const SearchBar = ({navigation, term, onTermChange}) => {
     const [latitude, setLatitude] = useState('');
     const [longitude, setLongitude] = useState('');
     const [locState, setLocState] = useState('');
-    const [zipCode, setZipCode ] = (state.profileInfo) ? useState(state.profileInfo.zipCode) : useState('30332');
+    const [zipCode, setZipCode] = (state.profileInfo) ? useState(state.profileInfo.zipCode) : useState('30332')
     const [waterStations, setWaterStations] = useState(false);
     const [indoorSpaces, setIndoorSpaces] = useState(false);
     const [outdoorSpaces, setOutdoorSpaces] = useState(false);
@@ -346,20 +336,9 @@ const SearchBar = ({navigation, term, onTermChange}) => {
             />
             <TouchableOpacity onPress={
                  () => {
-                    // if (zipCode === '') {
-                    //     console.log('Calling get user info')
-                  
-                    //     var response = await getUserInfo({});
-                    //     setModalOpen(!modalOpen)
-                    //     console.log(state);
-                    //     if (state.profileInfo) {
-                    //         setZipCode(state.profileInfo.zipCode)
-                    //     } else {
-                    //         console.log("Not setting")
-                    //     }
-                    // } else {
-                    //     console.log("Zip is not empty")
-                    // }
+                    if (state.profileInfo) {
+                        setZipCode(state.profileInfo.zipCode)
+                    }
                     setModalOpen(!modalOpen)
             }}
             >
@@ -377,13 +356,6 @@ const SearchBar = ({navigation, term, onTermChange}) => {
                 backdropTransitionOutTiming={600}
                 onBackdropPress={() => {
                     setModalOpen(!modalOpen);
-                    // const accommodationsSearch = buildAccommodationMap();
-                    // //onSearchSubmit(accommodationsSearch);
-                    // getSearchResults({
-                    //     name, latitude, longitude, zipCode, distance,
-                    //     maximumPrice, accommodationsSearch, openNow,
-                    //     kidFriendlyNow, minimumRating
-                    // });
                 }}
             >
                     {this.renderModalContent()}

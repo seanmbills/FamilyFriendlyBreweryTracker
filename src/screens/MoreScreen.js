@@ -12,6 +12,16 @@ import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
 
+const MapAuthContext = ({navigation}) => {
+    return (
+        <AuthContext.Consumer>
+            {
+                context => (<MoreScreenComponent navigation={navigation} context={context} />)
+            }
+        </AuthContext.Consumer>
+    )
+}
+
 class MoreScreenComponent extends Component {
     state = {
         isLoading: true,
@@ -19,24 +29,13 @@ class MoreScreenComponent extends Component {
         showUserErr: false
     }
 
-    
-
     componentDidMount() {
-        console.log("mounting more screen")
         let {state, getOwnedBreweries, clearBreweryContext} = this.context
+
+        console.log("context: " + this.props.context)
         
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
-            console.log("getting breweries")
-            // var response = await getOwnedBreweries().then(() => {
-            //     this.setState({
-            //         isLoading: false
-            //     })
-            //     if (!response || response.status >= 400) {
-            //         this.setState({showUserErr: true})
-            //     }
-            // })
-            // console.log("response: ", response)
-            var response = await getOwnedBreweries();
+            var response = await getOwnedBreweries({token: this.props.context.state.token});
             if (!response || response.status >= 400) {
                 this.setState({showUserErr: true})
             }
@@ -45,7 +44,6 @@ class MoreScreenComponent extends Component {
     }
 
     componentWillUnmount() {
-        //this.setState({showUserErr: false})
         this.focusListener.remove()
     }
 
@@ -84,7 +82,6 @@ const MoreScreen = ({navigation, noUser}) => {
      * clearIndividualBreweryResult is used when navigating to the createBrewery screen.
      * getOwnedBreweries is called when the screen is opened. This pulls down all screens a user owns
      */
-
     const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult, clearBreweryContext} = useContext(BreweryContext);
     const [showDialog, setShowDialog] = useState(false);
     
@@ -169,4 +166,4 @@ const styles = StyleSheet.create({
         flexDirection:'column'
     }
 })
-export default MoreScreenComponent;
+export default MapAuthContext;
