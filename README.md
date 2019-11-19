@@ -1,5 +1,8 @@
 # FamBrews
-
+  FamBrews aims to address  a problem that many young parents and families face when choosing how to spend their time together: how can we find a location that allows everyone (including parents, children, and maybe even the dog!) to not only attend, but to be entertained and enjoy themselves while there?
+  We found the current entertainment business review applications are lacking in information surrounding family friendly accommodations.
+  FamBrew attempts to solve this issue by allowing users to search for new breweries and locations while focusing on providing information regarding family friendly accommodations from things like changing tables, all the way to outdoor spaces for pets.
+  
 ## Prerequisites
    * npm
    * expo-cli
