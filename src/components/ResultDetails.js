@@ -1,6 +1,9 @@
 import React from 'react'
 import {Rating} from 'react-native-ratings'
 import {View, Text, StyleSheet, Image} from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
+import { Ionicons } from '@expo/vector-icons'
+//import {Ionicons} from '@expo/vector-icons'; //Uncomment when testing icons
 
 function getPriceSymbol(price) {
     var priceStr = ""
@@ -34,6 +37,23 @@ const ResultDetails = ({result}) => {
                 fractions={1}
             />
             <Text>{result.distance}</Text>
+
+            { /* Experiment icons to display brief brewery information */
+            /* { result.icons && result.icons.length > 0 && 
+            <View>
+                <FlatList
+                    data={result.icons}
+                    keyExtractor={(iconName) => iconName}
+                    horizontal={true}
+                    renderItem={(iconName) => {
+                        return (
+                            <Ionicons name={iconName} size={15}/>
+                        );
+                    }}
+                >
+                </FlatList>
+            </View>
+            } */}
             {/* {console.log(result.accommodations)} */}
         </View>
     )
