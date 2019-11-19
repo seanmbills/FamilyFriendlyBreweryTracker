@@ -17,7 +17,7 @@ import {Context as AuthContext} from '../context/AuthContext';
 const SearchBar = ({navigation, term, onTermChange, userZip}) => {
 
     const {getSearchResults, clearErrorMessage} = useContext(BreweryContext);
-    const {state, getUserInfo} = useContext(AuthContext);
+    const {state} = useContext(AuthContext);
 
     const [modalOpen, setModalOpen] = useState(false)
     const [openNow, setOpenNow] = useState(false)

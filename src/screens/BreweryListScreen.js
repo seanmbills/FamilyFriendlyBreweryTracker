@@ -6,16 +6,21 @@ import SearchBar from '../components/SearchBar';
 import ResultsList from '../components/ResultsList'
 class BreweryListScreenComponent extends Component {
     state = {
-        userZip: '30332'
+        userZip: '30332',
+        zipLoaded: false
     }
 
     componentDidMount() {
         let {getUserInfo} = this.context;
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
-            if (this.context.state.profileInfo === null || this.context.state.profileInfo === undefined) {
+            if ((this.context.state.profileInfo === null || this.context.state.profileInfo === undefined)) {
                 var response = await getUserInfo({token: this.context.state.token});
                 if (response && response.status < 400) {
-                    this.setState({userZip: response.data.zipCode})
+                    this.setState({
+                        userZip: response.data.zipCode,
+                        zipLoaded: true
+                    })
+
                 }
             }
         })
