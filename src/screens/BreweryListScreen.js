@@ -16,7 +16,7 @@ const BreweryListScreen = ({navigation}) => {
         <View>
             <SearchBar/>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <ResultsList results={state.results} listName="Results" />
+                <ResultsList results={state.results} />
             </ScrollView>
         </View>
         
