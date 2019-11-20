@@ -31,28 +31,30 @@ const ReadReviewsScreen = ({navigation}) => {
           <Text style={styles.writeReview}>Click here to write a review!</Text>
         </TouchableOpacity>
         <View>
-        <FlatList
-          data={state.results}
-          keyExtractor={(result) => result._id}
-          renderItem={({item}) => {
-          return (
-            <View style={styles.viewBox}>
-                 <Text style={styles.user}>{item.poster.username}
-                 </Text>
-                 <View style={{flexDirection: 'row'}}>
-                 <Rating style={styles.ratings}
-                     imageSize={20}
-                     readonly
-                     startingValue={item.rating}
-                     fractions={1}
-                 />
-                 <TimeAgo style={styles.timeAgo}time={item.postedDate}/>
-                 </View>
-                 <Text>{item.message}</Text>
-                 </View>
-          )
-          }}
-        />
+        {state.count > 0 &&
+          <FlatList
+            data={state.results}
+            keyExtractor={(result) => result._id}
+            renderItem={({item}) => {
+            return (
+              <View style={styles.viewBox}>
+                  <Text style={styles.user}>{item.poster.username}
+                  </Text>
+                  <View style={{flexDirection: 'row'}}>
+                  <Rating style={styles.ratings}
+                      imageSize={20}
+                      readonly
+                      startingValue={item.rating}
+                      fractions={1}
+                  />
+                  <TimeAgo style={styles.timeAgo}time={item.postedDate}/>
+                  </View>
+                  <Text>{item.message}</Text>
+                  </View>
+            )
+            }}
+          />
+        }
         </View>
       {
         state.results && state.count == 0 &&

@@ -1,10 +1,12 @@
 import React, {useState, useContext, useEffect, Component} from 'react';
 import {Context as BreweryContext} from '../context/BreweryContext';
+import {Context as AuthContext} from '../context/AuthContext'
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, FlatList, Image} from 'react-native';
 
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements';
 import Checkbox from 'react-native-check-box';
+import moment from 'moment'
 
 // Local Component imports
 import WelcomeButton from '../components/WelcomeButton'
@@ -12,6 +14,8 @@ import * as ImagePicker from 'expo-image-picker'
 import Constants from 'expo-constants'
 import * as Permissions from 'expo-permissions'
 import {Feather } from '@expo/vector-icons'
+import BufferPopup from '../components/BufferPopup';
+
 
 import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress, validateURL} from '../api/InputValidation';
 
@@ -31,15 +35,14 @@ const BreweryForm = ({isNew, navigation}) => {
     */
     const getOpenHrsFromStr = (hoursString) => {
         var openHours = hoursString.substring(0,hoursString.indexOf(' '));
-        var numIndex = 0;
-        if (openHours.length <= 3) {
-            while (numIndex < openHours.length && (openHours.charAt(numIndex) == ':' || (openHours.charAt(numIndex) >= '0' && openHours.charAt(numIndex) <= '9'))) {
-                numIndex += 1;
-            }
-            openHours = openHours.substring(0, numIndex) + ':00' + openHours.substring(numIndex);
+        if (openHours[0] === '0') openHours = openHours.substring(1)
+
+        if (openHours.indexOf(":") === -1) {
+            var amIndex = openHours.indexOf("M") - 1
+            return openHours.substring(0, amIndex) + ":00" + openHours.substring(amIndex)
+        } else {
+            return openHours
         }
-        
-        return openHours;
     }
 
     /*
@@ -50,15 +53,15 @@ const BreweryForm = ({isNew, navigation}) => {
      * @return A string containing just the close hours for the brewery
     */
     const getCloseHrsFromStr = (hoursString) => {
-        var closeHours = hoursString.substring(hoursString.indexOf('- ') + 2);
-        var numIndex = 0;
-        if (closeHours.length <= 3) {
-            while (numIndex < closeHours.length && (closeHours.charAt(numIndex) == ':' || (closeHours.charAt(numIndex) >= '0' && closeHours.charAt(numIndex) <= '9'))) {
-                numIndex += 1;
-            }
-            closeHours = closeHours.substring(0, numIndex) + ':00' + closeHours.substring(numIndex);
+        var openHours = hoursString.substring(hoursString.indexOf('- ') + 2);
+        if (openHours[0] === '0') openHours = openHours.substring(1)
+
+        if (openHours.indexOf(":") === -1) {
+            var amIndex = openHours.indexOf("M") - 1
+            return openHours.substring(0, amIndex) + ":00" + openHours.substring(amIndex)
+        } else {
+            return openHours
         }
-        return closeHours
     }
     
     /*
@@ -149,6 +152,7 @@ const BreweryForm = ({isNew, navigation}) => {
     }
 
     const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
+    const authContext = useContext(AuthContext)
     
     //Here were are checking if a brewery object has been supplied in the application context
     const brewery = (state['individualResult'] != null) ? state['individualResult'][0].brewery : null;
@@ -227,8 +231,13 @@ const BreweryForm = ({isNew, navigation}) => {
     const [childSeating, setChildSeating] = (brewery) ? useState(accommodations['childAccommodations']['seating']) : useState(false);
     const [strollerSpace, setStrollerSpace] = (brewery) ? useState(accommodations['childAccommodations']['strollerSpace']) : useState(false);
 
+    const [selectedTime, setSelectedTime] = useState('')
+
     // The message the dialog popup contains (will say if creation/update was successful)
     const [dialogMessage, setDialogMessage] = useState('');
+
+    const [showBufferPopup, setShowBufferPopup] = useState(false)
+    const [bufferText, setBufferText] = useState('')
 
     const [showFilters, setShowFilters] = useState(false); // Show checklist for accommodations
     const [showTimes, setShowTimes] = useState(false); // Show options to edit business hours
@@ -247,8 +256,6 @@ const BreweryForm = ({isNew, navigation}) => {
     const [breweryImage2, setBreweryImage2] = useState(null)
     const [breweryImage3, setBreweryImage3] = useState(null)
     const [imageCount, setImageCount] = useState(1)
-    // var [data, setData] = useState([])
-    var [data] = useState([])
 
 
     _listEmptyComponent = () => {
@@ -280,10 +287,13 @@ const BreweryForm = ({isNew, navigation}) => {
             // setBreweryImage1(result)
             // data.push(result)
             if (breweryImageNumber === 1) {
+                console.log('setting image 1')
                 setBreweryImage1(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
+                console.log('adding data to list')
                 data.push(result)
+                console.log("length: " + data.length)
                 // setData([result])
             } else if (breweryImageNumber === 2)  {
                 setBreweryImage2(result)
@@ -472,6 +482,7 @@ const BreweryForm = ({isNew, navigation}) => {
             default:
                 setDayPicked('');
         }
+        // setSelectedTime(time)
     }
 
 
@@ -598,39 +609,22 @@ const BreweryForm = ({isNew, navigation}) => {
     return (
         <ScrollView>
 
-            {/* {
-                (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
-                (<TouchableOpacity
-                    onPress = { () => {
-                            this._pickImage(imageCount, true)
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {
+                (breweryImage1 === null && 
+                    state.individualResult !== null && state.individualResult[0].signedUrl1 !== '') &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(1, false)
                         }
-                    }    
+                    }
                 >
-                    <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
-                </TouchableOpacity>)
-            } */}
-
-            {/* {console.log(typeof(breweryImage1))} */}
-            {/* {typeof(breweryImage1) === Object ? data.push(breweryImage1) : null} */}
-            {/* {breweryImage2 !== null ? data.push(breweryImage2) : data.push()}
-            {breweryImage3 !== null ? data.push(breweryImage3) : data.push()} */}
-            {/* {
-                (data.length > 0) &&
-                <FlatList
-                    horizontal
-                    data={data}
-                    keyExtractor={item => item.uri}
-                    renderItem={({item}) => {
-                        // console.log("item: " + item)
-                        return (
-                            <Image source={{uri: item.uri}} style={{width:200, height:200}}/>
-                        )
-                    }}
-                />
-            } */}
-
-            {/* {
-                (breweryImage1) &&
+                    <Image source={{uri: state.individualResult[0].signedUrl1}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+            {
+                (breweryImage1 !== null) &&
                 <TouchableOpacity
                     onPress={
                         () => {
@@ -643,7 +637,20 @@ const BreweryForm = ({isNew, navigation}) => {
             }
 
             {
-                (breweryImage2) && 
+                (breweryImage2 === null && 
+                    state.individualResult !== null && state.individualResult[0].signedUrl2 !== '') &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(2, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: state.individualResult[0].signedUrl2}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+            {
+                (breweryImage2 !== null) && 
                 <TouchableOpacity
                     onPress={
                         () => {
@@ -656,17 +663,51 @@ const BreweryForm = ({isNew, navigation}) => {
             }
 
             {
-                (breweryImage3) &&
+                (breweryImage3 === null && 
+                    state.individualResult !== null && state.individualResult[0].signedUrl3 !== '') &&
                 <TouchableOpacity
                     onPress={
                         () => {
-                            this._pickImage(3, false)
+                            this._pickImage(0, false)
+                        }
+                    }
+                >
+                    <Image source={{uri: state.individualResult[0].signedUrl3}} style={{width:200, height:200}} />
+                </TouchableOpacity>
+            }
+            {
+                (breweryImage3 !== null) &&
+                <TouchableOpacity
+                    onPress={
+                        () => {
+                            this._pickImage(0, false)
                         }
                     }
                 >
                     <Image source={{uri: breweryImage3.uri}} style={{width:200, height:200}} />
                 </TouchableOpacity>
-            } */}
+            }
+            {
+                (!breweryImage1 || !breweryImage2 || !breweryImage3) && 
+                (state.individualResult === null || (state.individualResult !== null &&
+                    (state.individualResult[0].signedUrl1 === '' || 
+                    state.individualResult[0].signedUrl2 === '' ||
+                    state.individualResult[0].signedUrl3 === '')
+                ))
+                &&
+                (
+                <View style={{flex:1, width: 200, alignSelf:'center', alignContent:'center'}}>
+                    <TouchableOpacity
+                        onPress = { () => {
+                                this._pickImage(imageCount, true)
+                            }
+                        }    
+                    >
+                        <Feather name="upload" style={{fontSize: 100, alignSelf: 'center'}} />
+                    </TouchableOpacity>
+                </View>)
+            }
+            </ScrollView>
 
 
             <View style={styles.fieldView}>
@@ -761,6 +802,7 @@ const BreweryForm = ({isNew, navigation}) => {
             <DateTimePicker
                 mode="time"
                 isVisible={timePickerVisible}
+                date={moment(`${selectedTime}`, 'H:mm a').toDate()}
                 onCancel={()=>setTimePickerVisible(!timePickerVisible)}
                 onConfirm={(time)=>{
                     handleTimePicked(time);
@@ -812,6 +854,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Monday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(mondayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('mondayOpen');
                     }}
@@ -823,6 +866,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Monday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(mondayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('mondayClose');
                     }}
@@ -837,6 +881,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Tuesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(tuesdayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('tuesdayOpen');
                     }}
@@ -848,6 +893,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Tuesday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(tuesdayCloseTime)
                         setTimePickerVisible(!timePickerVisible);
                         setDayPicked('tuesdayClose');
                     }}>
@@ -861,6 +907,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Wednesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(wednesdayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('wednesdayOpen');
                     }}
@@ -872,6 +919,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Wednesday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(wednesdayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked("wednesdayClose");
                     }}
@@ -886,6 +934,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Thursday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(thursdayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('thursdayOpen');
                     }}
@@ -897,6 +946,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Thursday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(thursdayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('thursdayClose');
                     }
@@ -911,6 +961,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Friday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(fridayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayOpen');
                     }}
@@ -922,6 +973,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Friday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(fridayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayClose');
                     }}>
@@ -935,6 +987,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Saturday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(saturdayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked("saturdayOpen")
                     }}
@@ -946,6 +999,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Saturday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(saturdayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked("saturdayClose");
                     }}>
@@ -959,6 +1013,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Sunday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(sundayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayOpen');
                     }}
@@ -970,6 +1025,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Sunday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(sundayCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayClose');
                     }}>
@@ -992,6 +1048,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Monday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(mondayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked("mondayKidOpen");
                     }}
@@ -1003,6 +1060,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Monday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(mondayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('mondayKidClose');
                     }}>
@@ -1016,6 +1074,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Tuesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(tuesdayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('tuesdayKidOpen');
                     }}
@@ -1027,6 +1086,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Tuesday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(tuesdayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('tuesdayKidClose');
                     }}>
@@ -1040,6 +1100,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Wednesday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(wednesdayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('wednesdayKidOpen');
                     }}
@@ -1051,6 +1112,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Wednesday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(wednesdayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('wednesdayKidClose');
                     }}>
@@ -1064,6 +1126,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Thursday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(thursdayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible);
                         setDayPicked('thursdayKidOpen');
                     }}
@@ -1075,6 +1138,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Thursday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(thursdayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('thursdayKidClose');
                     }}>
@@ -1088,6 +1152,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Friday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(fridayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayKidOpen');
                     }}
@@ -1099,6 +1164,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Friday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(fridayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayKidClose');
                     }}>
@@ -1112,6 +1178,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Saturday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(saturdayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('saturdayKidOpen');
                     }}
@@ -1123,6 +1190,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Saturday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(saturdayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('saturdayKidClose');
                     }}>
@@ -1136,6 +1204,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Sunday Open Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(sundayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayKidOpen');
                     }}
@@ -1147,6 +1216,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
                     <Text style={styles.timeTitle}>Sunday Close Time:</Text>
                     <TouchableOpacity onPress={()=>{
+                        setSelectedTime(sundayKidCloseTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayKidClose');
                     }}>
@@ -1268,12 +1338,14 @@ const BreweryForm = ({isNew, navigation}) => {
                         var name = breweryName; //rename breweryName state object to conform to backend expectations
                         var address = formatAddress(); 
                         var businessHours = formatBusinessHours();
-                        var alternativeKidFriendlyHours = businessHours;
 
                         // If the kidFriendlyHours are not the same as businessHours, build kidFriendlyHours object
                         if (!kidHoursSame) {
-                            alternativeKidFriendlyHours = formatKidsHours();
+                            var alternativeKidFriendlyHours = businessHours;
                         }
+
+                        alternativeKidFriendlyHours = formatKidsHours();
+
                         var accommodations = buildAccommodationMap();
                         
                         // Validate all user input
@@ -1301,22 +1373,29 @@ const BreweryForm = ({isNew, navigation}) => {
                         
                         // If brewery is being used to create a new brewery, hit createBrewery route
                         if (isNew) {
-                            
+                            setBufferText('Creating New Location...')
+                            setShowBufferPopup(true)
                             response =  await createBrewery({
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations
+                                alternativeKidFriendlyHours, accommodations, token: authContext.state.token,
+                                breweryImage1, breweryImage2, breweryImage3
                             });
+                            setShowBufferPopup(false)
                            
                         } else { // if brewery is being used to edit brewery, hit updateBrewery route
                             var breweryId = brewery._id;
+                            setBufferText('Updating Location...')
+                            setShowBufferPopup(true)
                             response = await updateBrewery({
                                 breweryId,
                                 name, address, price, phoneNumber, 
                                 email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations
+                                alternativeKidFriendlyHours, accommodations, token: authContext.state.token,
+                                breweryImage1, breweryImage2, breweryImage3
                             });
-                            getOwnedBreweries();
+                            getOwnedBreweries({token: authContext.state.token});
+                            setShowBufferPopup(false)
                         }
                         //console.log("response status " , response)
 
@@ -1367,7 +1446,9 @@ const BreweryForm = ({isNew, navigation}) => {
                     title="Cancel"
                     onPress={() => navigation.navigate("More")}
                 />
-            </View>            
+            </View> 
+
+            <BufferPopup isVisible={showBufferPopup} text={bufferText}/>           
         </ScrollView>
     );
 }

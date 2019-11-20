@@ -3,6 +3,7 @@ import createDataContext from './createDataContext'
 import ServerApi from '../api/Server'
 import {navigate} from '../navigationRef'
 import axios from 'axios'
+import { NavigationActions } from 'react-navigation'
 Buffer = require('buffer/').Buffer
 
 
@@ -16,25 +17,32 @@ const authReducer = (state, action) => {
         case 'updateEmail':
         case 'updatePhone':
         case 'signin':
-            return {...state, token: action.payload, errorMessage: ''}
+            return {...state, token: action.payload.token, errorMessage: ''}
         case 'userUpdate':
         case 'register':
-            return {...state, token: action.payload.token, signedURL: action.payload.signedURL, errorMessage: ''}
+            return {...state, token: action.payload.token, signedUrl: action.payload.signedUrl, errorMessage: ''}
         case 'clear_error_message':
             return {...state, errorMessage: ''}
+        case 'signout':
+            return {token: null, signedURL: '', errorMessage: '', profileInfo: null}
         default: 
             return state;
     }
 }
 
 const getUserInfo = (dispatch) => {
-    return async() => {
+    return async({token}) => {
         try {
-            const response = await ServerApi.get('/getUserInfo',
-                {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + (await AsyncStorage.getItem('token'))}}
-            );
-            console.log(response.data)
-            dispatch({type: 'get_user_info', payload: response.data})
+            if (token !== null && token !== '') {
+                const response = await ServerApi.get('/getUserInfo',
+                    {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + token}}
+                );
+                
+                dispatch({type: 'get_user_info', payload: response.data})
+                return response
+            } else {
+                return null
+            }
         } catch (err) {
             console.log(err.response.data.error)
             dispatch({ type: 'add_error_message', payload: err.response.data})
@@ -67,8 +75,8 @@ const register = (dispatch) => {
             // if we sign up, modify our state to reflect that we're authenticated
             // (aka got a token back)
             // we also store the token on the device for later access
-            await AsyncStorage.setItem('token', response.data.token)
-            await AsyncStorage.setItem('signedURL', response.data.signedURL)
+            await AsyncStorage.setItem('refreshToken', response.data.refreshToken)
+            await AsyncStorage.setItem('signedUrl', response.data.signedUrl)
 
             // upload the profile picture, if there is one, to the AWS S3 instance
             if (profilePic) {
@@ -84,7 +92,7 @@ const register = (dispatch) => {
                 console.log(buff)
                 const awsResponse = await axios.put(
                     // response.data.signedURL,
-                    await AsyncStorage.getItem('signedURL'),
+                    await AsyncStorage.getItem('signedUrl'),
                     buff,
                     options
                 )
@@ -117,8 +125,8 @@ const signin = (dispatch) => {
             const response = await ServerApi.post('/signin', {emailOrId, password}, 
                 { 'Accept' : 'application/json', 'Content-type': 'application/json'});
             console.log(response.data); 
-            await AsyncStorage.setItem('token', response.data.token)
-            dispatch({type: 'signin', payload: response.data.token})
+            await AsyncStorage.setItem('refreshToken', response.data.refreshToken)
+            dispatch({type: 'signin', payload: response.data})
             
             //navigate('loggedInFlow')
             return response;
@@ -179,13 +187,13 @@ const resetPassword = (dispatch) => {
  * @param zipCode - string - a user's updated zipCode
 */
 const userUpdate = (dispatch) => {
-    return async({firstName, lastName, zipCode, profilePic}) => {
+    return async({firstName, lastName, zipCode, profilePic, token}) => {
         try {
             const response = await ServerApi.post('/userUpdate', {firstName, lastName, zipCode},{ headers: 
                 {'Accept' : 'application/json', 'Content-type' : 'application/json',
-                'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
-            await AsyncStorage.setItem('token', response.data.token)
-            await AsyncStorage.setItem('signedURL', response.data.signedURL)
+                'authorization' : "Bearer " + token}});
+            console.log(response)
+            await AsyncStorage.setItem('signedUrl', response.data.signedUrl)
 
             // upload the profile picture, if there is one, to the AWS S3 instance
             if (profilePic) {
@@ -201,7 +209,7 @@ const userUpdate = (dispatch) => {
                 console.log(buff)
                 const awsResponse = await axios.put(
                     // response.data.signedURL,
-                    await AsyncStorage.getItem('signedURL'),
+                    await AsyncStorage.getItem('signedUrl'),
                     buff,
                     options
                 )
@@ -225,16 +233,13 @@ const userUpdate = (dispatch) => {
  * @param newPassword - string - the new user password
  */
 const updatePassword = (dispatch) => {
-    return async({oldPassword, newPassword}) => {
+    return async({oldPassword, newPassword, token}) => {
         try {
-            console.log('token: ')
-            console.log(await AsyncStorage.getItem('token'))
             const response = await ServerApi.post('/updatePassword', {oldPassword, newPassword}, { headers: 
             {'Accept' : 'application/json', 'Content-type' : 'application/json',
-            'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
+            'authorization' : "Bearer " + token}});
             
-            await AsyncStorage.setItem('token', response.data.token)
-            dispatch({type: 'updatePassword', payload: response.data.token})
+            dispatch({type: 'updatePassword', payload: response.data})
             console.log(response)
             return response;
         } catch (err) {
@@ -252,13 +257,12 @@ const updatePassword = (dispatch) => {
  * @param password - string - user's password (again used to confirm user authenticity)
  */
 const updateEmail = (dispatch) => {
-    return async({newEmail, password}) => {
+    return async({newEmail, password, token}) => {
         try {
             const response = await ServerApi.post('/updateEmail', {newEmail, password},{ headers: 
                 {'Accept' : 'application/json', 'Content-type' : 'application/json',
-                'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
-            await AsyncStorage.setItem('token', response.data.token)
-            dispatch({type: 'updateEmail', payload: response.data.token})
+                'authorization' : "Bearer " + token}});
+            dispatch({type: 'updateEmail', payload: response.data})
             return response;
         } catch (err) {
             console.log(err.response.data.error);
@@ -275,13 +279,12 @@ const updateEmail = (dispatch) => {
  * @param password - string - user's password (again used to confirm user authenticity)
  */
 const updatePhone = (dispatch) => {
-    return async({password, newPhone}) => {
+    return async({password, newPhone, token}) => {
         try {
             const response = await ServerApi.post('/updatePhone', {password, newPhone},{ headers: 
                 {'Accept' : 'application/json', 'Content-type' : 'application/json',
-                'authorization' : "Bearer " + (await AsyncStorage.getItem('token'))}});
-            await AsyncStorage.setItem('token', response.data.token)
-            dispatch({type: 'updatePhone', payload: response.data.token})
+                'authorization' : "Bearer " + token}});
+            dispatch({type: 'updatePhone', payload: response.data})
             return response;
         } catch (err) {
             console.log(err.response.data.error);
@@ -298,21 +301,33 @@ const clearErrorMessage = dispatch => () => {
 }
 
 const tryAutoSignin = dispatch => async() => {
-    const token = await AsyncStorage.getItem('token')
-    if (token)
+    const refreshToken = await AsyncStorage.getItem('refreshToken')
+    if (refreshToken !== null && refreshToken !== '')
         try {
-            const {exp} = decode(token)
-            if (Date.now() < exp * 1000)
-                dispatch({type: 'signin', payload: token})
+            const response = await ServerApi.post('/refreshAuth', {},
+            {headers: {
+                'Accept': 'application/json', 'Context-type': 'application/json',
+                'authorization' : 'Bearer ' + refreshToken
+            }})
+            console.log(response.data)
+            dispatch({type: 'signin', payload: response.data})
         } catch(err) {
-
+            dispatch({type: 'add_error_message', payload: err.response.data.error})
         }
 }
 
+const clearUserToken = (dispatch) => {
+    return async () => {
+        const token = await AsyncStorage.setItem('token', '')
+        return token
+    }
+}
 
 const signout = (dispatch) => {
-    return () => {
-        // somehow sign out the uer
+    return async () => {
+        // somehow sign out the user
+        await AsyncStorage.removeItem('refreshToken');
+        dispatch({type: 'signout'});
     }
 }
 
@@ -321,6 +336,6 @@ const signout = (dispatch) => {
 export const {Provider, Context} = createDataContext(
     authReducer,
     {register, signin, signout, forgotPassword, resetPassword, clearErrorMessage, 
-        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo},// tryAutoSignin},
-    {token: null, signedURL: '', errorMessage: '', profileInfo: null}
+        userUpdate, updatePassword, updateEmail, updatePhone, getUserInfo, tryAutoSignin, clearUserToken},
+    {token: null, signedUrl: '', errorMessage: '', profileInfo: null}
 )
