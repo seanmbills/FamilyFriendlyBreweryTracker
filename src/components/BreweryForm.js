@@ -155,8 +155,8 @@ const BreweryForm = ({isNew, navigation}) => {
 
         return accommodationsMap;
     }
-    const authContext = useContext(AuthContex);
 
+    const authContext = useContext(AuthContex);
     const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
     
     //Here were are checking if a brewery object has been supplied in the application context
@@ -289,8 +289,7 @@ const BreweryForm = ({isNew, navigation}) => {
         });
         
         if (!result.cancelled) {
-            // setBreweryImage1(result)
-            // data.push(result)
+           
             if (breweryImageNumber === 1) {
                 console.log('setting image 1')
                 setBreweryImage1(result)
@@ -298,20 +297,16 @@ const BreweryForm = ({isNew, navigation}) => {
                     setImageCount((imageCount + 1) % 3)
                 console.log('adding data to list')
                 data.push(result)
-                //console.log("length: " + data.length)
-                // setData([result])
+                
             } else if (breweryImageNumber === 2)  {
                 setBreweryImage2(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
-                // this.dataArray.data.push(result.uri)
-                // setData([breweryImage1, breweryImage2])
+                
             } else if (breweryImageNumber === 0) {
                 setBreweryImage3(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
-                // this.dataArray.data.push(result.uri)
-                // setData([breweryImage1, breweryImage2, breweryImage3])
             }
         }
     };
@@ -487,7 +482,7 @@ const BreweryForm = ({isNew, navigation}) => {
             default:
                 setDayPicked('');
         }
-        // setSelectedTime(time)
+        
     }
 
 

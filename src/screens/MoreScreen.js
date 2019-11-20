@@ -12,6 +12,16 @@ import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
 
+const MapAuthContext = ({navigation}) => {
+    return (
+        <AuthContext.Consumer>
+            {
+                context => (<MoreScreenComponent navigation={navigation} context={context} />)
+            }
+        </AuthContext.Consumer>
+    )
+}
+
 class MoreScreenComponent extends Component {
     state = {
         isLoading: true,
@@ -19,15 +29,10 @@ class MoreScreenComponent extends Component {
         showUserErr: false
     }
 
-    
-
     componentDidMount() {
-        console.log("mounting more screen")
-        let {state, getOwnedBreweries, clearBreweryContext} = this.context
-        let authContext = useContext(AuthContext);
+        let {getOwnedBreweries, clearBreweryContext} = this.context
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
-            console.log("getting breweries")
-            var response = await getOwnedBreweries({token: authContext.state.token});
+            var response = await getOwnedBreweries({token: this.props.context.state.token});
             if (!response || response.status >= 400) {
                 this.setState({showUserErr: true})
             }
@@ -36,7 +41,6 @@ class MoreScreenComponent extends Component {
     }
 
     componentWillUnmount() {
-        //this.setState({showUserErr: false})
         this.focusListener.remove()
     }
 
@@ -75,7 +79,6 @@ const MoreScreen = ({navigation, noUser}) => {
      * clearIndividualBreweryResult is used when navigating to the createBrewery screen.
      * getOwnedBreweries is called when the screen is opened. This pulls down all screens a user owns
      */
-
     const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult, clearBreweryContext} = useContext(BreweryContext);
     const [showDialog, setShowDialog] = useState(false);
     
@@ -124,7 +127,6 @@ const MoreScreen = ({navigation, noUser}) => {
                     onPress={() => {
                         // call here ensures no data will be used to populate breweryform on create screen
                         clearIndividualBreweryResult(); 
-                        // this.focusListener.remove()
                         navigation.navigate('CreateBrewery')
                     }}
                 />
@@ -160,4 +162,4 @@ const styles = StyleSheet.create({
         flexDirection:'column'
     }
 })
-export default MoreScreenComponent;
+export default MapAuthContext;

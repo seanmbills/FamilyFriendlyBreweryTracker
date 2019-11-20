@@ -13,7 +13,7 @@ import {navigate} from '../navigationRef'
 const breweryReducer = (state, action) => {
     switch(action.type) {
         case 'add_error_message':
-            return {...state, errorMessage: action.payload, results: null}
+            return {...state, errorMessage: action.payload, results: []}
         case 'create':
             return {...state, created: action.payload.response}
         case 'brewery':
@@ -114,25 +114,19 @@ const getSearchResults = (dispatch) => {
  * Gets a list of the brewery names and ids that a users "Owns" or has created
 */
 const getOwnedBreweries = (dispatch) => {
-    return async () => {
-        const userToken = await AsyncStorage.getItem('token');
+    return async ({token}) => {
         try {
-            if (userToken !== null && userToken !== '') {
+            if (token !== null && token !== '') {
                 const response = await ServerApi.get('/getOwnedBreweries', { headers: {
-                    'Accept' : 'application/json', 'Content-type' : 'application/json',
-                    'authorization' : 'Bearer ' + userToken
-                  }});
-                  
-                  // attach list of owned breweries to context object
-                  dispatch({type: 'owned_breweries', payload: response.data})
-                  console.log("Response: " , response)
-                  return response
-
+                'Accept' : 'application/json', 'Content-type' : 'application/json',
+                'authorization' : 'Bearer ' + token
+                }});
+                dispatch({type: "owned_breweries", payload: response.data})
+                return response
             } else {
                 console.log("Not sending request because there isn't a user")
-                return null;
+                return null
             }
-            
         } catch (err) {
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
@@ -162,9 +156,9 @@ const createBrewery = (dispatch) => {
     return async ({
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
-            alternativeKidFriendlyHours, accommodations,
+            alternativeKidFriendlyHours, accommodations, token,
             breweryImage1, breweryImage2, breweryImage3
-            }) => {
+        }) => {
         accommodations = stripAccommodationsSearch(accommodations); //remove fields from accommodations object which are false
 
         var req = {name, address, price, phoneNumber, email, website,
@@ -177,7 +171,7 @@ const createBrewery = (dispatch) => {
                 req, 
                 {headers: {
                     'Accept' : 'application/json', 'Content-type' : 'application/json',
-                    'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))}}
+                    'authorization' : 'Bearer ' + token}}
             );
 
 
@@ -290,9 +284,9 @@ const updateBrewery = (dispatch) => {
             breweryId,
             name, address, price, phoneNumber, 
             email, website, businessHours, kidHoursSameAsNormal, 
-            alternativeKidFriendlyHours, accommodations,
+            alternativeKidFriendlyHours, accommodations, token,
             breweryImage1, breweryImage2, breweryImage3
-            }) => {
+        }) => {
         accommodations = stripAccommodationsSearch(accommodations);
 
         var req = { breweryId, newName: name, newAddress: address,
@@ -309,7 +303,7 @@ const updateBrewery = (dispatch) => {
                 req, 
                 {headers: {
                     'Accept' : 'application/json', 'Content-type' : 'application/json',
-                    'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))}}
+                    'authorization' : 'Bearer ' + token}}
             );
 
             if (breweryImage1 !== null) {

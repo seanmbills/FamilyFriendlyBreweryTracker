@@ -80,7 +80,7 @@ const RegistrationScreen = ({navigation}) => {
     const [ birthDateErrMsg, setBirthDateErrMsg ] = useState('');
     const [ confirmPass, setConfirmPass ] = useState('');
     const [ profilePic, setProfilePic ] = useState(null)
-    const [bufferPopupVisible, setBufferPopupVisible ] = useState('');
+    const [bufferPopupVisible, setBufferPopupVisible ] = useState(false)
     
     function validateInput(inputMap) {
         var isValid = true
