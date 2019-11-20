@@ -1,6 +1,6 @@
 // React native imports
 import React, {useState, useContext, useEffect, Component} from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 
@@ -8,6 +8,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as AuthContext} from '../context/AuthContext';
 import {Context as BreweryContext} from '../context/BreweryContext'
+import {Context as ReviewContext} from '../context/ReviewContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
@@ -22,6 +23,11 @@ const MapAuthContext = ({navigation}) => {
     )
 }
 
+const screenWidth = Math.round(Dimensions.get('window').width);
+const screenHeight = 50;
+var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(19))
+breweryFont = Math.min(breweryFont, 35)
+
 class MoreScreenComponent extends Component {
     state = {
         isLoading: true,
@@ -29,11 +35,11 @@ class MoreScreenComponent extends Component {
         showUserErr: false
     }
 
-    componentDidMount() {
-        let {state, getOwnedBreweries, clearBreweryContext} = this.context
 
-        console.log("context: " + this.props.context)
-        
+
+    componentDidMount() {
+        let {state, getOwnedBreweries} = this.context
+
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             var response = await getOwnedBreweries({token: this.props.context.state.token});
             if (!response || response.status >= 400) {
@@ -65,7 +71,7 @@ MoreScreenComponent.contextType = BreweryContext
 
 
 
-/* 
+/*
  * Screen should contain two main components. 1.) a list of breweries a user "own's" or has created
  * 2.) an button which will navigate users to a screen where they can create a brewery
  */
@@ -82,12 +88,14 @@ const MoreScreen = ({navigation, noUser}) => {
      * clearIndividualBreweryResult is used when navigating to the createBrewery screen.
      * getOwnedBreweries is called when the screen is opened. This pulls down all screens a user owns
      */
-    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult, clearBreweryContext} = useContext(BreweryContext);
+
+    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
+    const {getReview} = useContext(ReviewContext);
     const [showDialog, setShowDialog] = useState(false);
-    
-    /* 
+
+    /*
      * Added this navigation listener so when a user navigates to the MoreScreen the app will
-     * fetch all breweries the user's owns 
+     * fetch all breweries the user's owns
      */
     console.log("no User: " , noUser)
     console.log("Current state: " , state)
@@ -120,6 +128,15 @@ const MoreScreen = ({navigation, noUser}) => {
                 showsHorizontalScrollIndicator={false}
                 />
             </View>
+              <TouchableOpacity
+              onPress={ async ()=>
+              {
+                  await getReview({reviewId: "5dc88df68c35b50004bf5995"});
+                  navigation.navigate('WriteReview', {breweryId: "5dc6139c43f7ef00046c02b8", breweryName:"Scofflaw", breweryFontSize: breweryFont, isEditingAReview: true, reviewId: '5dc88df68c35b50004bf5995'});
+              }}
+              >
+              <Text style={styles.subHeader}>Click here to edit Carl's review</Text>
+              </TouchableOpacity>
             </View>
             }
             { !noUser && //Determines if will show autentication required features
@@ -129,7 +146,7 @@ const MoreScreen = ({navigation, noUser}) => {
                     title="Create Brewery"
                     onPress={() => {
                         // call here ensures no data will be used to populate breweryform on create screen
-                        clearIndividualBreweryResult(); 
+                        clearIndividualBreweryResult();
                         // this.focusListener.remove()
                         navigation.navigate('CreateBrewery')
                     }}
@@ -166,4 +183,4 @@ const styles = StyleSheet.create({
         flexDirection:'column'
     }
 })
-export default MapAuthContext;
+export default MoreScreenComponent;
