@@ -24,19 +24,10 @@ class MoreScreenComponent extends Component {
     componentDidMount() {
         console.log("mounting more screen")
         let {state, getOwnedBreweries, clearBreweryContext} = this.context
-        
+        let authContext = useContext(AuthContext);
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             console.log("getting breweries")
-            // var response = await getOwnedBreweries().then(() => {
-            //     this.setState({
-            //         isLoading: false
-            //     })
-            //     if (!response || response.status >= 400) {
-            //         this.setState({showUserErr: true})
-            //     }
-            // })
-            // console.log("response: ", response)
-            var response = await getOwnedBreweries();
+            var response = await getOwnedBreweries({token: authContext.state.token});
             if (!response || response.status >= 400) {
                 this.setState({showUserErr: true})
             }
@@ -99,7 +90,7 @@ const MoreScreen = ({navigation, noUser}) => {
              <View style={styles.contentContainer}>
                     <Text style={styles.subHeader}>More</Text>
                 </View>
-            { state.ownedBreweries && state.ownedBreweries.length > 0 &&
+            { state.ownedBreweries !== null && state.ownedBreweries.length > 0 &&
              <View>
                 <View style={styles.contentContainer}>
                 <Text style={styles.subHeader}>My Breweries</Text>

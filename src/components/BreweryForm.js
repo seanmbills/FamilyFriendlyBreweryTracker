@@ -1,5 +1,6 @@
 import React, {useState, useContext, useEffect, Component} from 'react';
 import {Context as BreweryContext} from '../context/BreweryContext';
+import {Context as AuthContex} from '../context/AuthContext'
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, FlatList, Image} from 'react-native';
 
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -154,6 +155,7 @@ const BreweryForm = ({isNew, navigation}) => {
 
         return accommodationsMap;
     }
+    const authContext = useContext(AuthContex);
 
     const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
     
@@ -1367,6 +1369,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         var kidHoursSameAsNormal = kidHoursSame; //rename kidHoursFriendly state object to what backend expects
                         
                         var params = {
+                            token: authContext.state.token,
                             name: name,
                             address: address,
                             price: price,
@@ -1399,13 +1402,8 @@ const BreweryForm = ({isNew, navigation}) => {
                         if (isNew) {
                             setBufferText('Creating New Location...')
                             setShowBufferPopup(true)
-                            // response =  await createBrewery({
-                            //     name, address, price, phoneNumber, 
-                            //     email, website, businessHours, kidHoursSameAsNormal, 
-                            //     alternativeKidFriendlyHours, accommodations,
-                            //     breweryImage1, breweryImage2, breweryImage3
-                            // });
                             response = await createBrewery(params)
+                            getOwnedBreweries({token: authContext.state.token});
                             setShowBufferPopup(false)
                            
                         } else { // if brewery is being used to edit brewery, hit updateBrewery route
@@ -1414,17 +1412,9 @@ const BreweryForm = ({isNew, navigation}) => {
                             setBufferText('Updating Location...')
                             setShowBufferPopup(true)
                             response = await updateBrewery(params)
-                            // response = await updateBrewery({
-                            //     breweryId,
-                            //     name, address, price, phoneNumber, 
-                            //     email, website, businessHours, kidHoursSameAsNormal, 
-                            //     alternativeKidFriendlyHours, accommodations,
-                            //     breweryImage1, breweryImage2, breweryImage3
-                            // });
-                            getOwnedBreweries();
+                            getOwnedBreweries({token: authContext.state.token});
                             setShowBufferPopup(false)
                         }
-                        //console.log("response status " , response)
 
                         // If response was not received, or an error code was provided, set dialog error message
                         if (!response || parseInt(response.status) >= 400) {
