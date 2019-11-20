@@ -36,7 +36,7 @@ class BreweryListScreenComponent extends Component {
                
                 <SearchBar navigation={this.props.navigation} userZip={this.state.userZip}/>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <ResultsList results={this.state.results} listName="Results" />
+                    <ResultsList results={this.state.results} />
                 </ScrollView>
             </View>
             
