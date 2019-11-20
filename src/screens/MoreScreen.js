@@ -30,10 +30,7 @@ class MoreScreenComponent extends Component {
     }
 
     componentDidMount() {
-        let {state, getOwnedBreweries, clearBreweryContext} = this.context
-
-        console.log("context: " + this.props.context)
-        
+        let {getOwnedBreweries, clearBreweryContext} = this.context
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             var response = await getOwnedBreweries({token: this.props.context.state.token});
             if (!response || response.status >= 400) {
@@ -96,7 +93,7 @@ const MoreScreen = ({navigation, noUser}) => {
              <View style={styles.contentContainer}>
                     <Text style={styles.subHeader}>More</Text>
                 </View>
-            { state.ownedBreweries.length > 0 &&
+            { state.ownedBreweries !== null && state.ownedBreweries.length > 0 &&
              <View>
                 <View style={styles.contentContainer}>
                 <Text style={styles.subHeader}>My Breweries</Text>
@@ -130,7 +127,6 @@ const MoreScreen = ({navigation, noUser}) => {
                     onPress={() => {
                         // call here ensures no data will be used to populate breweryform on create screen
                         clearIndividualBreweryResult(); 
-                        // this.focusListener.remove()
                         navigation.navigate('CreateBrewery')
                     }}
                 />
