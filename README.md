@@ -8,7 +8,8 @@
    * expo-cli
    * iOS or Android expo application
 
-## Getting Started
+## Build Instructions
+  ### Using Expo
    * Clone this repository down to your local machine
    ` git clone https://github.com/seanmbills/FamilyFriendlyBreweryTracker.git `
    * Navigate into the cloned `FamBrew/` directory
@@ -20,5 +21,6 @@
      Scan this QR code with your iPhone or Android to launch the application.
    ** Note: if you scan the QR code and find your mobile device says "this application is taking longer than expected to load,"
      try switching the setting above the QR Code to tunnel, rather than LAN. 
+ ###
    
    
