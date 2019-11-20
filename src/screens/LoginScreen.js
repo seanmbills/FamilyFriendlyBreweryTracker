@@ -1,10 +1,11 @@
 // React native imports
-import React, { useState, useContext } from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import React, { useState, useContext, Component } from 'react';
+import { Text, StyleSheet, View, Image } from 'react-native';
 import {NavigationEvents} from 'react-navigation'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import {Context as AuthContext} from '../context/AuthContext'
 import {Input} from 'react-native-elements';
+import Modal from 'react-native-modal'
 
 // Local imports
 import TitleText from '../components/TitleText';
@@ -15,98 +16,123 @@ import BufferPopup from '../components/BufferPopup';
  * Screen contains a form which allows a user to login using his/her username/email and password
  * It also contains a link to another screen which will allow a user to reset his/her password
  */
-const LoginScreen = ({navigation}) => {
-    const {state, signin, clearErrorMessage} = useContext(AuthContext)
+class LoginScreen extends Component {
+    state = {
+        isVisible: false, 
+        email: '',
+        password: ''
+    }
 
-    // State objecst for email/username and password input fields
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [bufferPopupVisible, setBufferPopupVisible] = useState(false);
+    tryLogin = async () => {
+        let {state, signin} = this.context
+        await signin({emailOrId: this.state.email, password: this.state.password})
+    }
 
-       return (
-        <ScrollView keyboardDismissMode='on-drag' style={styles.background}>
-            <NavigationEvents 
-                onWillBlur={clearErrorMessage}
-            />
-            <View style={styles.topSpan}/>
-            <TitleText
-                title="Login"
-            />
-            <View style={styles.formElement}> 
-                <Input
-                    value={email}
-                    labelStyle={{color: 'black', fontSize: 20}}
-                    label='Email/Username'
-                    placeholder='Email or Username'
-                    placeholderTextColor="#262626"
-                    leftIcon={{type: 'font-awesome', name: 'envelope'}}
-                    leftIconContainerStyle={{paddingRight: 8}}
-                    inputContainerStyle={{borderBottomColor: 'black'}}
-                    autoCapitalize="none"
-                    onChangeText={(newEmail) => {
-                        setEmail(newEmail);
-                    }}
+    componentDidUpdate() {
+        let {state} = this.context
+        console.log("trying navigating")
+        if (!this.state.isVisible && state.token !== null && state.token !== '') {
+            this.setState({isVisible: false,})
+            console.log("navigating")
+            this.props.navigation.navigate('BreweryList')
+        }
+    }
+
+    render() {
+        let {state, clearErrorMessage} = this.context
+
+        let popup = (
+            <Modal isVisible={this.state.isVisible}>
+                <View style={{flex:1}, styles.container}>
+                    <Image source={require('../../assets/buffering.gif')}/>
+                    <Text style={styles.text}>{"Logging in..."}</Text>
+                </View>
+            </Modal>
+        )
+
+        return (
+            <ScrollView keyboardDismissMode='on-drag' style={styles.background}>
+                {popup}
+
+                <NavigationEvents 
+                    onWillBlur={clearErrorMessage}
                 />
-            </View>
-            <View style={styles.formElement}>
-                <Input
-                    value={password}
-                    labelStyle={{color: 'black', fontSize: 20}}
-                    label='Password'
-                    placeholder='Password'
-                    placeholderTextColor="#262626"
-                    leftIcon={{type: 'font-awesome', name: 'lock'}}
-                    leftIconContainerStyle={{paddingRight: 8}}
-                    inputContainerStyle={{borderBottomColor: 'black'}}
-                    secureTextEntry={true}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    onChangeText={(newPass) => {
-                        setPassword(newPass);
-                    }}
-                />
-            </View>
-            {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
-            <View style={styles.buttonContainer}>
-                <WelcomeButton
+                <View style={styles.topSpan}/>
+                <TitleText
                     title="Login"
-                    onPress={ async () => {
-                        const emailOrId = email;
-                        setBufferPopupVisible(true);
-                        var response = await signin({emailOrId, password})
-                        setBufferPopupVisible(false);
-                        if (!response || response.status >= 400) {
-                            console.log("Login error")
-                        } else {
-                            navigation.navigate("BreweryList");
-                        }
-                    }}
                 />
-            </View>
-            <View style={styles.buttonContainer}>
-                <WelcomeButton
-                    title="Back"
+                <View style={styles.formElement}> 
+                    <Input
+                        value={this.state.email}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Email/Username'
+                        placeholder='Email or Username'
+                        placeholderTextColor="#262626"
+                        leftIcon={{type: 'font-awesome', name: 'envelope'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        autoCapitalize="none"
+                        onChangeText={(newEmail) => {
+                            console.log("updating email")
+                            this.setState({
+                                email: newEmail,
+                            });
+                        }}
+                    />
+                </View>
+                <View style={styles.formElement}>
+                    <Input
+                        value={this.state.password}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Password'
+                        placeholder='Password'
+                        placeholderTextColor="#262626"
+                        leftIcon={{type: 'font-awesome', name: 'lock'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        secureTextEntry={true}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        onChangeText={(newPass) => {
+                            console.log("updating pass")
+                            this.setState({
+                                password: newPass,
+                            })
+                        }}
+                    />
+                </View>
+                {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
+                <View style={styles.buttonContainer}>
+                    <WelcomeButton
+                        title="Login"
+                        onPress={ async () => {
+                            await this.setState({isVisible: true,})
+                            await this.tryLogin()
+                            await this.setState({isVisible: false,})
+                            console.log(this.state.isVisible)
+                        }}
+                    />
+                </View>
+                <View style={styles.buttonContainer}>
+                    <WelcomeButton
+                        title="Back"
+                        onPress={() => {
+                            this.props.navigation.replace("Welcome");
+                        }}
+                    />
+                </View>
+                <TouchableOpacity
                     onPress={() => {
-                        navigation.navigate("Welcome");
+                        this.props.navigation.replace("ForgotPassword");
                     }}
-                />
-            </View>
-            <TouchableOpacity
-                onPress={() => {
-                    navigation.navigate("ForgotPassword");
-                }}
-            >
-                <Text style={styles.forgotPass}>Forgot Password</Text>
-            </TouchableOpacity>
-
-            {/* Buffer popup will be displayed while user is waiting for login response from backend */}
-            <BufferPopup 
-                isVisible={bufferPopupVisible}
-                text={"Logging in"}
-                />
-        </ScrollView>
-    );
+                >
+                    <Text style={styles.forgotPass}>Forgot Password</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        );
+    }
 }
+LoginScreen.contextType = AuthContext
 
 const styles = StyleSheet.create({
     background: {
@@ -136,7 +162,15 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 20,
         marginTop: 10
-    }
+    },
+    container: {
+        backgroundColor: 'white',
+        padding: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+      },
 });
 
 export default LoginScreen;

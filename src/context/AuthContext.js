@@ -302,7 +302,7 @@ const clearErrorMessage = dispatch => () => {
 
 const tryAutoSignin = dispatch => async() => {
     const refreshToken = await AsyncStorage.getItem('refreshToken')
-    if (refreshToken)
+    if (refreshToken !== null && refreshToken !== '')
         try {
             const response = await ServerApi.post('/refreshAuth', {},
             {headers: {
