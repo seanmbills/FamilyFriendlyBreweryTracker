@@ -1,6 +1,6 @@
 import React, {useState, useContext, useEffect, Component} from 'react';
 import {Context as BreweryContext} from '../context/BreweryContext';
-import {Context as AuthContex} from '../context/AuthContext'
+import {Context as AuthContext} from '../context/AuthContext'
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, FlatList, Image} from 'react-native';
 
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -158,6 +158,7 @@ const BreweryForm = ({isNew, navigation}) => {
 
     const authContext = useContext(AuthContex);
     const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
+    const authContext = useContext(AuthContext)
     
     //Here were are checking if a brewery object has been supplied in the application context
     const brewery = (state['individualResult'] != null) ? state['individualResult'][0].brewery : null;
