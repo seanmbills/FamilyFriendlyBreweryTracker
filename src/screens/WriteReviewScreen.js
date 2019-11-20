@@ -5,7 +5,7 @@ import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
 
 const WriteReviewScreen = ({navigation}) => {
-  const {state, createReview, getBreweryReviews, editReview} = useContext(ReviewContext);
+  const {state, createReview, getBreweryReviews, editReview, getReview} = useContext(ReviewContext);
 
   const [ratingNum, setRatingNum] = useState(3);
   const [description, setDescription] = useState('');
@@ -22,6 +22,10 @@ const WriteReviewScreen = ({navigation}) => {
 
   if (isEditingAReview) {
     // need to make a context method for getting a review by using the review id
+    var review = getReview(reviewId)
+    console.log('reviewId: ' + reviewId);
+    console.log('fvknlfnvljbrvjsbrkbv');
+    console.log(review.results);
     reviewDescription = 'REVIEW DESCRIPTION' //placeholder
     reviewRating = 2 //placeholder
   }
