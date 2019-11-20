@@ -1,25 +1,31 @@
 // React native imports
 import React, {useState, useContext, useEffect, Component} from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 
 // Local Imports
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as BreweryContext} from '../context/BreweryContext'
+import {Context as ReviewContext} from '../context/ReviewContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
+
+const screenWidth = Math.round(Dimensions.get('window').width);
+const screenHeight = 50;
+var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(19))
+breweryFont = Math.min(breweryFont, 35)
 
 class MoreScreenComponent extends Component {
     state = {
         isLoading: true
     }
 
-    
+
 
     componentDidMount() {
         let {state, getOwnedBreweries} = this.context
-        
+
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             console.log("getting breweries")
             await getOwnedBreweries().then(() => {
@@ -51,7 +57,7 @@ MoreScreenComponent.contextType = BreweryContext
 
 
 
-/* 
+/*
  * Screen should contain two main components. 1.) a list of breweries a user "own's" or has created
  * 2.) an button which will navigate users to a screen where they can create a brewery
  */
@@ -64,11 +70,12 @@ const MoreScreen = ({navigation}) => {
      */
 
     const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
+    const {getReview} = useContext(ReviewContext);
     const [showDialog, setShowDialog] = useState(false);
 
-    /* 
+    /*
      * Added this navigation listener so when a user navigates to the MoreScreen the app will
-     * fetch all breweries the user's owns 
+     * fetch all breweries the user's owns
      */
     return (
         <View style={styles.backgroundContainer}>
@@ -96,6 +103,15 @@ const MoreScreen = ({navigation}) => {
                 showsHorizontalScrollIndicator={false}
                 />
             </View>
+              <TouchableOpacity
+              onPress={ async ()=>
+              {
+                  await getReview({reviewId: "5dc88df68c35b50004bf5995"});
+                  navigation.navigate('WriteReview', {breweryId: "5dc6139c43f7ef00046c02b8", breweryName:"Scofflaw", breweryFontSize: breweryFont, isEditingAReview: true, reviewId: '5dc88df68c35b50004bf5995'});
+              }}
+              >
+              <Text style={styles.subHeader}>Click here to edit Carl's review</Text>
+              </TouchableOpacity>
             </View>
             }
             <View style={styles.contentContainer}>
@@ -103,7 +119,7 @@ const MoreScreen = ({navigation}) => {
                     title="Create Brewery"
                     onPress={() => {
                         // call here ensures no data will be used to populate breweryform on create screen
-                        clearIndividualBreweryResult(); 
+                        clearIndividualBreweryResult();
                         // this.focusListener.remove()
                         navigation.navigate('CreateBrewery')
                     }}

@@ -5,7 +5,7 @@ import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
 
 const WriteReviewScreen = ({navigation}) => {
-  const {state, createReview, getBreweryReviews} = useContext(ReviewContext);
+  const {state, createReview, getBreweryReviews, editReview} = useContext(ReviewContext);
 
   const [ratingNum, setRatingNum] = useState(3);
   const [description, setDescription] = useState('');
@@ -88,7 +88,7 @@ const WriteReviewScreen = ({navigation}) => {
                     var message = description;
                     var rating = ratingNum;
                     console.log({message, breweryId, rating})
-                    var response = await createReview({message, breweryId, rating});
+                    var response = await editReview({breweryId, message, rating, reviewId});
                     var getReviewsResponse = await getBreweryReviews({breweryId});
                   }}
               />)}
