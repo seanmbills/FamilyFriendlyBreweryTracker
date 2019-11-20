@@ -27,17 +27,17 @@ const reviewReducer = (state, action) => {
 }
 
 const createReview = (dispatch) => {
-    return async ({message, breweryId, rating}) => {
+    return async ({token, message, breweryId, rating}) => {
         try {
             var req = {message: message, breweryId: breweryId, rating: rating}
             console.log(req);
-            const response = await ServerApi.post('/createReview', 
+            const response = await ServerApi.post('/createReview',
             req,
             { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
-              'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
+              'authorization' : 'Bearer ' + token
             }});
-            
+
             dispatch({type: 'create', payload: response.data})
         } catch (err) {
             // console.log("Error: ", err.response)
@@ -51,7 +51,7 @@ const getBreweryReviews = (dispatch) => {
     return async ({breweryId}) => {
         var req = {breweryId};
         try {
-            const response = await ServerApi.get('/getBreweryReviews', 
+            const response = await ServerApi.get('/getBreweryReviews',
             {params: req},
             { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
@@ -62,7 +62,7 @@ const getBreweryReviews = (dispatch) => {
             return response;
         } catch (err) {
             console.log("Error: ", err.response)
-            
+
             console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error});
         }
@@ -82,7 +82,7 @@ const getReview = (dispatch) => {
     return async ({reviewId}) => {
         var req = {reviewId};
         try {
-            const response = await ServerApi.get('/review', 
+            const response = await ServerApi.get('/review',
             {params: req},
             { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
@@ -100,21 +100,21 @@ const getReview = (dispatch) => {
 }
 
 const editReview = (dispatch) => {
-    return async({breweryId, message, rating, reviewId}) => {
-        var req = {breweryId, message, rating, reviewId}
+    return async({token, breweryId, message, rating, reviewId}) => {
+        var req = {token, breweryId, message, rating, reviewId}
         try {
-            const response = await ServerApi.post('/createReview', 
+            const response = await ServerApi.post('/editReview',
             req,
             { headers: {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
-              'authorization' : 'Bearer ' + (await AsyncStorage.getItem('token'))
+              'authorization' : 'Bearer ' + (token)
             }});
             dispatch({type: 'edit', count: response.data.count, payload: response.data})
             return response;
         } catch (err) {
             console.log("Error: ", err.response)
 
-            console.log(err.response.daeta.error);
+            console.log(err.response.data.error);
             dispatch({type: 'add_error_message', payload: err.response.data.error})
         }
     }
