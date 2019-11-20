@@ -37,7 +37,7 @@ const getUserInfo = (dispatch) => {
                 const response = await ServerApi.get('/getUserInfo',
                     {headers: { 'Accept' : 'application/json', 'Content-type': 'application/json', 'authorization': 'Bearer ' + token}}
                 );
-                console.log(response.data)
+                
                 dispatch({type: 'get_user_info', payload: response.data})
                 return response
             } else {
@@ -302,7 +302,7 @@ const clearErrorMessage = dispatch => () => {
 
 const tryAutoSignin = dispatch => async() => {
     const refreshToken = await AsyncStorage.getItem('refreshToken')
-    if (refreshToken)
+    if (refreshToken !== null && refreshToken !== '')
         try {
             const response = await ServerApi.post('/refreshAuth', {},
             {headers: {

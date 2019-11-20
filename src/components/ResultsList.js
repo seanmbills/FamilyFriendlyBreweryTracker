@@ -2,13 +2,12 @@ import React, {useContext} from 'react'
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native'
 import ResultDetails from './ResultDetails';
 import {withNavigation} from 'react-navigation'
-//import BreweryContext from '../context/BreweryContext'
 import {Context as BreweryContext} from '../context/BreweryContext'
 
 
 const ResultsList = ({results, navigation}) => {
     var {state, getBrewery} = useContext(BreweryContext);
-    if (results === null || results.length === 0) {
+    if (results === null || results === undefined || results.length === 0) {
         return null;
     }
     return (
@@ -20,9 +19,8 @@ const ResultsList = ({results, navigation}) => {
                     return (
                         <TouchableOpacity onPress={
                             async () => {
-                            await getBrewery({breweryId: item.breweryId})
-                            // console.log(state.results[0]);
-                            navigation.navigate("BreweryDetails")
+                              await getBrewery({breweryId: item.breweryId})
+                              navigation.navigate("BreweryDetails")
                             }
                         }>
                             <ResultDetails result={item}/>
