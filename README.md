@@ -51,4 +51,12 @@ In the second case, errors, the screen will produce a large red error message/in
 
 # Release Notes (v1.0.0)
 
+## New Features:
+At this point, the entire application is considered to be a set of "new features". For a more concrete list of things that the application allows you to do, please see the accompanying "FFBT-Heroku-Server" repository (the backend portion of this project).
+  In addition to the functionality mentioned there, we've also integrated in such features as using the application as a guest, auto-signing in a user (if their credentials are still valid), amongst others. 
+  
+## Bug Fixes:
+At this time, no bug fixes are necessary to mention here, as all "fixes" made to date are to address making the application functional. In future iterations of the application, bug fixes included will be addressed here.
 
+## Known Bugs/Defects:
+At this point, we've addressed all known bugs to date. This list will get updated should that change.
