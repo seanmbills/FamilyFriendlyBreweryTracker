@@ -107,6 +107,7 @@ const UpdateAccountScreen = ({navigation}) => {
     
     // state object indicates if a user's password does not conform to valid format
     const [ passErrMsg, setPassErrMsg ] = useState('');
+    const [ zipErrMsg, setZipErrMsg ] = useState('');
 
 
      // state object indicates if a password is needed to update a particular user account field
@@ -146,6 +147,12 @@ const UpdateAccountScreen = ({navigation}) => {
             setProfilePic(result)
         }
     };
+
+
+    function validateZip(num) {
+        return num.length == 5
+        && num.match(/^[0-9]*$/g);
+    }
 
     //state object which indicates if popup buffer should be displayed
     const [ showDialog, setShowDialog ] = useState(false);
@@ -190,6 +197,9 @@ const UpdateAccountScreen = ({navigation}) => {
                     value={zipCode}
                     onChangeText={(newZip) => setZipCode(newZip)}
                 />
+            </View>
+            <View>
+                <Text style={styles.errMsg}>{zipErrMsg}</Text>
             </View>
             <View style={styles.fieldContainer}>
                 <Text style={styles.inputTitle}>First Name</Text>
@@ -244,24 +254,27 @@ const UpdateAccountScreen = ({navigation}) => {
                 <WelcomeButton
                     title="Submit"
                     onPress={ async ()=> {
-                        
-                        //Set dialog text and make it visible
-                        setBufferText("Updating Account")
-                        setShowDialog(true);
+                        if (validateZip(zipCode)) {
+                            //Set dialog text and make it visible
+                            setBufferText("Updating Account")
+                            setShowDialog(true);
 
-                        //Make request to backend to update account
-                        var response = await userUpdate({firstName, lastName, zipCode, profilePic, token: state.token})
+                            //Make request to backend to update account
+                            var response = await userUpdate({firstName, lastName, zipCode, profilePic, token: state.token})
 
-                        //set dialog to no longer be visible
-                        setShowDialog(false);
+                            //set dialog to no longer be visible
+                            setShowDialog(false);
 
-                        // If the update failed, show a failure popup
-                        if (!response || response.status >= 400) {
-                            setResultDialogText("Something went wrong. Unable to update account");
-                            setResultDialogVisible(true);
-                        } else { //Otherwise show a successful popup
-                            setResultDialogText("Account Successfully Updated!");
-                            setResultDialogVisible(true);
+                            // If the update failed, show a failure popup
+                            if (!response || response.status >= 400) {
+                                setResultDialogText("Something went wrong. Unable to update account");
+                                setResultDialogVisible(true);
+                            } else { //Otherwise show a successful popup
+                                setResultDialogText("Account Successfully Updated!");
+                                setResultDialogVisible(true);
+                            }
+                        } else {
+                            setZipErrMsg("The zip code is invalid. Please try again.")
                         }
                     }}
                 />
