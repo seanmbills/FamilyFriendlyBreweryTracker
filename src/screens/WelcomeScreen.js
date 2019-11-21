@@ -67,7 +67,7 @@ class WelcomeScreenComponent extends Component {
                             title="Sign Up"
                             destScreen="Registration"
                             onPress={() => {
-                                this.props.navigation.navigate('Registration')
+                                this.props.navigation.replace('Registration')
                             }}
                         />
                         <WelcomeButton
@@ -99,7 +99,7 @@ class WelcomeScreenComponent extends Component {
                                 onPress={async ()=>{
                                     await clearUserToken();
                                     await this.setState({guestPopup: false,});
-                                    navigation.navigate('breweryFlow');
+                                    this.props.navigation.navigate('breweryFlow');
                                 }}
                             />
                             <WelcomeButton
@@ -130,82 +130,6 @@ class WelcomeScreenComponent extends Component {
 }
 WelcomeScreenComponent.contextType = AuthContext
 
-
-/*
- * First screen a user views upon loading application. Allows them to navigate to two locations:
- * login or registration
- */
-const WelcomeScreen = ({navigation}) => {
-    
-    return (
-        <View style= {styles.background}> 
-            <Text style= {styles.welcomeBanner}>
-                FamBrews
-            </Text>
-            <View styles= {styles.buttonSection} >
-                <WelcomeButton
-                    title="Sign Up"
-                    destScreen="Registration"
-                    onPress={() => {
-                        navigation.navigate('Registration')
-                    }}
-                />
-                <WelcomeButton
-                    title="Login"
-                    destScreen="Login"
-                    onPress={() => {
-                        navigation.navigate('Login')
-                    }}
-                />
-            </View>
-            <View> 
-                <TouchableOpacity 
-                    onPress={()=>this.setState({guestPopup: true})}
-                >
-                    <Text style={styles.guestLink}>Continue as guest</Text>
-                </TouchableOpacity>
-            </View>
-            <Dialog 
-                visible={this.state.guestPopup}
-                onDismiss={()=> setShowErr(false)}
-                style={styles.dialogContent}
-            >
-                <DialogContent style={styles.dialogContent}>
-                    { !showErr && 
-                    <View stye={styles.dialogContent}>
-                    <Text style={styles.dialogText}>Are you over 21 years old?</Text>
-                    <WelcomeButton
-                        title="Yes"
-                        onPress={async ()=>{
-                            await clearUserToken();
-                            await setGuestPopup(false);
-                            navigation.navigate('breweryFlow');
-                        }}
-                    />
-                    <WelcomeButton
-                        title="No"
-                        onPress={()=>setShowErr(true)}
-                    />  
-                    </View>
-                    }   
-                    {showErr &&
-                    <View>
-                        <Text style={styles.dialogText}>You must be at least 21 years old to use this application</Text>
-                        <WelcomeButton
-                            title="Cancel"
-                            onPress={()=>{
-                                setGuestPopup(false)
-                                setShowErr(false)
-                                
-                            }}
-                        />
-                    </View>
-                    }
-                </DialogContent>
-            </Dialog>
-        </View>
-    );
-};
 
 const styles = StyleSheet.create({
     welcomeBanner: {
