@@ -156,7 +156,7 @@ const BreweryForm = ({isNew, navigation}) => {
         return accommodationsMap;
     }
 
-    const authContext = useContext(AuthContex);
+    
     const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
     const authContext = useContext(AuthContext)
     

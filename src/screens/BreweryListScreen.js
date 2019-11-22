@@ -31,6 +31,19 @@ class BreweryListScreenComponent extends Component {
     }
 
     render(){
+        console.log("navigation state", this.props.navigation.state)
+
+        const navigationOptions = () => {
+            return (
+                this.props.navigation.setParams({
+                    headerStyle: {
+                        backgroundColor: 'white',
+                        height: 5,
+                        borderBottomWidth: 0
+                    }
+                })
+            );
+        }
         return ( 
             <View>
                

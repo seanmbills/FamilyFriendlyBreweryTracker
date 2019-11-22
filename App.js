@@ -1,13 +1,16 @@
 import React  from 'react'
-import {TouchableOpacity, StyleSheet, Text,Header} from 'react-native';
+import {Platform, View, TouchableOpacity, StyleSheet, Text,Header} from 'react-native';
 import {
     createAppContainer,
     createSwitchNavigator,
 } from 'react-navigation'
 
+
+
 import {Ionicons} from '@expo/vector-icons';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import {createStackNavigator} from 'react-navigation-stack';
+
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import LoginScreen from './src/screens/LoginScreen';
@@ -28,7 +31,7 @@ import MoreScreen from './src/screens/MoreScreen';
 import CreateBreweryScreen from './src/screens/CreateBreweryScreen';
 import EditBreweryScreen from './src/screens/EditBreweryScreen.js';
 
-
+const headerHeight = (Platform.OS === 'ios') ? 5 : 0;
 
 
 const switchNavigator = createSwitchNavigator({
@@ -45,11 +48,13 @@ const switchNavigator = createSwitchNavigator({
             initialRouteName: 'Welcome',
             defaultNavigationOptions: {
                 title: '',
-                headerMode: 'none',
-                header: null,
-                navigationOptions: {
-                    header: null
-                }
+                headerTintColor: 'grey',
+                headerStyle: {
+                    backgroundColor: '#fcc203',
+                    height: headerHeight,
+                    borderBottomColor: '#fcc203',
+                    borderWidth: 0
+                },
             }
         }
     ),
@@ -130,13 +135,21 @@ const switchNavigator = createSwitchNavigator({
         //Options for the navigation object which wraps around the entire logged in flow. 
         //Sets banner to be displayed across top of all screens after login
         initialRouteName: 'loggedInInnerFlow',
-        defaultNavigationOptions: {
+        defaultNavigationOptions: ({navigation}) => (
+            // var color = '#fcc203';
+            // if (navigation.routeName === 'breweryFlow') {
+            //     color = 'white'
+            // }
+            // return <View style={{backgroundColor: {color}, height: 2}}></View>
+          {
             headerTintColor: 'grey',
             headerStyle: {
-              backgroundColor: 'white',
-              height: 5
+              backgroundColor: (navigation.routeName === 'breweryFlow') ? 'white' : '#fcc203',
+              height: headerHeight,
+              borderBottomWidth: 0
             },
-          },
+         }
+         )
     }
     )  
 }

@@ -54,9 +54,9 @@ class LoginScreen extends Component {
             <ScrollView keyboardDismissMode='on-drag' style={styles.background}>
                 {popup}
 
-                <NavigationEvents 
+                {/* <NavigationEvents 
                     onWillBlur={clearErrorMessage}
-                />
+                /> */}
                 <View style={styles.topSpan}/>
                 <TitleText
                     title="Login"
@@ -117,13 +117,13 @@ class LoginScreen extends Component {
                     <WelcomeButton
                         title="Back"
                         onPress={() => {
-                            this.props.navigation.replace("Welcome");
+                            this.props.navigation.navigate("Welcome");
                         }}
                     />
                 </View>
                 <TouchableOpacity
                     onPress={() => {
-                        this.props.navigation.replace("ForgotPassword");
+                        this.props.navigation.navigate("ForgotPassword");
                     }}
                 >
                     <Text style={styles.forgotPass}>Forgot Password</Text>
