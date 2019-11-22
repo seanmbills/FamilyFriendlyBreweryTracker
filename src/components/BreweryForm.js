@@ -156,7 +156,6 @@ const BreweryForm = ({isNew, navigation}) => {
         return accommodationsMap;
     }
 
-    const authContext = useContext(AuthContex);
     const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
     
     //Here were are checking if a brewery object has been supplied in the application context
