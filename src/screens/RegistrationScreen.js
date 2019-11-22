@@ -307,6 +307,7 @@ class RegistrationScreenComponent extends Component {
                     <View style={styles.formElement}>
                         <Input
                             value={this.state.zip}
+                            maxLength={5}
                             keyboardType="number-pad"
                             labelStyle={{color: 'black', fontSize: 20}}
                             label='Zip Code'
@@ -325,6 +326,7 @@ class RegistrationScreenComponent extends Component {
                     <View style={styles.formElement}>
                         <Input
                             value={this.state.phone}
+                            maxLength={10}
                             keyboardType="number-pad"
                             labelStyle={{color: 'black', fontSize: 20}}
                             label='Phone Number'
