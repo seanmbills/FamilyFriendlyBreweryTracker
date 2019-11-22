@@ -4,6 +4,17 @@ import {Context as BreweryContext} from '../context/BreweryContext'
 import {Context as AuthContext} from '../context/AuthContext'
 import SearchBar from '../components/SearchBar';
 import ResultsList from '../components/ResultsList'
+
+const MapBreweryContext = ({navigation}) => {
+    return (
+        <BreweryContext.Consumer>
+            {
+                context => (<BreweryListScreenComponent navigation={navigation} context={context} />)
+            }
+        </BreweryContext.Consumer>
+    )
+}
+
 class BreweryListScreenComponent extends Component {
     state = {
         userZip: '30332',
@@ -30,13 +41,13 @@ class BreweryListScreenComponent extends Component {
         this.focusListener.remove();
     }
 
-    render(){
+    render() {
+
         return ( 
             <View>
-               
                 <SearchBar navigation={this.props.navigation} userZip={this.state.userZip}/>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <ResultsList results={this.state.results} />
+                    <ResultsList results={this.props.context.state.results} />
                 </ScrollView>
             </View>
             
@@ -47,4 +58,4 @@ BreweryListScreenComponent.contextType = AuthContext;
 
 const styles = StyleSheet.create({})
 
-export default BreweryListScreenComponent;
+export default MapBreweryContext;
