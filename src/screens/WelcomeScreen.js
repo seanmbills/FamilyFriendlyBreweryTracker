@@ -87,7 +87,6 @@ class WelcomeScreenComponent extends Component {
                     </View>
                     <Dialog 
                         visible={this.state.guestPopup}
-                        onDismiss={()=> this.setState({showErr: false})}
                         style={styles.dialogContent}
                     >
                         <DialogContent style={styles.dialogContent}>
@@ -99,7 +98,7 @@ class WelcomeScreenComponent extends Component {
                                 onPress={async ()=>{
                                     await clearUserToken();
                                     await this.setState({guestPopup: false,});
-                                    this.props.navigation.navigate('breweryFlow');
+                                    this.props.navigation.navigate('BreweryList');
                                 }}
                             />
                             <WelcomeButton
