@@ -81,6 +81,7 @@ const getUserReviews = (dispatch) => {
               'authorization' : 'Bearer ' + token
             }});
             dispatch({type: 'user_reviews', count: response.data.count, payload: response.data})
+            return response;
         } catch (err) {
             console.log("Error: ", err.response)
             console.log(err.response.data.error);

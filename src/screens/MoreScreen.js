@@ -46,12 +46,10 @@ class MoreScreenComponent extends Component {
 
     componentDidMount() {
         
-        // let {getUserReviews} = this.props.reviewContext;
-        // console.log(getUserReviews)
-        let {getOwnedBreweries, clearBreweryContext} = this.context
+        let {getUserReviews} = this.props.reviewContext;
+        let {getOwnedBreweries} = this.context
         
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
-            console.log(this.props)
             var response = await getOwnedBreweries({token: this.props.context.state.token});
             if (!response || response.status >= 400) {
                 this.setState({showUserErr: true})
@@ -59,13 +57,15 @@ class MoreScreenComponent extends Component {
            
 
             //Get user's reviews
-            // var reviewResponse = await getUserReviews();
+            var reviewResponse = await getUserReviews({token: this.props.context.state.token});
             this.setState({isLoading: false})
         })
     }
 
     componentWillUnmount() {
         this.focusListener.remove()
+        let {clearBreweryContext} = this.context;
+        clearBreweryContext();
     }
 
     render() {
@@ -105,15 +105,16 @@ const MoreScreen = ({navigation, noUser}) => {
      */
 
     const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
-    const revContext = useContext(ReviewContex);
+    const revContext = useContext(ReviewContext);
     const [showDialog, setShowDialog] = useState(false);
 
+    const screenWidth = Math.round(Dimensions.get('window').width);
+    const screenHeight = 50;
+    
     /*
      * Added this navigation listener so when a user navigates to the MoreScreen the app will
      * fetch all breweries the user's owns
      */
-    console.log("no User: " , noUser)
-    console.log("Current state: " , state)
     return (
         <View style={styles.backgroundContainer}>
              <View style={styles.contentContainer}>
@@ -142,23 +143,37 @@ const MoreScreen = ({navigation, noUser}) => {
                 }}
                 showsHorizontalScrollIndicator={false}
                 />
-                <Text>Review:</Text>
+            </View>
+            </View>
+            }
+            { revContext.state.results && revContext.state.results.length > 0 && 
+            <View style={styles.contentContainer}>
+            <Text style={styles.subHeader}>My Reviews</Text>
                 <FlatList
                     data={revContext.state.results}
-                    keyExtractor={(review) => {return review.id}}
-                    renderItem={({review}) => {
+                    keyExtractor={(review) => {return review._id}}
+                    renderItem={({item}) => {
                         return (
                             <TouchableOpacity
                                 onPress={ async() => {
-                                    console.log(review.id);
+                                    var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/("Scofflaw Brewing".length))
+                                    breweryFont = Math.min(breweryFont, 35)
+                                    navigation.navigate("WriteReview",
+                                        {
+                                            breweryId: item.breweryId,
+                                            breweryName: 'Scofflaw Brewing co.',
+                                            breweryFontSize: breweryFont,
+                                            isEditingAReview: true,
+                                            review: item
+                                    });
+                                    //navigation.navigate("WriteReview")
                                 }}
                             >
-                                <Text>This is a review</Text>
+                                <Text>{item.message}</Text>
                             </TouchableOpacity>
                         )
                     }}
                 />
-            </View>
             </View>
             }
             { !noUser && //Determines if will show autentication required features
@@ -177,7 +192,6 @@ const MoreScreen = ({navigation, noUser}) => {
                 <WelcomeButton
                     title="Logout"
                     onPress={()=> {
-                        clearBreweryContext();
                         signout()
                         navigation.navigate('Welcome');
                     }}
@@ -204,4 +218,4 @@ const styles = StyleSheet.create({
         flexDirection:'column'
     }
 })
-export default MoreScreenComponent;
+export default MapAuthContext;

@@ -51,30 +51,30 @@ const WriteReviewScreen = ({navigation}) => {
   const {createReview, getBreweryReviews, editReview, getReview} = useContext(ReviewContext);
   const {state} = useContext(AuthContext)
 
-  const [ratingNum, setRatingNum] = useState(3);
-  const [description, setDescription] = useState('');
-  const [showSuccessMsg, setShowSuccessMsg] = useState(false);
-  const [showErrMsg, setShowErrMsg] = useState(false);
-
   const breweryId = navigation.getParam('breweryId')
   const breweryName = navigation.getParam('breweryName')
   const breweryFontSize = navigation.getParam('breweryFontSize')
   const isEditingAReview = navigation.getParam('isEditingAReview')
-  const reviewId = navigation.getParam('reviewId')
+  const review = navigation.getParam('review')
+  var reviewId = '';
   var reviewDescription = ''
-  var reviewRating = 3
+  var reviewRating = 3;
 
-  //
+  
 
   if (isEditingAReview) {
-    // need to make a context method for getting a review by using the review id
-    // var review = getReview(reviewId)
-    // console.log('reviewId: ' + reviewId);
-    // console.log('fvknlfnvljbrvjsbrkbv');
-    // console.log(review.results);
-    reviewDescription = 'REVIEW DESCRIPTION' //placeholder
-    reviewRating = 2 //placeholder
+      reviewDescription = review.message;
+      reviewRating = review.rating;
+      reviewId = review.id;
+
   }
+
+  const [ratingNum, setRatingNum] = useState(reviewRating);
+  const [description, setDescription] = useState(reviewDescription);
+
+  const [showSuccessMsg, setShowSuccessMsg] = useState(false);
+  const [showErrMsg, setShowErrMsg] = useState(false);
+
 
 
   logMethod = () => {
