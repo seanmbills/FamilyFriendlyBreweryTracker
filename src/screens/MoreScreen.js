@@ -8,18 +8,25 @@ import { FlatList } from 'react-native-gesture-handler';
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as AuthContext} from '../context/AuthContext';
 import {Context as BreweryContext} from '../context/BreweryContext'
-import {Context as ReviewContext} from '../context/ReviewContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
+import {Context as ReviewContext} from '../context/ReviewContext';
 
 const MapAuthContext = ({navigation}) => {
     return (
-        <AuthContext.Consumer>
+        <ReviewContext.Consumer>
             {
-                context => (<MoreScreenComponent navigation={navigation} context={context} />)
+            reviewContext => (
+                <AuthContext.Consumer>
+                    {
+                    context => (<MoreScreenComponent navigation={navigation} context={context} reviewContext={reviewContext}/>)
+                    }
+                </AuthContext.Consumer>
+                )
             }
-        </AuthContext.Consumer>
+        </ReviewContext.Consumer>
+        
     )
 }
 
@@ -38,12 +45,21 @@ class MoreScreenComponent extends Component {
 
 
     componentDidMount() {
+        
+        // let {getUserReviews} = this.props.reviewContext;
+        // console.log(getUserReviews)
         let {getOwnedBreweries, clearBreweryContext} = this.context
+        
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
+            console.log(this.props)
             var response = await getOwnedBreweries({token: this.props.context.state.token});
             if (!response || response.status >= 400) {
                 this.setState({showUserErr: true})
             }
+           
+
+            //Get user's reviews
+            // var reviewResponse = await getUserReviews();
             this.setState({isLoading: false})
         })
     }
@@ -89,7 +105,7 @@ const MoreScreen = ({navigation, noUser}) => {
      */
 
     const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
-    const {getReview} = useContext(ReviewContext);
+    const revContext = useContext(ReviewContex);
     const [showDialog, setShowDialog] = useState(false);
 
     /*
@@ -126,16 +142,23 @@ const MoreScreen = ({navigation, noUser}) => {
                 }}
                 showsHorizontalScrollIndicator={false}
                 />
+                <Text>Review:</Text>
+                <FlatList
+                    data={revContext.state.results}
+                    keyExtractor={(review) => {return review.id}}
+                    renderItem={({review}) => {
+                        return (
+                            <TouchableOpacity
+                                onPress={ async() => {
+                                    console.log(review.id);
+                                }}
+                            >
+                                <Text>This is a review</Text>
+                            </TouchableOpacity>
+                        )
+                    }}
+                />
             </View>
-              <TouchableOpacity
-              onPress={ async ()=>
-              {
-                  await getReview({reviewId: "5dc88df68c35b50004bf5995"});
-                  navigation.navigate('WriteReview', {breweryId: "5dc6139c43f7ef00046c02b8", breweryName:"Scofflaw", breweryFontSize: breweryFont, isEditingAReview: true, reviewId: '5dc88df68c35b50004bf5995'});
-              }}
-              >
-              <Text style={styles.subHeader}>Click here to edit Carl's review</Text>
-              </TouchableOpacity>
             </View>
             }
             { !noUser && //Determines if will show autentication required features
