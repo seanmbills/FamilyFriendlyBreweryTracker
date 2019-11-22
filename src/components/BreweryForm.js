@@ -107,7 +107,12 @@ const BreweryForm = ({isNew, navigation}) => {
      * @return - a javascript object which contains ALL accommodations fields, both those which are set and those which aren't
      */
     const fillAccommodationsFromBackend = (map) => {
-       
+        
+        // If not given a map, or the map is null, create  a new blank object so all fields will get set to false
+        console.log(map)
+        if (!map || map === null || map === undefined) {
+            map = new Map();
+        }
         var accommodationsMap = new Object();
         
         accommodationsMap['petFriendly'] = new Object();
@@ -151,6 +156,7 @@ const BreweryForm = ({isNew, navigation}) => {
         return accommodationsMap;
     }
 
+    const authContext = useContext(AuthContex);
     const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
     const authContext = useContext(AuthContext)
     
@@ -177,7 +183,7 @@ const BreweryForm = ({isNew, navigation}) => {
     const [breweryState, setState] = (brewery) ? useState(brewery.address.state) : useState('');
     const [zipCode, setZipCode] = (brewery) ? useState(brewery.address.zipCode) : useState('');
     const [price, setPrice] = (brewery) ? useState(brewery.price) : useState(0);
-    const [email, setEmail] = (brewery) ? useState(brewery.email) : useState(0);
+    const [email, setEmail] = (brewery) ? useState(brewery.email) : useState('');
     const [website, setWebsite] = (brewery) ? useState(brewery.website) : useState('');
     const priceButtons = [ '$', '$$', '$$$' , '$$$$']
     const [phoneNumber, setPhoneNumber] = (brewery) ? useState(brewery.phoneNumber) : useState('');
@@ -284,8 +290,7 @@ const BreweryForm = ({isNew, navigation}) => {
         });
         
         if (!result.cancelled) {
-            // setBreweryImage1(result)
-            // data.push(result)
+           
             if (breweryImageNumber === 1) {
                 console.log('setting image 1')
                 setBreweryImage1(result)
@@ -293,20 +298,16 @@ const BreweryForm = ({isNew, navigation}) => {
                     setImageCount((imageCount + 1) % 3)
                 console.log('adding data to list')
                 data.push(result)
-                console.log("length: " + data.length)
-                // setData([result])
+                
             } else if (breweryImageNumber === 2)  {
                 setBreweryImage2(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
-                // this.dataArray.data.push(result.uri)
-                // setData([breweryImage1, breweryImage2])
+                
             } else if (breweryImageNumber === 0) {
                 setBreweryImage3(result)
                 if (update)
                     setImageCount((imageCount + 1) % 3)
-                // this.dataArray.data.push(result.uri)
-                // setData([breweryImage1, breweryImage2, breweryImage3])
             }
         }
     };
@@ -482,7 +483,7 @@ const BreweryForm = ({isNew, navigation}) => {
             default:
                 setDayPicked('');
         }
-        // setSelectedTime(time)
+        
     }
 
 
@@ -745,6 +746,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     value={zipCode}
                     onChangeText={(newZip) => setZipCode(newZip)}
                     placeholder="Zip Code"
+                    keyboardType="decimal-pad"
                     maxLength={5}
                 />
                 <Text style={styles.errorMsg}>{addressErrorMsg}</Text>
@@ -1358,46 +1360,57 @@ const BreweryForm = ({isNew, navigation}) => {
                         } else if (!validatePhoneNumber) {
                             setPhoneErrorMsg("Must provide a valid phone number");
                             return;
-                        } else if (!validateEmail(email)) {
-                            setEmailErrorMsg("Must provide a valid email address");
-                            return;
-                        } else if (!validateURL(website)) {
-                            setWebsiteErrorMsg("Must provide a valid website URL");
-                            return;
                         } 
-                        
 
                         var kidHoursSameAsNormal = kidHoursSame; //rename kidHoursFriendly state object to what backend expects
                         
-                        var response;
+                        var params = {
+                            token: authContext.state.token,
+                            name: name,
+                            address: address,
+                            price: price,
+                            phoneNumber: phoneNumber,
+                            businessHours: businessHours,
+                            kidHoursSameAsNormal: kidHoursSameAsNormal,
+                            alternativeKidFriendlyHours: alternativeKidFriendlyHours,
+                            accommodations: accommodations,
+                            breweryImage1: breweryImage1,
+                            breweryImage2: breweryImage2,
+                            breweryImage3: breweryImage3
+                        }
+
+                        if (email && email.length > 0 && validateEmail(email)) {
+                            params['email'] = email;
+                        } else if (email && email.length > 0){
+                            setEmailErrorMsg("Must provide a valid email address");
+                            return;
+                        }
+
+                        if (website && website.length > 0 && validateURL(website)) {
+                            params['website'] = website
+                        } else if (website && website.length > 0){
+                            setWebsiteErrorMsg("Must provide a valid website URL");
+                            return;
+                        }
+                        
                         
                         // If brewery is being used to create a new brewery, hit createBrewery route
                         if (isNew) {
                             setBufferText('Creating New Location...')
                             setShowBufferPopup(true)
-                            response =  await createBrewery({
-                                name, address, price, phoneNumber, 
-                                email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations, token: authContext.state.token,
-                                breweryImage1, breweryImage2, breweryImage3
-                            });
+                            response = await createBrewery(params)
+                            getOwnedBreweries({token: authContext.state.token});
                             setShowBufferPopup(false)
                            
                         } else { // if brewery is being used to edit brewery, hit updateBrewery route
                             var breweryId = brewery._id;
+                            params['breweryId'] = breweryId;
                             setBufferText('Updating Location...')
                             setShowBufferPopup(true)
-                            response = await updateBrewery({
-                                breweryId,
-                                name, address, price, phoneNumber, 
-                                email, website, businessHours, kidHoursSameAsNormal, 
-                                alternativeKidFriendlyHours, accommodations, token: authContext.state.token,
-                                breweryImage1, breweryImage2, breweryImage3
-                            });
+                            response = await updateBrewery(params)
                             getOwnedBreweries({token: authContext.state.token});
                             setShowBufferPopup(false)
                         }
-                        //console.log("response status " , response)
 
                         // If response was not received, or an error code was provided, set dialog error message
                         if (!response || parseInt(response.status) >= 400) {
