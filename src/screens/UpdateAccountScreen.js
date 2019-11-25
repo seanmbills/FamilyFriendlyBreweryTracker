@@ -468,7 +468,14 @@ const UpdateAccountScreen = ({navigation}) => {
         <BufferPopup isVisible={showDialog} text={bufferText}/>
         <Dialog
             visible={resultDialogVisible}
-            onTouchOutside={()=> setResultDialogVisible(false)}
+            onTouchOutside={()=> {
+                setResultDialogVisible(false)
+                setNeedPassword(false);
+                setChangeEmail(false);
+                setChangePass(false);
+                setChangePhone(false);
+                setShowPic(true);
+            }}
         >
             <DialogContent
                 style={styles.resultDialog}
