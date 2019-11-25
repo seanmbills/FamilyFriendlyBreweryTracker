@@ -26,7 +26,7 @@ const MapAuthContext = ({navigation}) => {
                 )
             }
         </ReviewContext.Consumer>
-        
+
     )
 }
 
@@ -45,16 +45,16 @@ class MoreScreenComponent extends Component {
 
 
     componentDidMount() {
-        
+
         let {getUserReviews} = this.props.reviewContext;
         let {getOwnedBreweries} = this.context
-        
+
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             var response = await getOwnedBreweries({token: this.props.context.state.token});
             if (!response || response.status >= 400) {
                 this.setState({showUserErr: true})
             }
-           
+
 
             //Get user's reviews
             var reviewResponse = await getUserReviews({token: this.props.context.state.token});
@@ -93,7 +93,7 @@ MoreScreenComponent.contextType = BreweryContext
 const MoreScreen = ({navigation, noUser}) => {
 
     /*
-     *  Need to import signout method to allow user's to signout of application. 
+     *  Need to import signout method to allow user's to signout of application.
      */
     const {signout} = useContext(AuthContext);
 
@@ -110,7 +110,7 @@ const MoreScreen = ({navigation, noUser}) => {
 
     const screenWidth = Math.round(Dimensions.get('window').width);
     const screenHeight = 50;
-    
+
     /*
      * Added this navigation listener so when a user navigates to the MoreScreen the app will
      * fetch all breweries the user's owns
@@ -146,7 +146,7 @@ const MoreScreen = ({navigation, noUser}) => {
             </View>
             </View>
             }
-            { revContext.state.results && revContext.state.results.length > 0 && 
+            { revContext.state.results && revContext.state.results.length > 0 &&
             <View style={styles.contentContainer}>
             <Text style={styles.subHeader}>My Reviews</Text>
                 <FlatList
@@ -156,12 +156,12 @@ const MoreScreen = ({navigation, noUser}) => {
                         return (
                             <TouchableOpacity
                                 onPress={ async() => {
-                                    var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/("Scofflaw Brewing".length))
+                                    var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(item.breweryName.length))
                                     breweryFont = Math.min(breweryFont, 35)
                                     navigation.navigate("WriteReview",
                                         {
                                             breweryId: item.breweryId,
-                                            breweryName: 'Scofflaw Brewing co.',
+                                            breweryName: item.breweryName,
                                             breweryFontSize: breweryFont,
                                             isEditingAReview: true,
                                             review: item
@@ -183,7 +183,7 @@ const MoreScreen = ({navigation, noUser}) => {
                     title="Create Brewery"
                     onPress={() => {
                         // call here ensures no data will be used to populate breweryform on create screen
-                        clearIndividualBreweryResult(); 
+                        clearIndividualBreweryResult();
                         navigation.navigate('CreateBrewery')
                     }}
                 />
