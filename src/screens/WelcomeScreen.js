@@ -82,33 +82,33 @@ class WelcomeScreenComponent extends Component {
                         <TouchableOpacity 
                             onPress={()=>this.setState({guestPopup: true})}
                         >
-                            <Text style={styles.guestLink}>Continue as guest</Text>
+                            <Text style={styles.guestLink}>Continue as Guest</Text>
                         </TouchableOpacity>
                     </View>
                     <Dialog 
                         visible={this.state.guestPopup}
-                        style={styles.dialogContent}
+                        style={{backgroundColor: '#d6d6d6'}}
                     >
-                        <DialogContent style={styles.dialogContent}>
+                        <DialogContent style={{backgroundColor: '#d6d6d6'}}>
                             { !this.state.showErr && 
-                            <View stye={styles.dialogContent}>
-                            <Text style={styles.dialogText}>Are you over 21 years old?</Text>
-                            <WelcomeButton
-                                title="Yes"
-                                onPress={async ()=>{
-                                    await clearUserToken();
-                                    await this.setState({guestPopup: false,});
-                                    this.props.navigation.navigate('BreweryList');
-                                }}
-                            />
-                            <WelcomeButton
-                                title="No"
-                                onPress={()=>this.setState({showErr: true})}
-                            />  
+                            <View style={styles.dialogContent}>
+                                <Text style={styles.dialogText}>Are you over 21 years old?</Text>
+                                <WelcomeButton
+                                    title="Yes"
+                                    onPress={async ()=>{
+                                        await clearUserToken();
+                                        await this.setState({guestPopup: false,});
+                                        this.props.navigation.navigate('BreweryList');
+                                    }}
+                                />
+                                <WelcomeButton
+                                    title="No"
+                                    onPress={()=>this.setState({showErr: true})}
+                                />  
                             </View>
                             }   
                             {this.state.showErr &&
-                            <View>
+                            <View style={styles.dialogContent}>
                                 <Text style={styles.dialogText}>You must be at least 21 years old to use this application</Text>
                                 <WelcomeButton
                                     title="Cancel"
@@ -155,11 +155,12 @@ const styles = StyleSheet.create({
     },
     dialogContent: {
         alignItems: 'center',
-        backgroundColor: '#d6d6d6'
+
     },
     dialogText: {
         fontSize: 20,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginTop: 5
     },
     text: {
         alignSelf: 'center',

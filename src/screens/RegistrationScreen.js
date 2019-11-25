@@ -192,11 +192,11 @@ class RegistrationScreenComponent extends Component {
                         />
                         {   
                             !this.state.profilePic && 
-                            <Image source={require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
+                            <Image source={require('../../assets/EmptyProfilePic.png')} style={styles.imageStyle} />
                         }  
                         { 
                             this.state.profilePic &&
-                            <Image source={{ uri: this.state.profilePic.uri }} style={{ width: 200, height: 200 }} />
+                            <Image source={{ uri: this.state.profilePic.uri }} style={styles.imageStyle} />
                         }
                     </View>
 
@@ -307,6 +307,7 @@ class RegistrationScreenComponent extends Component {
                     <View style={styles.formElement}>
                         <Input
                             value={this.state.zip}
+                            maxLength={5}
                             keyboardType="number-pad"
                             labelStyle={{color: 'black', fontSize: 20}}
                             label='Zip Code'
@@ -325,6 +326,7 @@ class RegistrationScreenComponent extends Component {
                     <View style={styles.formElement}>
                         <Input
                             value={this.state.phone}
+                            maxLength={10}
                             keyboardType="number-pad"
                             labelStyle={{color: 'black', fontSize: 20}}
                             label='Phone Number'
@@ -432,6 +434,11 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         marginBottom: 5,
         marginLeft: 10
+    },
+    imageStyle: {
+        width: 200,
+        height: 200,
+        marginTop: 10
     },
     buttonContainer: {
         alignItems: "center",

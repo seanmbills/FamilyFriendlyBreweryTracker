@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Button, Image } from 'react-native';
 import { Context as AuthContext } from '../context/AuthContext';
 import { TextInput, TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
-import {withNavigation} from 'react-navigation';
+import {Input} from 'react-native-elements';
 
 // Local imports
 import WelcomeButton from '../components/WelcomeButton';
@@ -76,8 +76,8 @@ class UserUpdateAccount extends Component {
                 }
                 {
                     !this.state.isLoading && !this.state.foundUser &&
-                    <View>
-                        <Text>You must login to visit this part of the app</Text>
+                    <View style={{alignItems: 'center', flex: 1, backgroundColor: styles.background.backgroundColor}}>
+                        <Text style={styles.inputTitle}>You Must Login to Visit this Part of the App</Text>
                         <WelcomeButton
                             title="Login or Register"
                             onPress={()=>this.props.navigation.navigate("loginFlow")}
@@ -158,7 +158,7 @@ const UpdateAccountScreen = ({navigation}) => {
     const [ errDialogVisible, setErrDialogVisible ] = useState(false);
 
     return ( 
-        <ScrollView style={styles.background}>
+        <ScrollView keyboardDismissMode='on-drag' style={styles.background}>
             <Text style={styles.title}>Update Account</Text>
             {
                 showPic && 
@@ -169,15 +169,15 @@ const UpdateAccountScreen = ({navigation}) => {
                     />
                     {
                         !profilePic && (state.profileInfo === null || state.profileInfo.profilePic === '') && 
-                        <Image source = {require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
+                        <Image source = {require('../../assets/EmptyProfilePic.png')} style={styles.imageStyle} />
                     }
                     {
                         !profilePic && state.profileInfo !== null && state.profileInfo.profilePic !== '' && 
-                        <Image source={{uri: state.profileInfo.profilePic}} style={{width: 200, height: 200}} />
+                        <Image source={{uri: state.profileInfo.profilePic}} style={styles.imageStyle} />
                     }
                     {
                         profilePic &&
-                        <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />
+                        <Image source={{ uri: profilePic.uri }} style={styles.imageStyle} />
                     }
                 </View>
             }
@@ -185,30 +185,50 @@ const UpdateAccountScreen = ({navigation}) => {
         { /* a password isn't needed to update zipcode or first and last name */
           !needPassword && 
         <View>
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>Zip Code</Text>
-                <ZipTextField
-                    value={zipCode}
-                    onChangeText={(newZip) => setZipCode(newZip)}
-                />
+            <View style={styles.formElement}>
+                    <Input
+                        value={zipCode}
+                        keyboardType="number-pad"
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Zip Code'
+                        leftIcon={{type: 'font-awesome', name: 'map-marker'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        onChangeText={(newZip) => {
+                            setZipCode(newZip);
+                        }}
+                        maxLength={5}
+                    />
             </View>
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>First Name</Text>
-                <TextInput
-                    value={firstName}
-                    onChangeText={(newFirst) => setFirstName(newFirst)}
-                    style={styles.input}
-                    placeholder="first name"
-                />
+            <View style={styles.formElement}>
+                    <Input
+                        value={firstName}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='First Name'
+                        placeholder='First Name'
+                        placeholderTextColor="#262626"
+                        leftIcon={{type: 'font-awesome', name: 'id-badge'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        onChangeText={(newFirst) => {
+                            setFirstName(newFirst);
+                        }}
+                    />
             </View>
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>Last Name</Text>
-                <TextInput
-                    value={lastName}
-                    onChangeText={(newLast) => setLastName(newLast)}
-                    style={styles.input}
-                    placeholder="last name"
-                />
+            <View style={styles.formElement}>
+                    <Input
+                        value={lastName}
+                        labelStyle={{color: 'black', fontSize: 20}}
+                        label='Last Name'
+                        placeholder='Last Name'
+                        placeholderTextColor="#262626"
+                        leftIcon={{type: 'font-awesome', name: 'id-badge'}}
+                        leftIconContainerStyle={{paddingRight: 8}}
+                        inputContainerStyle={{borderBottomColor: 'black'}}
+                        onChangeText={(newLast) => {
+                            setLastName(newLast);
+                        }}
+                    />
             </View>
             <View style={styles.fieldContainer}>
                 <TouchableOpacity onPress={()=> {
@@ -246,10 +266,15 @@ const UpdateAccountScreen = ({navigation}) => {
                     title="Submit"
                     onPress={ async ()=> {
                         
+                        
+                        if (zipCode.length !== 5) {
+                            setResultDialogText("Zip Code must be a length of 5");
+                            setErrDialogVisible(true);
+                            return
+                        }
                         //Set dialog text and make it visible
                         setBufferText("Updating Account")
                         setShowDialog(true);
-
                         //Make request to backend to update account
                         var response = await userUpdate({firstName, lastName, zipCode, profilePic, token: state.token})
 
@@ -271,21 +296,34 @@ const UpdateAccountScreen = ({navigation}) => {
         { /* if a user wants to update his/her email, display a new email field and a confirm password field */
             needPassword && changeEmail && 
         <View>
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>Confirm Password</Text>
-                <PasswordField
+            <View style={styles.formElement}>
+                <Input
                     value={oldPassword}
+                    labelStyle={{color: 'black', fontSize: 20}}
+                    label='Confirm Password'
+                    placeholder='Password'
+                    placeholderTextColor="#262626"
+                    leftIcon={{type: 'font-awesome', name: 'lock'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
+                    inputContainerStyle={{borderBottomColor: 'black'}}
+                    secureTextEntry={true}
+                    autoCapitalize="none"
+                    autoCorrect={false}
                     onChangeText={(newOldPass) => setOldPassword(newOldPass)}
                 />
             </View>
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>New Email Address</Text>
-                <TextInput
+            <View style={styles.formElement}> 
+                <Input
                     value={newEmail}
-                    onChangeText={(newAddress) => setNewEmail(newAddress)}
-                    style={styles.input}
-                    placeholder="last name"
+                    labelStyle={{color: 'black', fontSize: 20}}
+                    label='New Email Address'
+                    placeholder='Email Address'
+                    placeholderTextColor="#262626"
+                    leftIcon={{type: 'font-awesome', name: 'envelope'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
+                    inputContainerStyle={{borderBottomColor: 'black'}}
                     autoCapitalize="none"
+                    onChangeText={(newAddress) => setNewEmail(newAddress)}
                 />
             </View>
             <View style={styles.buttonContainer}>
@@ -325,25 +363,52 @@ const UpdateAccountScreen = ({navigation}) => {
         }
         { /* if a user wants to update his/her password, display a new password field and a confirm password field */
             needPassword && changePass && 
-        <View>  
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>Old Password</Text>
-                <PasswordField
+        <View>
+            <View style={styles.formElement}>
+                <Input
                     value={oldPassword}
+                    labelStyle={{color: 'black', fontSize: 20}}
+                    label='Old Password'
+                    placeholder='Password'
+                    placeholderTextColor="#262626"
+                    leftIcon={{type: 'font-awesome', name: 'lock'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
+                    inputContainerStyle={{borderBottomColor: 'black'}}
+                    secureTextEntry={true}
+                    autoCapitalize="none"
+                    autoCorrect={false}
                     onChangeText={(newOldPass) => setOldPassword(newOldPass)}
                 />
             </View>
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>New Password</Text> 
-                <PasswordField
+            <View style={styles.formElement}>
+                <Input
                     value={newPassword}
+                    labelStyle={{color: 'black', fontSize: 20}}
+                    label='New Password'
+                    placeholder='Password'
+                    placeholderTextColor="#262626"
+                    leftIcon={{type: 'font-awesome', name: 'lock'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
+                    inputContainerStyle={{borderBottomColor: 'black'}}
+                    secureTextEntry={true}
+                    autoCapitalize="none"
+                    autoCorrect={false}
                     onChangeText={(newPass) => setNewPassword(newPass)}
                 />
             </View>
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>Confirm New Password</Text> 
-                <PasswordField
+            <View style={styles.formElement}>
+                <Input
                     value={confirmPassword}
+                    labelStyle={{color: 'black', fontSize: 20}}
+                    label='Confirm New Password'
+                    placeholder='Password'
+                    placeholderTextColor="#262626"
+                    leftIcon={{type: 'font-awesome', name: 'lock'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
+                    inputContainerStyle={{borderBottomColor: 'black'}}
+                    secureTextEntry={true}
+                    autoCapitalize="none"
+                    autoCorrect={false}
                     onChangeText={(newPass) => setConfirmPassword(newPass)}
                 />
             </View>
@@ -383,23 +448,37 @@ const UpdateAccountScreen = ({navigation}) => {
         { /* if a user wants to update his/her phone number, display a new phonenumber field and a confirm password field */
             needPassword && changePhone &&
         <View>
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>Confirm Password</Text>
-                <PasswordField
+            <View style={styles.formElement}>
+                <Input
                     value={oldPassword}
+                    labelStyle={{color: 'black', fontSize: 20}}
+                    label='Confirm Password'
+                    placeholder='Password'
+                    placeholderTextColor="#262626"
+                    leftIcon={{type: 'font-awesome', name: 'lock'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
+                    inputContainerStyle={{borderBottomColor: 'black'}}
+                    secureTextEntry={true}
+                    autoCapitalize="none"
+                    autoCorrect={false}
                     onChangeText={(newOldPass) => setOldPassword(newOldPass)}
                 />
             </View>
-            <View style={styles.fieldContainer}>
-                <Text style={styles.inputTitle}>New Phone #</Text>
-                <PhoneInput
-                        placeholder="Enter phone number"
-                        value={newPhone}
-                        onChangePhoneNumber={ (newNumber)=> {
-                            setNewPhone(newNumber);
-                        }}
-                        style={styles.input}   
-                    />
+            <View style={styles.formElement}>
+                <Input
+                    value={newPhone}
+                    keyboardType="number-pad"
+                    labelStyle={{color: 'black', fontSize: 20}}
+                    label='New Phone Number'
+                    placeholder='XXX-XXX-XXXX'
+                    placeholderTextColor="#262626"
+                    leftIcon={{type: 'font-awesome', name: 'phone'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
+                    inputContainerStyle={{borderBottomColor: 'black'}}
+                    onChangeText={ (newNumber)=> {
+                        setNewPhone(newNumber);
+                    }}
+                />
             </View>
             <View style={styles.buttonContainer}>
                 <WelcomeButton
@@ -450,7 +529,7 @@ const UpdateAccountScreen = ({navigation}) => {
         </View>
         }
         { !needPassword &&
-        <View style={styles.buttonContainer}>
+        <View style={styles.bottomButtonContainer}>
                 <WelcomeButton
                     onPress={()=> {
                         setNeedPassword(false);
@@ -517,6 +596,11 @@ const styles = StyleSheet.create({
         alignSelf: "center",
 
     },
+    formElement: {
+        marginTop: 20,
+        marginBottom: 20,
+        alignItems: 'center'
+    },
     inputTitle: {
         fontSize: 20,
         textAlign: "center",
@@ -531,19 +615,26 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: 200
     },
+    imageStyle: {
+        width: 200,
+        height: 200,
+        marginTop: 10
+    },
     buttonContainer: {
         alignItems: "center"
+    },
+    bottomButtonContainer: {
+        alignItems: "center",
+        marginBottom: 50
     },
     needPassLink: {
         fontSize: 20,
         fontWeight: "bold"
     },
     errMsg: {
-        color: "#eb1809",
-        fontSize: 20,
-        textAlign: "center",
-        marginLeft: 5,
-        marginRight: 5
+        color: "red",
+        fontSize: 12,
+        marginLeft: 15
     },
     resultDialogText: {
         alignSelf: 'center',

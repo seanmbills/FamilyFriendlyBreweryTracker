@@ -1,4 +1,4 @@
-import React, {useState, useContext } from 'react'
+import React, {useState, useContext, Component, useEffect } from 'react'
 import {View, Text, Button, StyleSheet, TextInput, 
     Switch, ScrollView, TouchableWithoutFeedback, Keyboard} from 'react-native'
 import {Feather } from '@expo/vector-icons'
@@ -7,15 +7,54 @@ import Modal from 'react-native-modal'
 import { ButtonGroup } from 'react-native-elements'
 import {Rating} from 'react-native-ratings'
 import ModalDropdown from 'react-native-modal-dropdown';
-import {Location, Permissions} from 'expo';
 import Checkbox from 'react-native-check-box';
 import {Context as BreweryContext} from '../context/BreweryContext';
 import {Context as AuthContext} from '../context/AuthContext';
 
+import * as Permissions from 'expo-permissions'
+import * as Location from 'expo-location'
+
+class SearchBarComponent extends Component {
+    state = {
+        location: null,
+    }
+
+    componentWillMount() {
+          this._getLocationAsync();
+    }
+    
+    _getLocationAsync = async () => {
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    
+        if (status === 'granted') {
+            let location = await Location.getCurrentPositionAsync({});
+            this.setState({ location });
+            console.log("location: " + this.state.location)
+        }
+    };
+
+    render() {
+        return (
+            <SearchBar location={this.state.location} 
+                navigation={this.props.navigation} term={this.props.term} 
+                onTermChange={this.props.onTermChange} 
+                userZip={this.props.userZip} />
+        )
+    }
+}
 
 
-const SearchBar = ({navigation, term, onTermChange, userZip}) => {
 
+const SearchBar = ({navigation, term, onTermChange, userZip, location}) => {
+    var latitude;
+    var longitude;
+    location === null ? null : latitude = location.coords.latitude
+    location === null ? null : longitude = location.coords.longitude
+    console.log(latitude)
+    console.log(longitude)
+
+    location === null ? null : console.log('location.lat: ' + JSON.stringify(location.coords.latitude))
+    location === null ? null : console.log('location.long: ' + JSON.stringify(location.coords.longitude))
     const {getSearchResults, clearErrorMessage} = useContext(BreweryContext);
     const {state} = useContext(AuthContext);
 
@@ -27,10 +66,10 @@ const SearchBar = ({navigation, term, onTermChange, userZip}) => {
     const [distanceIndex, setDistanceIndex] = useState(1);
     const [distance, setDistance] = useState(5 * 1609.34); //(5 miles converted into meters for backend)
     const [useLocation, setUseLocation] = useState(false)
-    const [latitude, setLatitude] = useState('');
-    const [longitude, setLongitude] = useState('');
+    // const [latitude, setLatitude] = useState('')
+    // const [longitude, setLongitude] = useState('')
     const [locState, setLocState] = useState('');
-    const [zipCode, setZipCode] = (state.profileInfo) ? useState(state.profileInfo.zipCode) : useState('30332')
+    const [zipCode, setZipCode] = (state.token === null || state.token === '') ? useState('30332') : useState('')
     const [waterStations, setWaterStations] = useState(false);
     const [indoorSpaces, setIndoorSpaces] = useState(false);
     const [outdoorSpaces, setOutdoorSpaces] = useState(false);
@@ -46,6 +85,8 @@ const SearchBar = ({navigation, term, onTermChange, userZip}) => {
     const [strollerSpace, setStrollerSpace] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [name, setName] = useState('');
+
+    const milesOptions = ["1 mile", "5 miles", "10 miles", "25 miles", "50 miles"];
 
     
     const priceButtons = ["$", "$$", "$$$", "$$$$"]
@@ -79,30 +120,6 @@ const SearchBar = ({navigation, term, onTermChange, userZip}) => {
         return accommodationsSearch;
     }
 
-    // findCurrentLocation = () => {
-    //     navigator.geolocation.getCurrentPosition(
-    //         position => {
-    //             const lat = JSON.stringify(position.coords.latitude);
-    //             const long = JSON.stringify(position.coords.longitude);
-    //             setLatitude(lat);
-    //             setLongitude(long);
-    //         },
-    //         { enableHighAccuracty: false, timeout: 20000, maximumAge: 1000 }
-    //     );
-    // };
-
-    // findCurrentLocationAsync = async () => {
-    //     console.log("Finding current location")
-    //     let { status } = await Permissions.askAsync(Permissions.Location);
-
-    //     if ( status !== 'granted') {
-    //         setUseLocation(false);
-    //     } else {
-    //         let location = await Location.getCurrentPositionAsync({});
-    //         setLocState({location});
-    //     }
-    // };
-
     renderModalContent = () => (
         <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()}>
         <View keyboardDismissMode='on-drag' style={styles.content}>
@@ -114,9 +131,6 @@ const SearchBar = ({navigation, term, onTermChange, userZip}) => {
                 <Text>Use Current Location:</Text>
                 <Switch onValueChange={() => {
                     setUseLocation(!useLocation);
-                    // if (useLocation) {
-                    //     this.findCurrentLocationAsync;
-                    // }
                 }} 
                 value={useLocation}/>
             </View>
@@ -140,6 +154,7 @@ const SearchBar = ({navigation, term, onTermChange, userZip}) => {
                     value={zipCode}
                     placeholder="Enter Zip Code"
                     style={styles.zipInput}
+                    maxLength={5}
                 />
             </View>
             }
@@ -175,7 +190,7 @@ const SearchBar = ({navigation, term, onTermChange, userZip}) => {
                 <ModalDropdown 
                     options={["1 mile", "5 miles", "10 miles", "25 miles", "50 miles"]}
                     defaultIndex={distanceIndex}
-                    defaultValue="5 miles"
+                    defaultValue={milesOptions[distanceIndex]}
                     onSelect={(index) => {
                         var options = [1, 5, 10, 25, 50];
                         setDistanceIndex(parseInt(index));
@@ -300,13 +315,25 @@ const SearchBar = ({navigation, term, onTermChange, userZip}) => {
             <View style={{ marginTop: 25, }}>
                 <Button 
                     onPress={()=> {
-                    const accommodationsSearch = buildAccommodationMap();
-                    //onSearchSubmit(accommodationsSearch);
-                    getSearchResults({
-                        name, latitude, longitude, zipCode, distance,
-                        maximumPrice, accommodationsSearch, openNow,
-                        kidFriendlyNow, minimumRating
-                    });}}
+                        const accommodationsSearch = buildAccommodationMap();
+                        //onSearchSubmit(accommodationsSearch);
+                        var req;
+                        if (useLocation) {
+                            req = {
+                                name, latitude, longitude, zipCode, distance,
+                                maximumPrice, accommodationsSearch, openNow,
+                                kidFriendlyNow, minimumRating
+                            }
+                            console.log("req: " + JSON.stringify(req))
+                        } else {
+                            req = {
+                                name, latitude: '', longitude: '', zipCode, distance,
+                                maximumPrice, accommodationsSearch, openNow,
+                                kidFriendlyNow, minimumRating
+                            }
+                        }
+                        getSearchResults(req);
+                    }}
                     title="Apply to Search"
                     >
                 </Button>
@@ -325,18 +352,31 @@ const SearchBar = ({navigation, term, onTermChange, userZip}) => {
                 onChangeText={(newName) => setName(newName)}
                 autoCapitalize="none"
                 autoCorrect={false}
-                onEndEditing={() => {
+                onEndEditing={async () => {
                     const accommodationsSearch = buildAccommodationMap();
-                    getSearchResults({
-                        name, latitude, longitude, zipCode, distance,
-                        maximumPrice, accommodationsSearch, openNow,
-                        kidFriendlyNow, minimumRating
-                    });
+                    var req;
+                    if (useLocation) {
+                        console.log('using lat/long')
+                        req = {
+                            name, latitude, longitude, zipCode, distance,
+                            maximumPrice, accommodationsSearch, openNow,
+                            kidFriendlyNow, minimumRating
+                        }
+                    } else {
+                        console.log('not using')
+                        req = {
+                            name, latitude: '', longitude: '', zipCode, distance,
+                            maximumPrice, accommodationsSearch, openNow,
+                            kidFriendlyNow, minimumRating
+                        }
+                    }
+                    
+                    getSearchResults(req);
                 }}
             />
             <TouchableOpacity onPress={
                  () => {
-                    if (state.profileInfo) {
+                    if (zipCode === '' && state.profileInfo) {
                         setZipCode(state.profileInfo.zipCode)
                     }
                     setModalOpen(!modalOpen)
@@ -410,4 +450,4 @@ const styles = StyleSheet.create({
       }
 })
 
-export default SearchBar
+export default SearchBarComponent
