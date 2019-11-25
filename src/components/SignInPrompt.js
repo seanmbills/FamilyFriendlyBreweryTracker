@@ -10,8 +10,10 @@ const SignInPrompt = ({navigation, isVisible}) => {
         <Dialog
             visible={shown}
         >
-            <DialogContent>
-                <Text>You must be signed in to access this part of the app</Text>
+            <DialogContent
+                style = {styles.mainContainer}
+            >
+                <Text style={styles.textTitle}>You Must be Signed in to Access this Part of the App</Text>
                 <WelcomeButton
                     title="Login or Register"
                     onPress={async ()=>{
@@ -31,4 +33,15 @@ const SignInPrompt = ({navigation, isVisible}) => {
     )
 }
 
+const styles = StyleSheet.create({
+    mainContainer: {
+        backgroundColor: '#d6d6d6',
+        alignItems: 'center',
+        textAlign: 'center'
+    },
+    textTitle: {
+        fontSize: 20,
+        textAlign: 'center'
+    }
+}) 
 export default SignInPrompt;
