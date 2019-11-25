@@ -26,7 +26,7 @@ const ReadReviewsScreen = ({navigation}) => {
               style={{fontSize: breweryFontSize, textAlign: 'center', fontWeight: 'bold', marginTop: 25, paddingBottom: 5}}>{breweryName}
         </Text>
         <TouchableOpacity onPress={() => {
-            navigation.navigate("WriteReview", {breweryId: breweryId, name:breweryName, breweryFontSize: breweryFontSize});
+            navigation.navigate("WriteReview", {breweryId: breweryId, breweryName:breweryName, breweryFontSize: breweryFontSize, isEditingAReview: false, review: null});
           }}>
           <Text style={styles.writeReview}>Click here to write a review!</Text>
         </TouchableOpacity>

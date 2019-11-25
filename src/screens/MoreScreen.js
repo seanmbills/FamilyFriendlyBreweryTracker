@@ -1,7 +1,8 @@
 // React native imports
 import React, {useState, useContext, useEffect, Component} from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import TimeAgo from 'react-native-timeago';
 
 
 // Local Imports
@@ -11,16 +12,29 @@ import {Context as BreweryContext} from '../context/BreweryContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
+import {Context as ReviewContext} from '../context/ReviewContext';
 
 const MapAuthContext = ({navigation}) => {
     return (
-        <AuthContext.Consumer>
+        <ReviewContext.Consumer>
             {
-                context => (<MoreScreenComponent navigation={navigation} context={context} />)
+            reviewContext => (
+                <AuthContext.Consumer>
+                    {
+                    context => (<MoreScreenComponent navigation={navigation} context={context} reviewContext={reviewContext}/>)
+                    }
+                </AuthContext.Consumer>
+                )
             }
-        </AuthContext.Consumer>
+        </ReviewContext.Consumer>
+
     )
 }
+
+const screenWidth = Math.round(Dimensions.get('window').width);
+const screenHeight = 50;
+var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(19))
+breweryFont = Math.min(breweryFont, 35)
 
 class MoreScreenComponent extends Component {
     state = {
@@ -29,19 +43,30 @@ class MoreScreenComponent extends Component {
         showUserErr: false
     }
 
+
+
     componentDidMount() {
-        let {getOwnedBreweries, clearBreweryContext} = this.context
+
+        let {getUserReviews} = this.props.reviewContext;
+        let {getOwnedBreweries} = this.context
+
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             var response = await getOwnedBreweries({token: this.props.context.state.token});
             if (!response || response.status >= 400) {
                 this.setState({showUserErr: true})
             }
+
+
+            //Get user's reviews
+            var reviewResponse = await getUserReviews({token: this.props.context.state.token});
             this.setState({isLoading: false})
         })
     }
 
     componentWillUnmount() {
         this.focusListener.remove()
+        let {clearBreweryContext} = this.context;
+        clearBreweryContext();
     }
 
     render() {
@@ -62,14 +87,14 @@ MoreScreenComponent.contextType = BreweryContext
 
 
 
-/* 
+/*
  * Screen should contain two main components. 1.) a list of breweries a user "own's" or has created
  * 2.) an button which will navigate users to a screen where they can create a brewery
  */
 const MoreScreen = ({navigation, noUser}) => {
 
     /*
-     *  Need to import signout method to allow user's to signout of application. 
+     *  Need to import signout method to allow user's to signout of application.
      */
     const {signout} = useContext(AuthContext);
 
@@ -79,15 +104,18 @@ const MoreScreen = ({navigation, noUser}) => {
      * clearIndividualBreweryResult is used when navigating to the createBrewery screen.
      * getOwnedBreweries is called when the screen is opened. This pulls down all screens a user owns
      */
-    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult, clearBreweryContext} = useContext(BreweryContext);
+
+    const {state, getBrewery, getOwnedBreweries, clearIndividualBreweryResult} = useContext(BreweryContext);
+    const revContext = useContext(ReviewContext);
     const [showDialog, setShowDialog] = useState(false);
-    
-    /* 
+
+    const screenWidth = Math.round(Dimensions.get('window').width);
+    const screenHeight = 50;
+
+    /*
      * Added this navigation listener so when a user navigates to the MoreScreen the app will
-     * fetch all breweries the user's owns 
+     * fetch all breweries the user's owns
      */
-    console.log("no User: " , noUser)
-    console.log("Current state: " , state)
     return (
         <View style={styles.backgroundContainer}>
              <View style={styles.contentContainer}>
@@ -119,6 +147,36 @@ const MoreScreen = ({navigation, noUser}) => {
             </View>
             </View>
             }
+            { revContext.state.results && revContext.state.results.length > 0 &&
+            <View style={styles.contentContainer}>
+            <Text style={styles.subHeader}>My Reviews</Text>
+                <FlatList
+                    data={revContext.state.results}
+                    keyExtractor={(review) => {return review._id}}
+                    renderItem={({item}) => {
+                        return (
+                            <TouchableOpacity
+                                onPress={ async() => {
+                                    var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(item.breweryName.length))
+                                    breweryFont = Math.min(breweryFont, 35)
+                                    navigation.navigate("WriteReview",
+                                        {
+                                            breweryId: item.breweryId,
+                                            breweryName: item.breweryName,
+                                            breweryFontSize: breweryFont,
+                                            isEditingAReview: true,
+                                            review: item
+                                    });
+                                    //navigation.navigate("WriteReview")
+                                }}
+                            >
+                                <Text>{item.breweryName} - <TimeAgo time={item.postedDate}/></Text>
+                            </TouchableOpacity>
+                        )
+                    }}
+                />
+            </View>
+            }
             { !noUser && //Determines if will show autentication required features
              <View>
             <View style={styles.contentContainer}>
@@ -126,7 +184,7 @@ const MoreScreen = ({navigation, noUser}) => {
                     title="Create Brewery"
                     onPress={() => {
                         // call here ensures no data will be used to populate breweryform on create screen
-                        clearIndividualBreweryResult(); 
+                        clearIndividualBreweryResult();
                         navigation.navigate('CreateBrewery')
                     }}
                 />
@@ -135,7 +193,6 @@ const MoreScreen = ({navigation, noUser}) => {
                 <WelcomeButton
                     title="Logout"
                     onPress={()=> {
-                        clearBreweryContext();
                         signout()
                         navigation.navigate('Welcome');
                     }}
