@@ -358,6 +358,7 @@ const styles = StyleSheet.create({
         fontSize: 40
     },
     boxInView: {
+      backgroundColor: 'white',
       borderRadius: 10,
       borderStyle: 'dashed',
       borderWidth: 1,
