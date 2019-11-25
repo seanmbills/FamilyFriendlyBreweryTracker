@@ -12,6 +12,7 @@
     "buffer": "^5.4.3",
     "crypto": "^1.0.1",
     "expo": "^34.0.4",
+    "expo-ads-admob": "^7.0.0",
     "expo-constants": "^7.0.1",
     "expo-image-manipulator": "^7.0.0",
     "expo-image-picker": "^7.0.0",
