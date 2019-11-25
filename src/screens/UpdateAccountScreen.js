@@ -17,6 +17,7 @@ import Constants from 'expo-constants'
 import * as Permissions from 'expo-permissions'
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
+import SharedStyles from '../../assets/SharedStyles';
 
 
 
@@ -483,7 +484,7 @@ const UpdateAccountScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: "#fcc203",
+        backgroundColor: SharedStyles.backgroundColor,
         flex: 1,
     },
     title: {

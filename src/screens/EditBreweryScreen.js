@@ -6,6 +6,7 @@ import {Text, View, StyleSheet, ScrollView} from 'react-native';
 // Local components import
 import WelcomeButton from '../components/WelcomeButton';
 import BreweryForm from '../components/BreweryForm';
+import SharedStyles from '../../assets/SharedStyles';
 
 /* 
  * Essentially a dummy screen meant to hold a breweryForm component. 
@@ -33,7 +34,7 @@ const EditBreweryScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
     backgroundContainer: {
-        backgroundColor: "#fcc203",
+        backgroundColor: SharedStyles.backgroundColor,
         flex: 1
     },
     contentContainer: {

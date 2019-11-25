@@ -6,6 +6,7 @@ import TimeAgo from 'react-native-timeago';
 
 
 import {Context as ReviewContext} from '../context/ReviewContext';
+import SharedStyles from '../../assets/SharedStyles';
 
 const ReadReviewsScreen = ({navigation}) => {
 
@@ -66,7 +67,7 @@ const ReadReviewsScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fcc203',
+    backgroundColor: SharedStyles.backgroundColor,
     flex: 1
   },
   viewBox: {

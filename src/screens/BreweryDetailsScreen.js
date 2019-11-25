@@ -16,6 +16,7 @@ import {Context as BreweryContext} from '../context/BreweryContext'
 import {Context as ReviewContext} from '../context/ReviewContext'
 import {Rating} from 'react-native-ratings'
 import Emoji from 'react-native-emoji'
+import SharedStyles from '../../assets/SharedStyles'
 
 
 const BreweryDetailsScreen = ({navigation}) => {
@@ -347,6 +348,9 @@ const BreweryDetailsScreen = ({navigation}) => {
 
 
 const styles = StyleSheet.create({
+    scrollView: {
+      backgroundColor: SharedStyles.backgroundColor
+    },
     spaceAtTop: {
         fontSize: 10
     },

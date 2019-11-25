@@ -4,6 +4,7 @@ import {Context as BreweryContext} from '../context/BreweryContext'
 import {Context as AuthContext} from '../context/AuthContext'
 import SearchBar from '../components/SearchBar';
 import ResultsList from '../components/ResultsList'
+import SharedStyles from '../../assets/SharedStyles';
 
 const MapBreweryContext = ({navigation}) => {
     return (
@@ -44,7 +45,7 @@ class BreweryListScreenComponent extends Component {
     render() {
 
         return ( 
-            <View>
+            <View style={styles.mainContainer}>
                 <SearchBar navigation={this.props.navigation} userZip={this.state.userZip}/>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <ResultsList results={this.props.context.state.results} />
@@ -56,6 +57,11 @@ class BreweryListScreenComponent extends Component {
 }
 BreweryListScreenComponent.contextType = AuthContext;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    mainContainer: {
+        backgroundColor: SharedStyles.backgroundColor,
+        flex: 1
+    }
+})
 
 export default MapBreweryContext;

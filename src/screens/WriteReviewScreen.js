@@ -7,6 +7,7 @@ import {Context as AuthContext} from '../context/AuthContext'
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
+import SharedStyles from '../../assets/SharedStyles';
 
 class WriteReviewScreenComponent extends Component {
   state = {
@@ -153,7 +154,7 @@ const WriteReviewScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fcc203',
+    backgroundColor: SharedStyles.backgroundColor,
     flex: 1
   },
   viewBox: {

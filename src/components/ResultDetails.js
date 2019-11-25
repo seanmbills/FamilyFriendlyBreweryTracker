@@ -1,6 +1,7 @@
 import React from 'react'
 import {Rating} from 'react-native-ratings'
 import {View, Text, StyleSheet, Image} from 'react-native'
+import SharedStyles from '../../assets/SharedStyles'
 
 function getPriceSymbol(price) {
     var priceStr = ""
@@ -13,7 +14,7 @@ function getPriceSymbol(price) {
 const ResultDetails = ({result}) => {
     console.log(typeof(result.signedUrl))
     return (
-        <View style={{flex: 1}}>
+        <View style={{flex: 1, backgroundColor: 'white', margin: 7,}}>
             <View style={styles.container}>
                 <View style={{flex: 2, justifyContent:'center', alignContent:'center', alignItems:'center'}}>
                     {

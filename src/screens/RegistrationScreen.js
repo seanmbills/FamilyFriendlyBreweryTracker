@@ -25,6 +25,7 @@ import {validatePassword, validateEmail} from '../api/InputValidation'
 // import EmptyProfilePic from '../../assets/EmptyProfilePic.png'
 
 import BufferPopup from '../components/BufferPopup';
+import SharedStyles from '../../assets/SharedStyles';
 
 class RegistrationScreenComponent extends Component {
     // state objects for the needed input fields
@@ -416,7 +417,7 @@ RegistrationScreenComponent.contextType = AuthContext
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: "#fcc203",
+        backgroundColor: SharedStyles.backgroundColor,
         paddingTop: 40
     },
     formElement: {

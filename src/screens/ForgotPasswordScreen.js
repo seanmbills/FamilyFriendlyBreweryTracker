@@ -10,6 +10,7 @@ import {Input} from 'react-native-elements';
 import WelcomeButton from '../components/WelcomeButton';
 import {validatePassword} from '../api/InputValidation';
 import SubHeading from '../components/SubHeading';
+import SharedStyles from '../../assets/SharedStyles';
 
 
 // NOTE: Had trouble adding KeyboardAvoidingView to this screen but consider trying to add
@@ -186,7 +187,7 @@ const ForgotPasswordScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: "#fcc203",
+        backgroundColor: SharedStyles.backgroundColor,
         paddingTop: 45,
         flex: 1,
     },

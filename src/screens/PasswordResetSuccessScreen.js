@@ -5,6 +5,7 @@ import {View, StyleSheet, Text} from 'react-native'
 // Local imports 
 import WelcomeButton from '../components/WelcomeButton'
 import SubHeading from '../components/SubHeading';
+import SharedStyles from '../../assets/SharedStyles';
 
 // Screen simply indicates if a user's password reset attempt was successful and forces them to navigate back to login
 const PasswordResetSuccessScreen = ({navigation}) => {
@@ -27,7 +28,7 @@ const PasswordResetSuccessScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: "#fcc203",
+        backgroundColor: SharedStyles.backgroundColor,
         flex: 1,
         paddingTop: 40
     },

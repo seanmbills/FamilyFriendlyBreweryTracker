@@ -11,6 +11,7 @@ import {Context as BreweryContext} from '../context/BreweryContext'
 import { withNavigationFocus } from 'react-navigation';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
+import SharedStyles from '../../assets/SharedStyles';
 
 const MapAuthContext = ({navigation}) => {
     return (
@@ -149,7 +150,7 @@ const MoreScreen = ({navigation, noUser}) => {
 
 const styles = StyleSheet.create({
     backgroundContainer: {
-        backgroundColor: "#fcc203",
+        backgroundColor: SharedStyles.backgroundColor,
         flex: 1
     },
     subHeader: {

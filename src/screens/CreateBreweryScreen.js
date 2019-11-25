@@ -5,6 +5,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 // Local Imports
 import BreweryForm from '../components/BreweryForm';
+import SharedStyles from '../../assets/SharedStyles';
 
 /* 
  * Screen is essentially a dummy holder for the Brewery Form component. As this component contains all logic and 
@@ -31,7 +32,7 @@ const CreateBreweryScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
     backgroundContainer: {
-        backgroundColor: "#fcc203",
+        backgroundColor: SharedStyles.backgroundColor,
         flex: 1
     },
     contentContainer: {

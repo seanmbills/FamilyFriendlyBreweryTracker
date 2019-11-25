@@ -11,6 +11,7 @@ import Modal from 'react-native-modal'
 import TitleText from '../components/TitleText';
 import WelcomeButton from '../components/WelcomeButton';
 import BufferPopup from '../components/BufferPopup';
+import SharedStyles from '../../assets/SharedStyles';
 
 /*
  * Screen contains a form which allows a user to login using his/her username/email and password
@@ -136,7 +137,7 @@ LoginScreen.contextType = AuthContext
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: "#fcc203",
+        backgroundColor: SharedStyles.backgroundColor,
         paddingTop: 40
     },
     formElement: {
