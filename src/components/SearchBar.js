@@ -69,7 +69,7 @@ const SearchBar = ({navigation, term, onTermChange, userZip, location}) => {
     // const [latitude, setLatitude] = useState('')
     // const [longitude, setLongitude] = useState('')
     const [locState, setLocState] = useState('');
-    const [zipCode, setZipCode] = (state.profileInfo) ? useState(state.profileInfo.zipCode) : useState('30332')
+    const [zipCode, setZipCode] = (state.token === null || state.token === '') ? useState('30332') : useState('')
     const [waterStations, setWaterStations] = useState(false);
     const [indoorSpaces, setIndoorSpaces] = useState(false);
     const [outdoorSpaces, setOutdoorSpaces] = useState(false);
@@ -152,6 +152,7 @@ const SearchBar = ({navigation, term, onTermChange, userZip, location}) => {
                     value={zipCode}
                     placeholder="Enter Zip Code"
                     style={styles.zipInput}
+                    maxLength={5}
                 />
             </View>
             }
@@ -373,7 +374,7 @@ const SearchBar = ({navigation, term, onTermChange, userZip, location}) => {
             />
             <TouchableOpacity onPress={
                  () => {
-                    if (state.profileInfo) {
+                    if (zipCode === '' && state.profileInfo) {
                         setZipCode(state.profileInfo.zipCode)
                     }
                     setModalOpen(!modalOpen)
