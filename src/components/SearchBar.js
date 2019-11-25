@@ -86,6 +86,8 @@ const SearchBar = ({navigation, term, onTermChange, userZip, location}) => {
     const [showFilters, setShowFilters] = useState(false);
     const [name, setName] = useState('');
 
+    const milesOptions = ["1 mile", "5 miles", "10 miles", "25 miles", "50 miles"];
+
     
     const priceButtons = ["$", "$$", "$$$", "$$$$"]
 
@@ -188,7 +190,7 @@ const SearchBar = ({navigation, term, onTermChange, userZip, location}) => {
                 <ModalDropdown 
                     options={["1 mile", "5 miles", "10 miles", "25 miles", "50 miles"]}
                     defaultIndex={distanceIndex}
-                    defaultValue="5 miles"
+                    defaultValue={milesOptions[distanceIndex]}
                     onSelect={(index) => {
                         var options = [1, 5, 10, 25, 50];
                         setDistanceIndex(parseInt(index));
