@@ -155,6 +155,7 @@ const UpdateAccountScreen = ({navigation}) => {
     //State object which indicates if results popup should be shown
     const [ resultDialogVisible, setResultDialogVisible ] = useState(false);
     const [ resultDialogText, setResultDialogText ] = useState('');
+    const [ errDialogVisible, setErrDialogVisible ] = useState(false);
 
     return ( 
         <ScrollView keyboardDismissMode='on-drag' style={styles.background}>
@@ -265,10 +266,15 @@ const UpdateAccountScreen = ({navigation}) => {
                     title="Submit"
                     onPress={ async ()=> {
                         
+                        
+                        if (zipCode.length !== 5) {
+                            setResultDialogText("Zip Code must be a length of 5");
+                            setErrDialogVisible(true);
+                            return
+                        }
                         //Set dialog text and make it visible
                         setBufferText("Updating Account")
                         setShowDialog(true);
-
                         //Make request to backend to update account
                         var response = await userUpdate({firstName, lastName, zipCode, profilePic, token: state.token})
 
@@ -278,7 +284,7 @@ const UpdateAccountScreen = ({navigation}) => {
                         // If the update failed, show a failure popup
                         if (!response || response.status >= 400) {
                             setResultDialogText("Something went wrong. Unable to update account");
-                            setResultDialogVisible(true);
+                            setErrDialogVisible(true);
                         } else { //Otherwise show a successful popup
                             setResultDialogText("Account Successfully Updated!");
                             setResultDialogVisible(true);
@@ -339,7 +345,7 @@ const UpdateAccountScreen = ({navigation}) => {
                              // If the update failed, show a failure popup
                             if (!response || response.status >= 400) {
                                 setResultDialogText("Something went wrong. Unable to update email");
-                                setResultDialogVisible(true);
+                                setErrDialogVisible(true);
                             } else { //Otherwise show a successful popup
                                 setResultDialogText("Email Successfully Updated!");
                                 setResultDialogVisible(true);
@@ -347,8 +353,8 @@ const UpdateAccountScreen = ({navigation}) => {
 
                         } else {
                             //Show dialog stating email was invalid
-                            setResultDialogText("Email or password entered was not valid");
-                            setResultDialogVisible(true);
+                            setResultDialogText("Email entered was not valid");
+                            setErrDialogVisible(true);
                         }
                     }}
                 />
@@ -426,7 +432,7 @@ const UpdateAccountScreen = ({navigation}) => {
                             // If the update failed, show a failure popup
                             if (!response || response.status >= 400) {
                                 setResultDialogText("Something went wrong. Unable to update password");
-                                setResultDialogVisible(true);
+                                setErrDialogVisible(true);
                             } else { //Otherwise show a successful popup
                                 setResultDialogText("Password Successfully Updated!");
                                 setResultDialogVisible(true);
@@ -493,15 +499,15 @@ const UpdateAccountScreen = ({navigation}) => {
                             // If the update failed, show a failure popup
                             if (!response || response.status >= 400) {
                                 setResultDialogText("Something went wrong. Unable to update phone number");
-                                setResultDialogVisible(true);
+                                setErrDialogVisible(true);
                             } else { //Otherwise show a successful popup
                                 setResultDialogText("Phone Number Successfully Updated!");
                                 setResultDialogVisible(true);
                             }
                         } else {
                             // Show result dialog which states phone number was invalid
-                            setResultDialogText("Phone number entered was not valid");
-                            setResultDialogVisible(true);
+                            setResultDialogText("Phone Number entered was not valid");
+                            setErrDialogVisible(true);
                         }
                     }}
                 />
@@ -537,12 +543,31 @@ const UpdateAccountScreen = ({navigation}) => {
                 />
             </View>
         }
-        {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
+        {/* {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null} */}
 
         <BufferPopup isVisible={showDialog} text={bufferText}/>
         <Dialog
             visible={resultDialogVisible}
-            onTouchOutside={()=> setResultDialogVisible(false)}
+            onTouchOutside={()=> {
+                setResultDialogVisible(false)
+                setNeedPassword(false);
+                setChangeEmail(false);
+                setChangePass(false);
+                setChangePhone(false);
+                setShowPic(true);
+            }}
+        >
+            <DialogContent
+                style={styles.resultDialog}
+            >
+                <Text style={styles.resultDialogText}>{resultDialogText}</Text>
+            </DialogContent>
+        </Dialog>
+        <Dialog
+            visible={errDialogVisible}
+            onTouchOutside={()=> {
+                setErrDialogVisible(false)
+            }}
         >
             <DialogContent
                 style={styles.resultDialog}
