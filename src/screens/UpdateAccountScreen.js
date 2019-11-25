@@ -155,6 +155,7 @@ const UpdateAccountScreen = ({navigation}) => {
     //State object which indicates if results popup should be shown
     const [ resultDialogVisible, setResultDialogVisible ] = useState(false);
     const [ resultDialogText, setResultDialogText ] = useState('');
+    const [ errDialogVisible, setErrDialogVisible ] = useState(false);
 
     return ( 
         <ScrollView style={styles.background}>
@@ -258,7 +259,7 @@ const UpdateAccountScreen = ({navigation}) => {
                         // If the update failed, show a failure popup
                         if (!response || response.status >= 400) {
                             setResultDialogText("Something went wrong. Unable to update account");
-                            setResultDialogVisible(true);
+                            setErrDialogVisible(true);
                         } else { //Otherwise show a successful popup
                             setResultDialogText("Account Successfully Updated!");
                             setResultDialogVisible(true);
@@ -306,7 +307,7 @@ const UpdateAccountScreen = ({navigation}) => {
                              // If the update failed, show a failure popup
                             if (!response || response.status >= 400) {
                                 setResultDialogText("Something went wrong. Unable to update email");
-                                setResultDialogVisible(true);
+                                setErrDialogVisible(true);
                             } else { //Otherwise show a successful popup
                                 setResultDialogText("Email Successfully Updated!");
                                 setResultDialogVisible(true);
@@ -315,7 +316,7 @@ const UpdateAccountScreen = ({navigation}) => {
                         } else {
                             //Show dialog stating email was invalid
                             setResultDialogText("Email entered was not valid");
-                            setResultDialogVisible(true);
+                            setErrDialogVisible(true);
                         }
                     }}
                 />
@@ -366,7 +367,7 @@ const UpdateAccountScreen = ({navigation}) => {
                             // If the update failed, show a failure popup
                             if (!response || response.status >= 400) {
                                 setResultDialogText("Something went wrong. Unable to update password");
-                                setResultDialogVisible(true);
+                                setErrDialogVisible(true);
                             } else { //Otherwise show a successful popup
                                 setResultDialogText("Password Successfully Updated!");
                                 setResultDialogVisible(true);
@@ -419,7 +420,7 @@ const UpdateAccountScreen = ({navigation}) => {
                             // If the update failed, show a failure popup
                             if (!response || response.status >= 400) {
                                 setResultDialogText("Something went wrong. Unable to update phone number");
-                                setResultDialogVisible(true);
+                                setErrDialogVisible(true);
                             } else { //Otherwise show a successful popup
                                 setResultDialogText("Phone Number Successfully Updated!");
                                 setResultDialogVisible(true);
@@ -427,7 +428,7 @@ const UpdateAccountScreen = ({navigation}) => {
                         } else {
                             // Show result dialog which states phone number was invalid
                             setResultDialogText("Phone Number entered was not valid");
-                            setResultDialogVisible(true);
+                            setErrDialogVisible(true);
                         }
                     }}
                 />
@@ -463,7 +464,7 @@ const UpdateAccountScreen = ({navigation}) => {
                 />
             </View>
         }
-        {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null}
+        {/* {state.errorMessage ? <Text style={styles.errorMsg}>{state.errorMessage}</Text> : null} */}
 
         <BufferPopup isVisible={showDialog} text={bufferText}/>
         <Dialog
@@ -475,6 +476,18 @@ const UpdateAccountScreen = ({navigation}) => {
                 setChangePass(false);
                 setChangePhone(false);
                 setShowPic(true);
+            }}
+        >
+            <DialogContent
+                style={styles.resultDialog}
+            >
+                <Text style={styles.resultDialogText}>{resultDialogText}</Text>
+            </DialogContent>
+        </Dialog>
+        <Dialog
+            visible={errDialogVisible}
+            onTouchOutside={()=> {
+                setErrDialogVisible(false)
             }}
         >
             <DialogContent
