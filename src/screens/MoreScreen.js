@@ -2,6 +2,7 @@
 import React, {useState, useContext, useEffect, Component} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import TimeAgo from 'react-native-timeago';
 
 
 // Local Imports
@@ -169,7 +170,7 @@ const MoreScreen = ({navigation, noUser}) => {
                                     //navigation.navigate("WriteReview")
                                 }}
                             >
-                                <Text>{item.message}</Text>
+                                <Text>{item.breweryName} - <TimeAgo time={item.postedDate}/></Text>
                             </TouchableOpacity>
                         )
                     }}

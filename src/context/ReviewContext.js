@@ -119,6 +119,7 @@ const editReview = (dispatch) => {
               'Accept' : 'application/json', 'Content-type' : 'application/json',
               'authorization' : 'Bearer ' + (token)
             }});
+            console.log(response);
             dispatch({type: 'edit', count: response.data.count, payload: response.data})
             return response;
         } catch (err) {
