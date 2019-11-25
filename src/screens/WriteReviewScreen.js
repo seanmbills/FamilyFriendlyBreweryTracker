@@ -60,12 +60,12 @@ const WriteReviewScreen = ({navigation}) => {
   var reviewDescription = ''
   var reviewRating = 3;
 
-  
+
 
   if (isEditingAReview) {
       reviewDescription = review.message;
       reviewRating = review.rating;
-      reviewId = review.id;
+      reviewId = review._id;
 
   }
 
@@ -148,8 +148,8 @@ const WriteReviewScreen = ({navigation}) => {
                     const params = {
                       token: authContext.state.token,
                       breweryId: breweryId,
-                      message: message,
-                      rating: rating,
+                      newMessage: message,
+                      newRating: rating,
                       reviewId: reviewId
                     }
                     var response = await editReview(params);
