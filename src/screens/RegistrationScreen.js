@@ -176,11 +176,11 @@ const RegistrationScreen = ({navigation}) => {
                     />
                     {   
                         !profilePic && 
-                        <Image source={require('../../assets/EmptyProfilePic.png')} style={{width: 200, height: 200}} />
+                        <Image source={require('../../assets/EmptyProfilePic.png')} style={styles.imageStyle} />
                     }  
                     { 
                         profilePic &&
-                        <Image source={{ uri: profilePic.uri }} style={{ width: 200, height: 200 }} />
+                        <Image source={{ uri: profilePic.uri }} style={styles.imageStyle} />
                     }
                 </View>
 
@@ -417,6 +417,11 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         marginBottom: 5,
         marginLeft: 10
+    },
+    imageStyle: {
+        width: 200,
+        height: 200,
+        marginTop: 10
     },
     buttonContainer: {
         alignItems: "center",
