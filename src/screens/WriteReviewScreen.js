@@ -49,7 +49,7 @@ WriteReviewScreenComponent.contextType = AuthContext;
 
 const WriteReviewScreen = ({navigation}) => {
   const {createReview, getBreweryReviews, editReview, getReview} = useContext(ReviewContext);
-  const {state} = useContext(AuthContext)
+  const authContext = useContext(AuthContext)
 
   const breweryId = navigation.getParam('breweryId')
   const breweryName = navigation.getParam('breweryName')
@@ -146,7 +146,7 @@ const WriteReviewScreen = ({navigation}) => {
                     var rating = ratingNum;
                     console.log({breweryId, message, rating, reviewId})
                     const params = {
-                      token: state.token,
+                      token: authContext.state.token,
                       breweryId: breweryId,
                       message: message,
                       rating: rating,
