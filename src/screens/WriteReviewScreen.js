@@ -3,10 +3,12 @@ import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpac
 import {Rating, AirbnbRating} from 'react-native-ratings'
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
-import {Context as AuthContext} from '../context/AuthContext'
+import {Context as AuthContext} from '../context/AuthContext';
+import {Context as BreweryContext} from '../context/BreweryContext';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
+import SharedStyles from '../../assets/SharedStyles';
 
 class WriteReviewScreenComponent extends Component {
   state = {
@@ -50,6 +52,7 @@ WriteReviewScreenComponent.contextType = AuthContext;
 const WriteReviewScreen = ({navigation}) => {
   const {state, createReview, getBreweryReviews} = useContext(ReviewContext);
   const authContext = useContext(AuthContext)
+  const breweryContext = useContext(BreweryContext);
 
   const [ratingNum, setRatingNum] = useState(3);
   const [description, setDescription] = useState('');
@@ -131,6 +134,7 @@ const WriteReviewScreen = ({navigation}) => {
                   <WelcomeButton
                     title="Back"
                     onPress={async ()=>{
+                      await breweryContext.getBrewery({breweryId});
                       await setShowSuccessMsg(false)
                       navigation.goBack()
                     }}
@@ -153,7 +157,7 @@ const WriteReviewScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fcc203',
+    backgroundColor: SharedStyles.backgroundColor,
     flex: 1
   },
   viewBox: {
