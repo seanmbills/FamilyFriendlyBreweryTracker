@@ -2,6 +2,7 @@ import React, {useState, useContext, useEffect, Component} from 'react';
 import {Context as BreweryContext} from '../context/BreweryContext';
 import {Context as AuthContext} from '../context/AuthContext'
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, FlatList, Image} from 'react-native';
+import {Input} from 'react-native-elements';
 
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements';
@@ -710,8 +711,12 @@ const BreweryForm = ({isNew, navigation}) => {
 
 
             <View style={styles.fieldView}>
-                <Text style={styles.fieldTitle}>Brewery Name:</Text>
-                <TextInput style={styles.textInput}
+                <Input 
+                    
+                    labelStyle={{color: 'black', fontSize: 20}}
+                    label="Brewery Name"
+                    placeholderTextColor="#262626"
+                    inputContainerStyle={{borderBottomColor: 'black'}}
                     value={breweryName}
                     onChangeText={(newName) => setBreweryName(newName)}
                     placeholder="Brewery Name"
@@ -720,38 +725,49 @@ const BreweryForm = ({isNew, navigation}) => {
                 <Text style={styles.errorMsg}>{nameErrorMsg}</Text>
             </View>
             <View style={styles.fieldView}>
-                <Text style={styles.fieldTitle}>Brewery Address:</Text>
-                <TextInput style={styles.textInput}
+                <Input
+                    label="Brewery Address"
+                    labelStyle={{color: 'black', fontSize: 20}}
                     value={street}
                     onChangeText={(newStreet) => setStreet(newStreet)}
                     placeholder="Street"
                     autoCapitalize="words"
+                    placeholderTextColor="#262626"
+                    inputContainerStyle={{borderBottomColor: 'black'}}
                 />
-                <TextInput style={styles.textInput}
+                <Input
                     value={city}
                     onChangeText={(newCity) => setCity(newCity)}
                     placeholder="City"
                     autoCapitalize="words"
+                    placeholderTextColor="#262626"
+                    inputContainerStyle={{borderBottomColor: 'black'}}
+            
                 />
-                <TextInput style={styles.textInput}
+                <Input
                     value={breweryState}
                     onChangeText={(newState) => setState(newState)}
                     placeholder="State"
                     autoCapitalize="characters"
+                    placeholderTextColor="#262626"
+                    inputContainerStyle={{borderBottomColor: 'black'}}
                     maxLength={2}
                 />
-                <TextInput style={styles.textInput}
+                <Input
+
                     value={zipCode}
                     onChangeText={(newZip) => setZipCode(newZip)}
                     placeholder="Zip Code"
                     keyboardType="decimal-pad"
+                    placeholderTextColor="#262626"
+                    inputContainerStyle={{borderBottomColor: 'black'}}
                     maxLength={5}
                 />
                 <Text style={styles.errorMsg}>{addressErrorMsg}</Text>
             </View>
 
             <View style={styles.fieldView}>
-                <Text style={styles.fieldTitle}>Relative Price:</Text>
+                <Text style={styles.fieldTitle}>Relative Price</Text>
                 <ButtonGroup
                     onPress={(e) => {setPrice(e)}}
                     selectedIndex={price}
@@ -761,36 +777,52 @@ const BreweryForm = ({isNew, navigation}) => {
             </View>
 
             <View style={styles.fieldView}>
-                <Text style={styles.fieldTitle}>Phone Number:</Text>
-                <TextInput style={styles.textInput}
+                
+                <Input
                     value={phoneNumber}
                     onChangeText={(newPhone) => setPhoneNumber(newPhone)}
+                    label="Phone Number"
+                    labelStyle={{color: 'black', fontSize: 20}}
                     placeholder="Phone Number"
                     keyboardType="number-pad"
+                    placeholderTextColor="#262626"
+                    leftIcon={{type: 'font-awesome', name: 'phone'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
+                    inputContainerStyle={{borderBottomColor: 'black'}}
                     maxLength={10}
                 />
                 <Text style={styles.errorMsg}>{phoneErrorMsg}</Text>
             </View>
 
             <View style={styles.fieldView}>
-                <Text style={styles.fieldTitle}>Email:</Text>
-                <TextInput style={styles.textInput}
+                <Input 
                     value={email}
                     onChangeText={(newEmail) => setEmail(newEmail)}
+                    label="Email"
+                    labelStyle={{color: 'black', fontSize: 20}}
                     placeholder="Email"
                     keyboardType='email-address'
                     autoCapitalize="none"
                     autoCorrect={false}
+                    leftIcon={{type: 'font-awesome', name: 'envelope'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
+                    placeholderTextColor='#262626'
+                    inputContainerStyle={{borderBottomColor: 'black'}}
                 />
                 <Text style={styles.errorMsg}>{emailErrorMsg}</Text>
             </View>
 
             <View style={styles.fieldView}>
-                <Text style={styles.fieldTitle}>Website URL:</Text>
-                <TextInput style={styles.textInput}
+                <Input 
                     value={website}
                     onChangeText={(newWeb) => setWebsite(newWeb)}
+                    label="Website"
+                    labelStyle={{color: 'black', fontSize: 20}}
+                    leftIcon={{type: 'font-awesome', name: 'globe'}}
+                    leftIconContainerStyle={{paddingRight: 8}}
                     placeholder="Website"
+                    placeholderTextColor='#262626'
+                    inputContainerStyle={{borderBottomColor: 'black'}}
                     keyboardType='email-address'
                     autoCapitalize="none"
                 />
@@ -853,14 +885,14 @@ const BreweryForm = ({isNew, navigation}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Monday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>{
+                    <TouchableOpacity style={styles.timeValue}
+                        onPress={()=>{
                         setSelectedTime(mondayOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('mondayOpen');
                     }}
-                        style={{display:'inline-block'}}
                     >
-                        <Text>{mondayOpenTime}</Text>
+                        <Text style={styles.timeValue}>{mondayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -871,7 +903,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setDayPicked('mondayClose');
                     }}
                     >
-                        <Text>{mondayCloseTime}</Text>
+                        <Text style={styles.timeValue}>{mondayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -887,7 +919,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                       
                     >
-                        <Text>{tuesdayOpenTime}</Text>
+                        <Text style={styles.timeValue}>{tuesdayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -897,7 +929,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible);
                         setDayPicked('tuesdayClose');
                     }}>
-                        <Text>{tuesdayCloseTime}</Text>
+                        <Text style={styles.timeValue}>{tuesdayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -913,7 +945,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                       
                     >
-                        <Text>{wednesdayOpenTime}</Text>
+                        <Text style={styles.timeValue}>{wednesdayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -924,7 +956,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setDayPicked("wednesdayClose");
                     }}
                     >
-                        <Text>{wednesdayCloseTime}</Text>
+                        <Text style={styles.timeValue}>{wednesdayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -940,7 +972,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                         
                     >
-                        <Text>{thursdayOpenTime}</Text>
+                        <Text style={styles.timeValue}>{thursdayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -951,7 +983,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setDayPicked('thursdayClose');
                     }
                     }>
-                        <Text>{thursdayCloseTime}</Text>
+                        <Text style={styles.timeValue}>{thursdayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -967,7 +999,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                       
                     >
-                        <Text>{fridayOpenTime}</Text>
+                        <Text style={styles.timeValue}>{fridayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -977,7 +1009,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayClose');
                     }}>
-                        <Text>{fridayCloseTime}</Text>
+                        <Text style={styles.timeValue}>{fridayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -993,7 +1025,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                         
                     >
-                        <Text>{saturdayOpenTime}</Text>
+                        <Text style={styles.timeValue}>{saturdayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -1003,7 +1035,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked("saturdayClose");
                     }}>
-                        <Text>{saturdayCloseTime}</Text>
+                        <Text style={styles.timeValue}>{saturdayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1019,7 +1051,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                         
                     >
-                        <Text>{sundayOpenTime}</Text>
+                        <Text style={styles.timeValue}>{sundayOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -1029,7 +1061,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayClose');
                     }}>
-                        <Text>{sundayCloseTime}</Text>
+                        <Text style={styles.timeValue}>{sundayCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1054,7 +1086,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                         style={{display:'inline-block'}}
                     >
-                        <Text>{mondayKidOpenTime}</Text>
+                        <Text style={styles.timeValue}>{mondayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -1064,7 +1096,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('mondayKidClose');
                     }}>
-                        <Text>{mondayKidCloseTime}</Text>
+                        <Text style={styles.timeValue}>{mondayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1080,7 +1112,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                       
                     >
-                        <Text>{tuesdayKidOpenTime}</Text>
+                        <Text style={styles.timeValue}>{tuesdayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -1090,7 +1122,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('tuesdayKidClose');
                     }}>
-                        <Text>{tuesdayKidCloseTime}</Text>
+                        <Text style={styles.timeValue}>{tuesdayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1106,7 +1138,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                       
                     >
-                        <Text>{wednesdayKidOpenTime}</Text>
+                        <Text style={styles.timeValue}>{wednesdayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -1116,7 +1148,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('wednesdayKidClose');
                     }}>
-                        <Text>{wednesdayKidCloseTime}</Text>
+                        <Text style={styles.timeValue}>{wednesdayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1132,7 +1164,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                         
                     >
-                        <Text>{thursdayKidOpenTime}</Text>
+                        <Text style={styles.timeValue}>{thursdayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -1142,7 +1174,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('thursdayKidClose');
                     }}>
-                        <Text>{thursdayKidCloseTime}</Text>
+                        <Text style={styles.timeValue}>{thursdayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1158,7 +1190,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                       
                     >
-                        <Text>{fridayKidOpenTime}</Text>
+                        <Text style={styles.timeValue}>{fridayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -1168,7 +1200,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('fridayKidClose');
                     }}>
-                        <Text>{fridayKidCloseTime}</Text>
+                        <Text style={styles.timeValue}>{fridayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1177,14 +1209,15 @@ const BreweryForm = ({isNew, navigation}) => {
             <View style={styles.timeContainers}>
                 <View style={{flexDirection:'row', flexWrap:'wrap'}}>
                     <Text style={styles.timeTitle}>Saturday Open Time:</Text>
-                    <TouchableOpacity onPress={()=>{
+                    <TouchableOpacity style={styles.timeValue}
+                        onPress={()=>{
                         setSelectedTime(saturdayKidOpenTime)
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('saturdayKidOpen');
                     }}
                         
                     >
-                        <Text>{saturdayKidOpenTime}</Text>
+                        <Text style={styles.timeValue}>{saturdayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -1194,7 +1227,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('saturdayKidClose');
                     }}>
-                        <Text>{saturdayKidCloseTime}</Text>
+                        <Text style={styles.timeValue}>{saturdayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1210,7 +1243,7 @@ const BreweryForm = ({isNew, navigation}) => {
                     }}
                         
                     >
-                        <Text>{sundayKidOpenTime}</Text>
+                        <Text style={styles.timeValue}>{sundayKidOpenTime}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection:'row', flexWrap:'true'}}>
@@ -1220,7 +1253,7 @@ const BreweryForm = ({isNew, navigation}) => {
                         setTimePickerVisible(!timePickerVisible)
                         setDayPicked('sundayKidClose');
                     }}>
-                        <Text>{sundayKidCloseTime}</Text>
+                        <Text style={styles.timeValue}>{sundayKidCloseTime}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1491,7 +1524,7 @@ const styles = StyleSheet.create({
         marginLeft:4,
         color: 'black',
         marginBottom:5,
-        fontSize:15,
+        fontSize:20,
         fontWeight:'bold',
     },
     filtersContainer: {
@@ -1502,14 +1535,11 @@ const styles = StyleSheet.create({
         borderRadius:5
     },
     timeContainers: {
-        backgroundColor: 'white',
         margin:5,
         padding:5,
-        borderRadius:5,
-        borderColor: 'black',
-        borderWidth:2,
         flexDirection:'column',
-        flex:1
+        flex:1,
+        borderBottomColor: 'black'
     },
     contentContainer: {
         margin:5,
@@ -1523,6 +1553,13 @@ const styles = StyleSheet.create({
         color: 'black',
         backgroundColor: 'white',
         fontSize: 25
+    },
+    timeValue: {
+        justifyContent: 'space-evenly',
+        textAlignVertical: 'bottom',
+        fontSize: '14',
+        display: 'inline-block',
+        marginLeft: 2
     }
 });
 
