@@ -39,10 +39,14 @@ const ResultsList = ({results, navigation}) => {
     }
     var dataList = []
     const addAd = 5
+    var count = 0
     for (var i = 0; i < results.length; i++ ) {
-        if (i % addAd === 0)
-            dataList.push({item: adBanner, isAd: true})
-        dataList.push({item: results[i], isAd: false})
+        if (i % addAd === 0) {
+            dataList.push({item: adBanner, isAd: true, key: count})
+            count++
+        }
+        dataList.push({item: results[i], isAd: false, key: count})
+        count++
     }
     console.log(dataList)
     
@@ -50,7 +54,7 @@ const ResultsList = ({results, navigation}) => {
         <View style={styles.container}>
             <FlatList 
                 data={dataList}
-                keyExtractor={(result, index) => result.item.breweryId}
+                keyExtractor={(result, index) => result.key.toString()}
                 renderItem={({item}) => {
                     if (item.isAd) {
                         return (
