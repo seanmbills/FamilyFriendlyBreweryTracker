@@ -3,10 +3,12 @@ import {View, StyleSheet, Text, TextInput, ScrollView, Dimensions, TouchableOpac
 import {Rating, AirbnbRating} from 'react-native-ratings'
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as ReviewContext} from '../context/ReviewContext';
-import {Context as AuthContext} from '../context/AuthContext'
+import {Context as AuthContext} from '../context/AuthContext';
+import {Context as BreweryContext} from '../context/BreweryContext';
 import BufferPopup from '../components/BufferPopup';
 import SignInPrompt from '../components/SignInPrompt';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
+// import SharedStyles from '../../assets/SharedStyles';
 
 class WriteReviewScreenComponent extends Component {
   state = {
@@ -48,17 +50,34 @@ WriteReviewScreenComponent.contextType = AuthContext;
 
 
 const WriteReviewScreen = ({navigation}) => {
-  const {state, createReview, getBreweryReviews} = useContext(ReviewContext);
+  const {createReview, getBreweryReviews, editReview, getReview} = useContext(ReviewContext);
   const authContext = useContext(AuthContext)
+  const breweryContext = useContext(BreweryContext);
 
-  const [ratingNum, setRatingNum] = useState(3);
-  const [description, setDescription] = useState('');
+  const breweryId = navigation.getParam('breweryId')
+  const breweryName = navigation.getParam('breweryName')
+  const breweryFontSize = navigation.getParam('breweryFontSize')
+  const isEditingAReview = navigation.getParam('isEditingAReview')
+  const review = navigation.getParam('review')
+  var reviewId = '';
+  var reviewDescription = ''
+  var reviewRating = 3;
+
+
+
+  if (isEditingAReview) {
+      reviewDescription = review.message;
+      reviewRating = review.rating;
+      reviewId = review._id;
+
+  }
+
+  const [ratingNum, setRatingNum] = useState(reviewRating);
+  const [description, setDescription] = useState(reviewDescription);
+
   const [showSuccessMsg, setShowSuccessMsg] = useState(false);
   const [showErrMsg, setShowErrMsg] = useState(false);
 
-  const breweryId = navigation.getParam('breweryId')
-  const breweryName = navigation.getParam('name')
-  const breweryFontSize = navigation.getParam('breweryFontSize')
 
 
   logMethod = () => {
@@ -67,10 +86,6 @@ const WriteReviewScreen = ({navigation}) => {
     console.log(breweryId);
     console.log(breweryName);
   }
-
-  // ratingCompleted(rating) {
-  //   console.log("Rating is: " + rating);
-  // }
 
     return (
       <ScrollView style={styles.container}>
@@ -81,7 +96,7 @@ const WriteReviewScreen = ({navigation}) => {
           <AirbnbRating
             count={5}
             reviews={["Terrible", "Bad", "Okay", "Good", "Great"]}
-            defaultRating={3}
+            defaultRating= {isEditingAReview ? (reviewRating) : (3)}
             size={50}
             onFinishRating={(newRating) => {
                 setRatingNum(newRating);
@@ -97,7 +112,7 @@ const WriteReviewScreen = ({navigation}) => {
           />
           <TextInput
             value={description}
-            placeholder="Write the review here. Make sure to include examples about what you do and do not like."
+            placeholder = {isEditingAReview ? (reviewDescription) : ("Write the review here. Make sure to include examples about what you do and do not like.")}
             autoCapitalize="none"
             autoCorrect={false}
             multiline={true}
@@ -107,6 +122,7 @@ const WriteReviewScreen = ({navigation}) => {
           />
           </View>
           <View style={styles.buttonContainer}>
+            {!isEditingAReview ? (
               <WelcomeButton
                   title="Submit"
                   onPress={async ()=> {
@@ -123,7 +139,26 @@ const WriteReviewScreen = ({navigation}) => {
                         setShowErrMsg(true);
                     }
                   }}
-              />
+                />)
+                :
+                (<WelcomeButton
+                  title="Update"
+                  onPress={async ()=> {
+                    logMethod()
+                    var message = description;
+                    var rating = ratingNum;
+                    console.log({breweryId, message, rating, reviewId})
+                    const params = {
+                      token: authContext.state.token,
+                      breweryId: breweryId,
+                      newMessage: message,
+                      newRating: rating,
+                      reviewId: reviewId
+                    }
+                    var response = await editReview(params);
+                    var getReviewsResponse = await getBreweryReviews({breweryId});
+                  }}
+              />)}
           </View>
           <Dialog visible={showSuccessMsg}>
             <DialogContent style={styles.dialogContent}>
@@ -131,6 +166,7 @@ const WriteReviewScreen = ({navigation}) => {
                   <WelcomeButton
                     title="Back"
                     onPress={async ()=>{
+                      await breweryContext.getBrewery({breweryId});
                       await setShowSuccessMsg(false)
                       navigation.goBack()
                     }}
@@ -153,7 +189,7 @@ const WriteReviewScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fcc203',
+    // backgroundColor: SharedStyles.backgroundColor,
     flex: 1
   },
   viewBox: {

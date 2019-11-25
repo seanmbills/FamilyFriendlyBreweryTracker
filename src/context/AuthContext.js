@@ -9,6 +9,8 @@ Buffer = require('buffer/').Buffer
 
 const authReducer = (state, action) => {
     switch(action.type) {
+        case 'clear_token':
+            return {...state, token: null}
         case 'add_error_message':
             return {...state, errorMessage: action.payload}
         case 'get_user_info':
@@ -318,8 +320,7 @@ const tryAutoSignin = dispatch => async() => {
 
 const clearUserToken = (dispatch) => {
     return async () => {
-        const token = await AsyncStorage.setItem('token', '')
-        return token
+        dispatch({type: 'clear_token', payload: null})
     }
 }
 
