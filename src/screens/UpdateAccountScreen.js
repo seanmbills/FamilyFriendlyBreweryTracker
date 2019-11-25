@@ -76,8 +76,8 @@ class UserUpdateAccount extends Component {
                 }
                 {
                     !this.state.isLoading && !this.state.foundUser &&
-                    <View>
-                        <Text>You must login to visit this part of the app</Text>
+                    <View style={{alignItems: 'center', flex: 1, backgroundColor: styles.background.backgroundColor}}>
+                        <Text style={styles.inputTitle}>You Must Login to Visit this Part of the App</Text>
                         <WelcomeButton
                             title="Login or Register"
                             onPress={()=>this.props.navigation.navigate("loginFlow")}
