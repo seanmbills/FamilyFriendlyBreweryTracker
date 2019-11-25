@@ -1,10 +1,11 @@
 import React, {Component, useState, useContext} from 'react';
-import { Text, StyleSheet, View, TouchableOpacity, Image } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, Image, Share } from 'react-native';
 import WelcomeButton from '../components/WelcomeButton';
 import {Context as AuthContext} from '../context/AuthContext';
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
 import BufferPopup from '../components/BufferPopup'
 import Modal from 'react-native-modal'
+import SharedStyles from '../../assets/SharedStyles';
 
 class WelcomeScreenComponent extends Component {
     state = {
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
         marginBottom: 100
     },
     background: {
-        backgroundColor: '#fcc203',
+        backgroundColor: SharedStyles.backgroundColor,
         height: '100%',
         width: '100%',
         alignContent: 'center',
