@@ -1557,8 +1557,8 @@ const styles = StyleSheet.create({
     timeValue: {
         justifyContent: 'space-evenly',
         textAlignVertical: 'bottom',
-        fontSize: '14',
-        display: 'inline-block',
+        fontSize: 14,
+        // display: 'inline-block',
         marginLeft: 2
     }
 });
