@@ -1363,7 +1363,7 @@ const BreweryForm = ({isNew, navigation}) => {
             </View>
             </View>
             }
-            <View style={styles.fieldView}>
+            <View style={styles.fieldView, {flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 <WelcomeButton
                     title="Submit"
                     onPress={ async ()=> {
@@ -1485,7 +1485,7 @@ const BreweryForm = ({isNew, navigation}) => {
                 
             </Dialog>
 
-            <View style={styles.fieldView}>
+            <View style={styles.fieldView, {flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 <WelcomeButton
                     title="Cancel"
                     onPress={() => navigation.navigate("More")}
