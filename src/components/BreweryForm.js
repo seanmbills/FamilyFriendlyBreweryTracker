@@ -22,6 +22,7 @@ import {validateEmail, validatePhoneNumber, validateBreweryName, validateAddress
 
 import Dialog, {DialogContent} from 'react-native-popup-dialog';
 import { DrawerActions } from 'react-navigation-drawer';
+import { initializeInterstitial } from '../api/interstitialAds';
 
 const BreweryForm = ({isNew, navigation}) => {
     
@@ -158,6 +159,7 @@ const BreweryForm = ({isNew, navigation}) => {
     }
 
     const {state, createBrewery, updateBrewery, getOwnedBreweries} = useContext(BreweryContext);
+    const authContext = useContext(AuthContext)
     
     //Here were are checking if a brewery object has been supplied in the application context
     const brewery = (state['individualResult'] != null) ? state['individualResult'][0].brewery : null;
@@ -1477,6 +1479,7 @@ const BreweryForm = ({isNew, navigation}) => {
                             title="Back"
                             onPress={() => {
                                 setDialogOpen(false);
+                                initializeInterstitial()
                                 navigation.navigate('More');
                             }}
                         />
