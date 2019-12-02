@@ -54,6 +54,7 @@ const BreweryDetailsScreen = ({navigation}) => {
     }
 
     const screenWidth = Math.round(Dimensions.get('window').width);
+    const imageWidth = screenWidth * 11 / 12;
     const screenHeight = 50;
     var breweryFont = Math.sqrt((screenWidth - 32)*screenHeight/(breweryResult.name.length))
     breweryFont = Math.min(breweryFont, 35)
@@ -208,20 +209,25 @@ const BreweryDetailsScreen = ({navigation}) => {
 
         {
             (data.length > 0) &&
-            <FlatList
-                horizontal
-                data={data}
-                renderItem={({item}) => {
-                  return (
-                    <Image source={{uri: item}} style={{width:400, height:400}} />
-                  )
-                }}
-                keyExtractor={item => item}
-            />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <FlatList
+                  horizontal
+                  data={data}
+                  renderItem={({item}) => {
+                    return (
+                      <Image source={{uri: item}} resizeMode='contain' style={{width:imageWidth, height:imageWidth}} />
+                    )
+                  }}
+                  keyExtractor={item => item}
+                  showsHorizontalScrollIndicator={false}
+              />
+            </View>
         }
         {
           data.length === 0 &&
-          <Image source={require('../../assets/PhotosComingSoon.jpg')} style={{width: 700, height: 500}} />
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Image source={require('../../assets/PhotosComingSoon.jpg')} resizeMode='contain' style={{width: imageWidth, height: imageWidth}} />
+          </View>
         }
 
         {/*The first box*/}
