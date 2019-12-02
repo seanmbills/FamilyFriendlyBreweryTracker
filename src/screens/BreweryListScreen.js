@@ -5,6 +5,8 @@ import {Context as AuthContext} from '../context/AuthContext'
 import SearchBar from '../components/SearchBar';
 import ResultsList from '../components/ResultsList'
 
+import {initializeInterstitial} from '../api/interstitialAds'
+
 const MapBreweryContext = ({navigation}) => {
     return (
         <BreweryContext.Consumer>
@@ -22,6 +24,7 @@ class BreweryListScreenComponent extends Component {
     }
 
     componentDidMount() {
+        initializeInterstitial()
         let {getUserInfo} = this.context;
         this.focusListener = this.props.navigation.addListener('didFocus', async () => {
             if ((this.context.state.profileInfo === null || this.context.state.profileInfo === undefined)) {
