@@ -58,9 +58,9 @@ const SearchBar = ({navigation, term, onTermChange, userZip, location}) => {
     const [modalOpen, setModalOpen] = useState(false)
     const [openNow, setOpenNow] = useState(false)
     const [kidFriendlyNow, setKidFriendlyNow] = useState(false)
-    const [maximumPrice, setPrice] = useState(0)
-    const [minimumRating, setRating] = useState(5)
-    const [distanceIndex, setDistanceIndex] = useState(1);
+    const [maximumPrice, setPrice] = useState(3)
+    const [minimumRating, setRating] = useState(3)
+    const [distanceIndex, setDistanceIndex] = useState(4);
     const [distance, setDistance] = useState(5 * 1609.34); //(5 miles converted into meters for backend)
     const [useLocation, setUseLocation] = useState(false)
     const [granted, setGranted] = useState(false)
@@ -330,6 +330,7 @@ const SearchBar = ({navigation, term, onTermChange, userZip, location}) => {
                             }
                         }
                         getSearchResults(req);
+                        setModalOpen(!modalOpen);
                     }}
                     title="Apply to Search"
                     >
